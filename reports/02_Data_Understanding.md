@@ -18,6 +18,26 @@ with the execution of similar future projects.
 
 --->
 
+This is a simulation competition. It is possible to download games using the Kaggle API, but the most
+common way to gather data is playing the game.
+
+It seems that the game engine is written in Javascript, and I have read in the [forum](https://www.kaggle.com/c/lux-ai-2021/discussion/267351#1486329)
+that translating that to python could yield speedups.
+
+### Engine installation
+
+- [Getting started](https://github.com/Lux-AI-Challenge/Lux-Design-2021#getting-started)
+- [Install node js](https://github.com/nodesource/distributions/blob/master/README.md#installation-instructions)
+- [Python get started](https://github.com/Lux-AI-Challenge/Lux-Design-2021/tree/master/kits/python)
+
+### Useful resources
+
+- [Sample folder](https://github.com/Lux-AI-Challenge/Lux-Design-2021/raw/master/kits/python/simple/simple.tar.gz)
+- [Visualizer](https://2021vis.lux-ai.org/) allows to upload replays
+- [Run tournaments with trueskill rating](https://github.com/Lux-AI-Challenge/Lux-Design-2021#cli-leaderboard-evaluation)
+- [How to make a submission](https://github.com/Lux-AI-Challenge/Lux-Design-2021/tree/master/kits/python#submitting-to-kaggle). It is different from hungry geese, we need to submit a .tar.gz file with
+a `main.py` script. This allows to save the models to file instead of embedding them in the code.
+
 ## External data
 
 <!--- It is allowed in this challenge? If so write it here ideas of how to find
