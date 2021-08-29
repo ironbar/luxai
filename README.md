@@ -1,9 +1,13 @@
 # luxai
+
+![](reports/res/project_picture.png)
+
 Gather the most resources and survive the night!
 
 https://www.kaggle.com/c/lux-ai-2021
 
 ## Methodology
+
 I'm following [CRISP-DM 1.0](https://www.the-modeling-agency.com/crisp-dm.pdf) methodology for the reports.
 
 I have skipped Evaluation and Deployment steps because they are not usually done on Kaggle.
