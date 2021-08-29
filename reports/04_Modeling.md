@@ -1,6 +1,7 @@
 # Modeling
 
 ## Select modeling technique
+
 <!---Document the actual modeling technique that is to be used. If multiple
 techniques are applied, perform this task separately for each technique.
 Many modeling techniques make specific assumptions about the data—for example,
@@ -8,6 +9,7 @@ that all attributes have uniform distributions, no missing values allowed,
 class attribute must be symbolic, etc. Record any such assumptions made. --->
 
 ## Generate test design
+
 <!---Describe the intended plan for training, testing, and evaluating the models.
 A primary component of the plan is determining how to divide the available dataset
 into training, test, and validation datasets.
@@ -22,6 +24,7 @@ validation score and LB score
 --->
 
 ## Iteration 1. Iteration_title
+
 <!---
 The work is done using short iterations. Each iteration needs to have a very
 clear goal. This allows to gain greater knowledge of the problem on each iteration.
