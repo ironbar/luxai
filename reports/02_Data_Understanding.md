@@ -43,6 +43,8 @@ a `main.py` script. This allows to save the models to file instead of embedding 
 <!--- It is allowed in this challenge? If so write it here ideas of how to find
 it and if people have already posted it on the forum describe it. --->
 
+I find very unlikely that using external data could be useful on this competition.
+
 ## Describe data
 
 <!---Describe the data that has been acquired, including the format of the data,

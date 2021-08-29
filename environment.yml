@@ -83,4 +83,8 @@ dependencies:
   - xz=5.2.5=h7b6447c_0
   - zeromq=4.3.4=h2531618_0
   - zlib=1.2.11=h7b6447c_3
+  - pip:
+    - jsonschema==3.2.0
+    - kaggle-environments==1.8.11
+    - pyrsistent==0.18.0
 prefix: /home/gbarbadillo/miniconda3/envs/luxai
