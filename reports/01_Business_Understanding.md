@@ -32,7 +32,7 @@ the data analysis goal and project plan
  --->
 
 I will be going two weeks on holidays from 25 September and around 10 days from 26 November. So instead
-of having 3 months for the challenge I will be having slighlty more than 2 months.
+of having 3 months for the challenge I will be having slightly more than 2 months.
 
 Moreover I will be missing on the last days of the challenge. Thus I need to have in mind that I need to
 end the challenge before the other participants.
