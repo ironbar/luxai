@@ -1,0 +1,7 @@
+syntax: glob
+notebooks/.ipynb_checkpoints/*
+*.egg-info/*
+*.pyc
+.vscode/*
+.eggs/*
+.pytest_cache/*
