@@ -17,6 +17,7 @@ I have skipped Evaluation and Deployment steps because they are not usually done
 1. [Data preparation](reports/03_Data_Preparation.md)
 1. [Modeling](reports/04_Modeling.md)
 1. [Solution summary](reports/05_Solution_Summary.md)
+
 * [Challenge workflow](reports/00_Challenge_Workflow.md)
 
 ## Code structure
