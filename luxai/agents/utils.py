@@ -22,20 +22,19 @@ def get_available_workers(player: Player) -> list[Unit]:
 
 
 def get_available_city_tiles(player: Player) -> list[CityTile]:
-    available_city_tiles = []
-    for _, city in player.cities.items():
-        for city_tile in city.citytiles:
-            if city_tile.can_act():
-                available_city_tiles.append(city_tile)
-    return available_city_tiles
+    return [city_tile for city_tile in get_all_city_tiles(player) if city_tile.can_act()]
 
 
 def get_all_city_tiles(player: Player) -> list[CityTile]:
-    return [city_tile for city_tile in city.citytiles for _, city in player.cities.items()]
+    city_tiles = []
+    for _, city in player.cities.items():
+        city_tiles.extend(city.citytiles)
+    return city_tiles
+
 
 def get_n_buildable_units(player: Player) -> int:
-    n_city_tiles = len(player.units)
-    return n_city_tiles - player.units
+    return len(get_all_city_tiles(player)) - len(player.units)
+
 
 def move_to_closest_resource(unit: Unit, player: Player, resource_tiles: list[Cell]) -> str:
     """ Moves the unit towards the closest resource, returns None if there is no available resource """
