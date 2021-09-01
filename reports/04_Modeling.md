@@ -8,6 +8,9 @@ Many modeling techniques make specific assumptions about the data—for example,
 that all attributes have uniform distributions, no missing values allowed,
 class attribute must be symbolic, etc. Record any such assumptions made. --->
 
+**TODO:** I will go back to this point once I have created some hand-made agents and
+I have a better understanding of the game.
+
 ## Generate test design
 
 <!---Describe the intended plan for training, testing, and evaluating the models.
@@ -23,15 +26,35 @@ to make a lot of submissions. Sometimes is not easy to have a good correlation b
 validation score and LB score
 --->
 
-## Iteration 1. Iteration_title
+**TODO:** I will go back to this point once I have created some hand-made agents and
+I have a better understanding of the game.
+
+## Iteration 1. Hand made agent
 
 <!---
 The work is done using short iterations. Each iteration needs to have a very
 clear goal. This allows to gain greater knowledge of the problem on each iteration.
 --->
 
-### Goal
+### 1. Goal
 
-### Development
+The goal is to identify the difficulties when making a hand agent
 
-### Results
+### 1. Development
+
+On a first step I'm going to start from the simple agent and make it better incrementally.
+
+### 1. Results
+
+## Iteration n. Iteration_title
+
+<!---
+The work is done using short iterations. Each iteration needs to have a very
+clear goal. This allows to gain greater knowledge of the problem on each iteration.
+--->
+
+### n. Goal
+
+### n. Development
+
+### n. Results
