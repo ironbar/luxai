@@ -5,3 +5,4 @@ notebooks/.ipynb_checkpoints/*
 .vscode/*
 .eggs/*
 .pytest_cache/*
+forum/simple/*
