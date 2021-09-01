@@ -52,6 +52,36 @@ the quantity of data (for example, the number of records and fields in each tabl
 the identities of the fields, and any other surface features which have been
 discovered. Evaluate whether the data acquired satisfies the relevant requirements. --->
 
+- The game is pretty slow. It takes around 5 seconds for a 32x32 board and around 2 seconds for 16x16
+- The game has this configuration parameters:
+
+```python
+{'width': 12,
+ 'height': 12,
+ 'episodeSteps': 361,
+ 'actTimeout': 3,
+ 'runTimeout': 1200,
+ 'mapType': 'random',
+ 'annotations': False,
+ 'loglevel': 0,
+ 'seed': 751269832}
+```
+
+- Resetting the environment does not change the map, the seed determines the map
+- The game board and the actions are encoded with some custom format, but python parsers are provided
+  that make easier to deal with the game information. I don't know how efficient this parsers are. We can
+  leave that for later if we need to improve speed.
+- The python objects are well documented [here](https://github.com/Lux-AI-Challenge/Lux-Design-2021/tree/master/kits)
+![](https://raw.githubusercontent.com/Lux-AI-Challenge/Lux-Design-2021/master/assets/game_board.png)
+- In the representation the square is rotated 45º. X dimension is on WE axis and Y dimension is on NS axis.
+    - Increasing x means moving east
+    - Increasing y means moving south
+- We can use a function or a class as an agent just like we did on hungry geese challenge
+- It is possible to draw circles, lines... that are shown when rendering the match
+- The best way to visualize a match is to render to html because the visualization uses the whole tab
+- Using the python parser we can probably get the same metrics as the one provided by the rendering of the match.
+- It takes around 40 ms to parse a match
+
 ## Explore data
 
 <!---This task addresses data mining questions using querying, visualization,
@@ -67,16 +97,24 @@ Some techniques:
 * Intuitions about the data
 --->
 
+I have to probably start building agents for the game to identify which features
+are relevant for the game.
+
+<!---
+
+I have commented this because does not apply to this challenge
+
 ## Verify data quality
 
-<!---Examine the quality of the data, addressing questions such as: Is the data
+
+
+Examine the quality of the data, addressing questions such as: Is the data
 complete (does it cover all the cases required)? Is it correct, or does it contain
 errors and, if there are errors, how common are they? Are there missing values in
-the data? If so, how are they represented, where do they occur, and how common are they? --->
+the data? If so, how are they represented, where do they occur, and how common are they? 
 
 ## Amount of data
 
-<!---
 How big is the train dataset? How compared to the test set?
 Is enough for DL?
 --->
