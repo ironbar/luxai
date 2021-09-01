@@ -7,7 +7,7 @@ from luxai.agents.utils import (
     get_available_workers,
     get_resource_tiles,
     move_to_closest_resource,
-    move_to_closest_city
+    move_to_closest_city_tile
 )
 
 class BaseAgent():
@@ -45,7 +45,7 @@ class SimpleAgent(BaseAgent):
             if unit.get_cargo_space_left() > 0:
                 actions.append(move_to_closest_resource(unit, player, resource_tiles))
             else:
-                actions.append(move_to_closest_city(unit, player))
+                actions.append(move_to_closest_city_tile(unit, player))
 
         actions = [action for action in actions if action is not None]
         return actions

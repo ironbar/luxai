@@ -1,9 +1,12 @@
 import math
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.constants import Constants
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Player, Unit, CityTile
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_map import Cell
 
-
-def get_resource_tiles(game_state):
+def get_resource_tiles(game_state: Game) -> list[Cell]:
+    """ Returns a list with all the Cells that have resources in the map """
     resource_tiles: list[Cell] = []
     for y in range(game_state.map.height):
         for x in range(game_state.map.width):
@@ -13,12 +16,18 @@ def get_resource_tiles(game_state):
     return resource_tiles
 
 
-def get_available_workers(player):
+def get_available_workers(player: Player) -> list[Unit]:
+    """ Returns a list with the workers that are available to do actions """
     return [unit for unit in player.units if unit.is_worker() and unit.can_act()]
 
 
-def move_to_closest_resource(unit, player, resource_tiles):
-    # if the unit is a worker and we have space in cargo, lets find the nearest resource tile and try to mine it
+def move_to_closest_resource(unit: Unit, player: Player, resource_tiles: list[Cell]) -> str:
+    """ Moves the unit towards the closest resource, returns None if there is no available resource """
+    closest_resource_tile = find_closest_resource(unit, player, resource_tiles)
+    if closest_resource_tile is not None:
+        return unit.move(unit.pos.direction_to(closest_resource_tile.pos))
+
+def find_closest_resource(unit: Unit, player: Player, resource_tiles: list[Cell]) -> Cell:
     closest_dist = math.inf
     closest_resource_tile = None
     for resource_tile in resource_tiles:
@@ -28,20 +37,23 @@ def move_to_closest_resource(unit, player, resource_tiles):
         if dist < closest_dist:
             closest_dist = dist
             closest_resource_tile = resource_tile
-    if closest_resource_tile is not None:
-        return unit.move(unit.pos.direction_to(closest_resource_tile.pos))
+    return closest_resource_tile
 
 
-def move_to_closest_city(unit, player):
-    if len(player.cities) > 0:
-        closest_dist = math.inf
-        closest_city_tile = None
-        for k, city in player.cities.items():
-            for city_tile in city.citytiles:
-                dist = city_tile.pos.distance_to(unit.pos)
-                if dist < closest_dist:
-                    closest_dist = dist
-                    closest_city_tile = city_tile
-        if closest_city_tile is not None:
-            move_dir = unit.pos.direction_to(closest_city_tile.pos)
-            return unit.move(move_dir)
+def move_to_closest_city_tile(unit: Unit, player: Player) -> str:
+    """ Moves the unit towards the closest city tile, returns None if there is no available resource """
+    closest_city_tile = find_closest_city_tile(unit, player)
+    if closest_city_tile is not None:
+        move_dir = unit.pos.direction_to(closest_city_tile.pos)
+        return unit.move(move_dir)
+
+def find_closest_city_tile(unit: Unit, player: Player) -> CityTile:
+    closest_dist = math.inf
+    closest_city_tile = None
+    for k, city in player.cities.items():
+        for city_tile in city.citytiles:
+            dist = city_tile.pos.distance_to(unit.pos)
+            if dist < closest_dist:
+                closest_dist = dist
+                closest_city_tile = city_tile
+    return closest_city_tile
