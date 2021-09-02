@@ -1,14 +1,19 @@
 """
 Basic handmade agents
 """
+import random
+
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Player
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux import annotate
 
 from luxai.agents.utils import (
     get_available_workers,
     get_available_city_tiles,
     get_resource_tiles,
+    get_empty_tiles,
     get_n_buildable_units,
+    find_closest_tile_to_unit,
     move_to_closest_resource,
     move_to_closest_city_tile,
 )
@@ -106,4 +111,42 @@ class BuildWorkerOrResearchAgent(SimpleAgent):
                     actions.append(city_tile.build_worker())
                 else:
                     actions.append(city_tile.research())
+        return actions
+
+
+class NaiveViralAgent(BuildWorkerOrResearchAgent):
+    """
+    This agent will build new city tiles to grow as fast as possible
+    """
+    def __init__(self, build_new_city_tile_probability):
+        super().__init__()
+        self.build_new_city_tile_probability = build_new_city_tile_probability
+
+    def __call__(self, observation: dict, configuration: dict) -> list[str]:
+        self._update_game_state(observation)
+        player = self.game_state.players[observation.player]
+        resource_tiles = get_resource_tiles(self.game_state)
+        actions = self.create_viral_actions_for_workers(player, resource_tiles)
+        actions.extend(self.manage_city_tiles(player))
+        actions = [action for action in actions if action is not None]
+        return actions
+
+    def create_viral_actions_for_workers(self, player, resource_tiles) -> list[str]:
+        empty_tiles = get_empty_tiles(self.game_state)
+        actions = []
+        for unit in get_available_workers(player):
+            if unit.get_cargo_space_left() > 0:
+                actions.append(move_to_closest_resource(unit, player, resource_tiles))
+            else:
+                build_new_city_tile = random.uniform(0, 1) < self.build_new_city_tile_probability
+                if build_new_city_tile:
+                    closest_empty_tile = find_closest_tile_to_unit(unit, empty_tiles)
+                    if closest_empty_tile is not None:
+                        #actions.append(annotate.sidetext('Closest empty tile: %s' % str(closest_empty_tile.pos)))
+                        if unit.pos.equals(closest_empty_tile.pos):
+                            actions.append(unit.build_city())
+                        else:
+                            actions.append(unit.move(unit.pos.direction_to(closest_empty_tile.pos)))
+                else:
+                    actions.append(move_to_closest_city_tile(unit, player))
         return actions

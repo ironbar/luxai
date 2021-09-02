@@ -16,6 +16,17 @@ def get_resource_tiles(game_state: Game) -> list[Cell]:
     return resource_tiles
 
 
+def get_empty_tiles(game_state: Game) -> list[Cell]:
+    """ Returns a list with all the Cells that do not have resources nor cities """
+    empty_tiles: list[Cell] = []
+    for y in range(game_state.map.height):
+        for x in range(game_state.map.width):
+            cell = game_state.map.get_cell(x, y)
+            if not cell.has_resource() and cell.citytile is None:
+                empty_tiles.append(cell)
+    return empty_tiles
+
+
 def get_available_workers(player: Player) -> list[Unit]:
     """ Returns a list with the workers that are available to do actions """
     return [unit for unit in player.units if unit.is_worker() and unit.can_act()]
@@ -72,3 +83,14 @@ def find_closest_city_tile(unit: Unit, player: Player) -> CityTile:
                 closest_dist = dist
                 closest_city_tile = city_tile
     return closest_city_tile
+
+
+def find_closest_tile_to_unit(unit: Unit, candidate_tiles: list[Cell]) -> Cell:
+    closest_dist = math.inf
+    closest_tile = None
+    for tile in candidate_tiles:
+        dist = tile.pos.distance_to(unit.pos)
+        if dist < closest_dist:
+            closest_dist = dist
+            closest_tile = tile
+    return closest_tile
