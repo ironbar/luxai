@@ -32,6 +32,11 @@ def get_available_workers(player: Player) -> list[Unit]:
     return [unit for unit in player.units if unit.is_worker() and unit.can_act()]
 
 
+def get_non_available_workers(player: Player) -> list[Unit]:
+    """ Returns a list with the workers that are not available and will stay on same tile """
+    return [unit for unit in player.units if unit.is_worker() and not unit.can_act()]
+
+
 def get_available_city_tiles(player: Player) -> list[CityTile]:
     return [city_tile for city_tile in get_all_city_tiles(player) if city_tile.can_act()]
 
@@ -94,3 +99,7 @@ def find_closest_tile_to_unit(unit: Unit, candidate_tiles: list[Cell]) -> Cell:
             closest_dist = dist
             closest_tile = tile
     return closest_tile
+
+
+def is_position_in_list(position, positions):
+    return any(position.equals(other_position) for other_position in positions)

@@ -9,13 +9,18 @@ from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux import annotate
 
 from luxai.agents.utils import (
     get_available_workers,
+    get_non_available_workers,
     get_available_city_tiles,
     get_resource_tiles,
     get_empty_tiles,
     get_n_buildable_units,
+    get_all_city_tiles,
     find_closest_tile_to_unit,
+    find_closest_resource,
+    find_closest_city_tile,
     move_to_closest_resource,
     move_to_closest_city_tile,
+    is_position_in_list,
 )
 
 class BaseAgent():
@@ -172,4 +177,78 @@ class NaiveRandomViralAgent(NaiveViralAgent):
         actions = self.create_viral_actions_for_workers(player, resource_tiles, empty_tiles)
         actions.extend(self.manage_city_tiles(player))
         actions = [action for action in actions if action is not None]
+        return actions
+
+
+class ViralRemoveBlockingAgent(BuildWorkerOrResearchAgent):
+    """
+    This agent will build new city tiles to grow as fast as possible, it will
+    not remove actions that would lead to blocking
+
+    This agent will be different from the previous ones because it will create
+    the actions at the end, instead of creating actions for each unit.
+    """
+    def __init__(self, build_new_city_tile_probability):
+        super().__init__()
+        self.build_new_city_tile_probability = build_new_city_tile_probability
+
+    def __call__(self, observation: dict, configuration: dict) -> list[str]:
+        self._update_game_state(observation)
+        player = self.game_state.players[observation.player]
+        resource_tiles = get_resource_tiles(self.game_state)
+        empty_tiles = get_empty_tiles(self.game_state)
+        random.shuffle(empty_tiles)
+        random.shuffle(resource_tiles)
+
+        actions = self.create_viral_actions_for_workers(player, resource_tiles, empty_tiles)
+        actions.extend(self.manage_city_tiles(player))
+        actions = [action for action in actions if action is not None]
+        return actions
+
+    def create_viral_actions_for_workers(self, player, resource_tiles, empty_tiles) -> list[str]:
+        actions = []
+        available_workers, movement_directions = [], []
+        available_workers = get_available_workers(player)
+        random.shuffle(available_workers)
+        non_available_workers = get_non_available_workers(player)
+
+        for unit in available_workers:
+            if unit.get_cargo_space_left() > 0:
+                closest_resource_tile = find_closest_resource(unit, player, resource_tiles)
+                if closest_resource_tile is not None:
+                    movement_directions.append(unit.pos.direction_to(closest_resource_tile.pos))
+                else:
+                    movement_directions.append(None)
+            else:
+                build_new_city_tile = random.uniform(0, 1) < self.build_new_city_tile_probability
+                if build_new_city_tile:
+                    closest_empty_tile = find_closest_tile_to_unit(unit, empty_tiles)
+                    if closest_empty_tile is not None:
+                        if unit.pos.equals(closest_empty_tile.pos):
+                            actions.append(unit.build_city())
+                            movement_directions.append(None)
+                        else:
+                            movement_directions.append(unit.pos.direction_to(closest_empty_tile.pos))
+                else:
+                    closest_city_tile = find_closest_city_tile(unit, player)
+                    if closest_city_tile is not None:
+                        movement_directions.append(unit.pos.direction_to(closest_city_tile.pos))
+                    else:
+                        movement_directions.append(None)
+
+        assert len(available_workers) == len(movement_directions)
+        city_tile_positions = [city_tile.pos for city_tile in get_all_city_tiles(player)]
+        blocking_positions = [unit.pos for unit in non_available_workers if not is_position_in_list(unit.pos, city_tile_positions)]
+        #https://github.com/Lux-AI-Challenge/Lux-Design-2021/tree/master/kits#position
+        for unit, direction in zip(available_workers, movement_directions):
+            if direction is None:
+                continue
+            future_position = unit.pos.translate(direction, units=1)
+            if is_position_in_list(future_position, blocking_positions):
+                if not is_position_in_list(unit.pos, city_tile_positions):
+                    blocking_positions.append(unit.pos)
+            else:
+                actions.append(unit.move(direction))
+                if not is_position_in_list(future_position, city_tile_positions):
+                    blocking_positions.append(future_position)
         return actions
