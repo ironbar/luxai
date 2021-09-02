@@ -126,13 +126,14 @@ class NaiveViralAgent(BuildWorkerOrResearchAgent):
         self._update_game_state(observation)
         player = self.game_state.players[observation.player]
         resource_tiles = get_resource_tiles(self.game_state)
-        actions = self.create_viral_actions_for_workers(player, resource_tiles)
+        empty_tiles = get_empty_tiles(self.game_state)
+
+        actions = self.create_viral_actions_for_workers(player, resource_tiles, empty_tiles)
         actions.extend(self.manage_city_tiles(player))
         actions = [action for action in actions if action is not None]
         return actions
 
-    def create_viral_actions_for_workers(self, player, resource_tiles) -> list[str]:
-        empty_tiles = get_empty_tiles(self.game_state)
+    def create_viral_actions_for_workers(self, player, resource_tiles, empty_tiles) -> list[str]:
         actions = []
         for unit in get_available_workers(player):
             if unit.get_cargo_space_left() > 0:
@@ -149,4 +150,26 @@ class NaiveViralAgent(BuildWorkerOrResearchAgent):
                             actions.append(unit.move(unit.pos.direction_to(closest_empty_tile.pos)))
                 else:
                     actions.append(move_to_closest_city_tile(unit, player))
+        return actions
+
+
+class NaiveRandomViralAgent(NaiveViralAgent):
+    """
+    This agent extends NaiveViralAgent by randomly shuffling the tiles
+    This make the agent much more stronger because it is capable of avoiding some blockings
+    """
+    def __init__(self, build_new_city_tile_probability):
+        super().__init__(build_new_city_tile_probability)
+
+    def __call__(self, observation: dict, configuration: dict) -> list[str]:
+        self._update_game_state(observation)
+        player = self.game_state.players[observation.player]
+        resource_tiles = get_resource_tiles(self.game_state)
+        empty_tiles = get_empty_tiles(self.game_state)
+        random.shuffle(empty_tiles)
+        random.shuffle(resource_tiles)
+
+        actions = self.create_viral_actions_for_workers(player, resource_tiles, empty_tiles)
+        actions.extend(self.manage_city_tiles(player))
+        actions = [action for action in actions if action is not None]
         return actions
