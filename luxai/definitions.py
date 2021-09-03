@@ -11,3 +11,5 @@ SUBMISSION_PATH = os.path.join(DATASET_PATH, 'data', 'submission_format.csv')
 LIBRARY_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 """
 import os
+
+BOARD_SIZES = [12, 16, 24, 32]
