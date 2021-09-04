@@ -26,8 +26,9 @@ to make a lot of submissions. Sometimes is not easy to have a good correlation b
 validation score and LB score
 --->
 
-**TODO:** I will go back to this point once I have created some hand-made agents and
-I have a better understanding of the game.
+I will start using a simple win ratio metric to verify that new agents are better
+than the old ones. I should probably compute the win ratio against more than one
+agent to verify that the new agent is robust.
 
 ## Iteration 1. Rule based agent
 
