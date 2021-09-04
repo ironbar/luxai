@@ -111,6 +111,31 @@ I don't know yet if there is room for machine learning. Maybe in the part of cho
 at the board and identifying the key resources, the ideal layout of the city... But probably execution
 is better done by code.
 
+## Iteration 2. Task manager bot
+
+<!---
+The work is done using short iterations. Each iteration needs to have a very
+clear goal. This allows to gain greater knowledge of the problem on each iteration.
+--->
+
+### 2.1 Goal
+
+The goal is to implement a task manager bot. At the start of the turn the bot will assign different
+tasks to the units and later it will coordinate the actions based on their priority.
+
+Hopefully this approach will scale better to complex behaviour than the one used on the first bot.
+
+### 2.2 Development
+
+I started thinking about this approach when dealing with collisions and when balancing between building
+cities or gathering resources. Later I found that a very similar approach was described on [Halite challenge](https://recursive.cc/blog/halite-iii-postmortem.html)
+Thus seeing that it has sense I have decided to implement it. I would love to get a bot that is
+able to beat the viral agent more than 90% of the times.
+
+### 2.3 Results
+
+### 2.4 Next steps
+
 ## Iteration n. Iteration_title
 
 <!---
