@@ -2,6 +2,7 @@
 Basic handmade agents
 """
 import random
+from typing import List
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Player
