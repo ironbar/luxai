@@ -29,22 +29,34 @@ validation score and LB score
 **TODO:** I will go back to this point once I have created some hand-made agents and
 I have a better understanding of the game.
 
-## Iteration 1. Hand made agent
+## Iteration 1. Rule based agent
 
 <!---
 The work is done using short iterations. Each iteration needs to have a very
 clear goal. This allows to gain greater knowledge of the problem on each iteration.
 --->
 
-### 1. Goal
+### 1.1 Goal
 
-The goal is to identify the difficulties when making a hand agent
+The goal is to identify the difficulties when making a rule based agent
 
-### 1. Development
+### 1.2 Development
 
-On a first step I'm going to start from the simple agent and make it better incrementally.
+On a first step I'm going to start from the simple agent and make it better incrementally. All the work can be found on notebook `002_hand_made_agent`. I have refactorized the simple agent and later done the following updates:
 
-### 1. Results
+1. Add research
+2. Build new workers
+3. Build new cities
+4. Avoid collisions
+
+With this I have created the first agent called `viral` that builds cities and workers as fast as possible.
+
+#### 1.2.1 Ideas for improving the agent
+
+### 1.3 Results
+
+The agent `viral` scores around 974 on leaderboard, which is around position 100 on the leaderboard.
+This agent beats the `simple_agent` around 94.5% of the times.
 
 ## Iteration n. Iteration_title
 
@@ -53,8 +65,8 @@ The work is done using short iterations. Each iteration needs to have a very
 clear goal. This allows to gain greater knowledge of the problem on each iteration.
 --->
 
-### n. Goal
+### n.1 Goal
 
-### n. Development
+### n.2 Development
 
-### n. Results
+### n.3 Results
