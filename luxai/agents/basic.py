@@ -36,7 +36,7 @@ class BaseAgent():
         else:
             self.game_state._update(observation["updates"])
 
-    def __call__(self, observation: dict, configuration: dict) -> list[str]:
+    def __call__(self, observation: dict, configuration: dict) -> List[str]:
         self._update_game_state(observation)
         raise NotImplementedError('You have to implement this function')
 
@@ -46,7 +46,7 @@ class SimpleAgent(BaseAgent):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, observation: dict, configuration: dict) -> list[str]:
+    def __call__(self, observation: dict, configuration: dict) -> List[str]:
         self._update_game_state(observation)
         player = self.game_state.players[observation.player]
         resource_tiles = get_resource_tiles(self.game_state)
@@ -55,7 +55,7 @@ class SimpleAgent(BaseAgent):
         return actions
 
     @staticmethod
-    def create_simple_actions_for_workers(player, resource_tiles) -> list[str]:
+    def create_simple_actions_for_workers(player, resource_tiles) -> List[str]:
         actions = []
         for unit in get_available_workers(player):
             if unit.get_cargo_space_left() > 0:
@@ -70,7 +70,7 @@ class ResearchAgent(SimpleAgent):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, observation: dict, configuration: dict) -> list[str]:
+    def __call__(self, observation: dict, configuration: dict) -> List[str]:
         self._update_game_state(observation)
         player = self.game_state.players[observation.player]
         resource_tiles = get_resource_tiles(self.game_state)
@@ -80,7 +80,7 @@ class ResearchAgent(SimpleAgent):
         return actions
 
     @staticmethod
-    def make_city_tiles_research_whenever_possible(player: Player) -> list[str]:
+    def make_city_tiles_research_whenever_possible(player: Player) -> List[str]:
         actions = []
         for city_tile in get_available_city_tiles(player):
             actions.append(city_tile.research())
@@ -95,7 +95,7 @@ class BuildWorkerOrResearchAgent(SimpleAgent):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, observation: dict, configuration: dict) -> list[str]:
+    def __call__(self, observation: dict, configuration: dict) -> List[str]:
         self._update_game_state(observation)
         player = self.game_state.players[observation.player]
         resource_tiles = get_resource_tiles(self.game_state)
@@ -105,7 +105,7 @@ class BuildWorkerOrResearchAgent(SimpleAgent):
         return actions
 
     @staticmethod
-    def manage_city_tiles(player: Player) -> list[str]:
+    def manage_city_tiles(player: Player) -> List[str]:
         actions = []
         available_city_tiles = get_available_city_tiles(player)
         if available_city_tiles:
@@ -127,7 +127,7 @@ class NaiveViralAgent(BuildWorkerOrResearchAgent):
         super().__init__()
         self.build_new_city_tile_probability = build_new_city_tile_probability
 
-    def __call__(self, observation: dict, configuration: dict) -> list[str]:
+    def __call__(self, observation: dict, configuration: dict) -> List[str]:
         self._update_game_state(observation)
         player = self.game_state.players[observation.player]
         resource_tiles = get_resource_tiles(self.game_state)
@@ -138,7 +138,7 @@ class NaiveViralAgent(BuildWorkerOrResearchAgent):
         actions = [action for action in actions if action is not None]
         return actions
 
-    def create_viral_actions_for_workers(self, player, resource_tiles, empty_tiles) -> list[str]:
+    def create_viral_actions_for_workers(self, player, resource_tiles, empty_tiles) -> List[str]:
         actions = []
         for unit in get_available_workers(player):
             if unit.get_cargo_space_left() > 0:
@@ -166,7 +166,7 @@ class NaiveRandomViralAgent(NaiveViralAgent):
     def __init__(self, build_new_city_tile_probability):
         super().__init__(build_new_city_tile_probability)
 
-    def __call__(self, observation: dict, configuration: dict) -> list[str]:
+    def __call__(self, observation: dict, configuration: dict) -> List[str]:
         self._update_game_state(observation)
         player = self.game_state.players[observation.player]
         resource_tiles = get_resource_tiles(self.game_state)
@@ -192,7 +192,7 @@ class ViralRemoveBlockingAgent(BuildWorkerOrResearchAgent):
         super().__init__()
         self.build_new_city_tile_probability = build_new_city_tile_probability
 
-    def __call__(self, observation: dict, configuration: dict) -> list[str]:
+    def __call__(self, observation: dict, configuration: dict) -> List[str]:
         self._update_game_state(observation)
         player = self.game_state.players[observation.player]
         resource_tiles = get_resource_tiles(self.game_state)
@@ -205,7 +205,7 @@ class ViralRemoveBlockingAgent(BuildWorkerOrResearchAgent):
         actions = [action for action in actions if action is not None]
         return actions
 
-    def create_viral_actions_for_workers(self, player, resource_tiles, empty_tiles) -> list[str]:
+    def create_viral_actions_for_workers(self, player, resource_tiles, empty_tiles) -> List[str]:
         actions = []
         available_workers, movement_directions = [], []
         available_workers = get_available_workers(player)

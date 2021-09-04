@@ -1,13 +1,14 @@
 import math
+from typing import List
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.constants import Constants
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Player, Unit, CityTile
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_map import Cell
 
-def get_resource_tiles(game_state: Game) -> list[Cell]:
+def get_resource_tiles(game_state: Game) -> List[Cell]:
     """ Returns a list with all the Cells that have resources in the map """
-    resource_tiles: list[Cell] = []
+    resource_tiles: List[Cell] = []
     for y in range(game_state.map.height):
         for x in range(game_state.map.width):
             cell = game_state.map.get_cell(x, y)
@@ -16,9 +17,9 @@ def get_resource_tiles(game_state: Game) -> list[Cell]:
     return resource_tiles
 
 
-def get_empty_tiles(game_state: Game) -> list[Cell]:
+def get_empty_tiles(game_state: Game) -> List[Cell]:
     """ Returns a list with all the Cells that do not have resources nor cities """
-    empty_tiles: list[Cell] = []
+    empty_tiles: List[Cell] = []
     for y in range(game_state.map.height):
         for x in range(game_state.map.width):
             cell = game_state.map.get_cell(x, y)
@@ -27,21 +28,21 @@ def get_empty_tiles(game_state: Game) -> list[Cell]:
     return empty_tiles
 
 
-def get_available_workers(player: Player) -> list[Unit]:
+def get_available_workers(player: Player) -> List[Unit]:
     """ Returns a list with the workers that are available to do actions """
     return [unit for unit in player.units if unit.is_worker() and unit.can_act()]
 
 
-def get_non_available_workers(player: Player) -> list[Unit]:
+def get_non_available_workers(player: Player) -> List[Unit]:
     """ Returns a list with the workers that are not available and will stay on same tile """
     return [unit for unit in player.units if unit.is_worker() and not unit.can_act()]
 
 
-def get_available_city_tiles(player: Player) -> list[CityTile]:
+def get_available_city_tiles(player: Player) -> List[CityTile]:
     return [city_tile for city_tile in get_all_city_tiles(player) if city_tile.can_act()]
 
 
-def get_all_city_tiles(player: Player) -> list[CityTile]:
+def get_all_city_tiles(player: Player) -> List[CityTile]:
     city_tiles = []
     for _, city in player.cities.items():
         city_tiles.extend(city.citytiles)
@@ -52,13 +53,13 @@ def get_n_buildable_units(player: Player) -> int:
     return len(get_all_city_tiles(player)) - len(player.units)
 
 
-def move_to_closest_resource(unit: Unit, player: Player, resource_tiles: list[Cell]) -> str:
+def move_to_closest_resource(unit: Unit, player: Player, resource_tiles: List[Cell]) -> str:
     """ Moves the unit towards the closest resource, returns None if there is no available resource """
     closest_resource_tile = find_closest_resource(unit, player, resource_tiles)
     if closest_resource_tile is not None:
         return unit.move(unit.pos.direction_to(closest_resource_tile.pos))
 
-def find_closest_resource(unit: Unit, player: Player, resource_tiles: list[Cell]) -> Cell:
+def find_closest_resource(unit: Unit, player: Player, resource_tiles: List[Cell]) -> Cell:
     closest_dist = math.inf
     closest_resource_tile = None
     for resource_tile in resource_tiles:
@@ -90,7 +91,7 @@ def find_closest_city_tile(unit: Unit, player: Player) -> CityTile:
     return closest_city_tile
 
 
-def find_closest_tile_to_unit(unit: Unit, candidate_tiles: list[Cell]) -> Cell:
+def find_closest_tile_to_unit(unit: Unit, candidate_tiles: List[Cell]) -> Cell:
     closest_dist = math.inf
     closest_tile = None
     for tile in candidate_tiles:
