@@ -86,7 +86,7 @@ The agent `viral` scores around 974 on leaderboard, which is around position 100
 This agent beats the `simple_agent` around 94.5% of the times.
 
 In this [link](https://www.kaggle.com/c/lux-ai-2021/submissions?dialog=episodes-submission-22702173) visualizations of the agent can be seen.
-Below a picture of the viral agent with a big city before it collapses for lack of fuel.
+Below a picture of the viral agent with a big city before it collapses for lack of fuel on this [episode](https://www.kaggle.com/c/lux-ai-2021/submissions?dialog=episodes-episode-26566016).
 
 ![viral_agent](res/viral_agent.png)
 
