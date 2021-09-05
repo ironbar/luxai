@@ -4,6 +4,8 @@ Agents that follow the task manager framework
 import random
 from typing import List
 
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_constants import GAME_CONSTANTS
+
 from luxai.agents.basic import BaseAgent
 from luxai.agents.utils import (
     get_available_workers,
@@ -26,8 +28,6 @@ class GameInfo():
     Class to store all the relevant information of the game for taking decisions
     """
     def __init__(self):
-        self.player = None
-        self.opponent = None
         self.resource_tiles = None
         self.empty_tiles = None
 
@@ -41,6 +41,8 @@ class TaskManagerAgent(BaseAgent):
         super().__init__()
         self.unit_id_to_task = {}
         self.game_info = GameInfo()
+        self.player = None
+        self.opponent = None
 
     def __call__(self, observation: dict, configuration: dict) -> List[str]:
         return self.task_manager(observation, configuration)
@@ -49,7 +51,7 @@ class TaskManagerAgent(BaseAgent):
         self.gather_game_information(observation, configuration)
         self.assign_tasks_to_units()
         actions = self.coordinate_units()
-        actions.extend(self.manage_cities())
+        actions.extend(self.manage_cities(self.player))
         return actions
 
     def gather_game_information(self, observation, configuration):
@@ -57,7 +59,8 @@ class TaskManagerAgent(BaseAgent):
         Updates the game_state and extracts information that later is used to take decisions
         """
         self._update_game_state(observation)
-        self.game_info.player = self.game_state.players[observation.player]
+        self.player = self.game_state.players[observation.player]
+        self.opponent = self.game_state.players[(observation.player + 1) % 2]
         resource_tiles = get_resource_tiles(self.game_state)
         empty_tiles = get_empty_tiles(self.game_state)
         random.shuffle(empty_tiles)
@@ -71,5 +74,16 @@ class TaskManagerAgent(BaseAgent):
     def coordinate_units(self) -> List[str]:
         return []
 
-    def manage_cities(self) -> List[str]:
-        return []
+    @staticmethod
+    def manage_cities(player) -> List[str]:
+        actions = []
+        available_city_tiles = get_available_city_tiles(player)
+        if available_city_tiles:
+            n_buildable_units = get_n_buildable_units(player)
+            for city_tile in available_city_tiles:
+                if n_buildable_units:
+                    n_buildable_units -= 1
+                    actions.append(city_tile.build_worker())
+                elif player.research_points < GAME_CONSTANTS['PARAMETERS']['RESEARCH_REQUIREMENTS']['URANIUM']:
+                    actions.append(city_tile.research())
+        return actions
