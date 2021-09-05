@@ -21,3 +21,12 @@ def render_game_in_html(env, filepath=None):
     with open(filepath, 'w') as f:
         f.write(env.render(mode='html'))
     os.system('google-chrome "%s"' % os.path.realpath(filepath))
+
+def create_temporal_python_file(text: str) -> str:
+    """
+    Creates a temporal python file with the provided text and returns the path to the file
+    """
+    filepath = tempfile.NamedTemporaryFile(delete=False, suffix='.py').name
+    with open(filepath, 'w') as f:
+        f.write(text)
+    return filepath
