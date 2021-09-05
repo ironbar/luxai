@@ -50,7 +50,7 @@ class TaskManagerAgent(BaseAgent):
     def task_manager(self, observation: dict, configuration: dict) -> List[str]:
         self.gather_game_information(observation, configuration)
         self.assign_tasks_to_units()
-        actions = self.coordinate_units()
+        actions = self.coordinate_units_movement()
         actions.extend(self.manage_cities(self.player))
         return actions
 
@@ -69,9 +69,17 @@ class TaskManagerAgent(BaseAgent):
         self.game_info.empty_tiles = empty_tiles
 
     def assign_tasks_to_units(self):
+        """
+        For the available units check if they already have a task, if that is the
+        case verify if the task is already fullfilled and then assign a new task
+        If the agent does not have a task assign one
+        """
         pass
 
-    def coordinate_units(self) -> List[str]:
+    def coordinate_units_movement(self) -> List[str]:
+        """
+        For the available units coordinate the movements so they don't collide
+        """
         return []
 
     @staticmethod
