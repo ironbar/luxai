@@ -22,6 +22,10 @@ from luxai.agents.utils import (
     move_to_closest_city_tile,
     is_position_in_list,
 )
+from luxai.agents.tasks import (
+    GatherResourcesTask,
+    GoToPositionTask,
+)
 
 class GameInfo():
     """
@@ -30,6 +34,8 @@ class GameInfo():
     def __init__(self):
         self.resource_tiles = None
         self.empty_tiles = None
+        self.available_workers = None
+        self.non_available_workers = None
 
 
 class TaskManagerAgent(BaseAgent):
@@ -61,12 +67,14 @@ class TaskManagerAgent(BaseAgent):
         self._update_game_state(observation)
         self.player = self.game_state.players[observation.player]
         self.opponent = self.game_state.players[(observation.player + 1) % 2]
-        resource_tiles = get_resource_tiles(self.game_state)
-        empty_tiles = get_empty_tiles(self.game_state)
-        random.shuffle(empty_tiles)
-        random.shuffle(resource_tiles)
-        self.game_info.resource_tiles = resource_tiles
-        self.game_info.empty_tiles = empty_tiles
+        self.game_info.resource_tiles = get_resource_tiles(self.game_state)
+        self.game_info.empty_tiles = get_empty_tiles(self.game_state)
+        random.shuffle(self.game_info.resource_tiles)
+        random.shuffle(self.game_info.empty_tiles)
+
+        self.game_info.available_workers = get_available_workers(self.player)
+        random.shuffle(self.game_info.available_workers)
+        self.game_info.non_available_workers = get_non_available_workers(self.player)
 
     def assign_tasks_to_units(self):
         """
@@ -74,13 +82,32 @@ class TaskManagerAgent(BaseAgent):
         case verify if the task is already fullfilled and then assign a new task
         If the agent does not have a task assign one
         """
-        pass
+        for unit in self.game_info.available_workers:
+            if unit.id in self.unit_id_to_task:
+                task = self.unit_id_to_task[unit.id]
+                if task.is_done(unit):
+                    self.assign_new_task_to_unit(unit)
+            else:
+                self.assign_new_task_to_unit(unit)
+
+    def assign_new_task_to_unit(self, unit):
+        if not unit.get_cargo_space_left():
+            closest_city_tile = find_closest_city_tile(unit, self.player)
+            self.unit_id_to_task[unit.id] = GoToPositionTask(closest_city_tile.pos)
+        else:
+            closest_resource_tile = find_closest_resource(unit, self.player, self.game_info.resource_tiles)
+            self.unit_id_to_task[unit.id] = GatherResourcesTask(closest_resource_tile.pos)
 
     def coordinate_units_movement(self) -> List[str]:
         """
         For the available units coordinate the movements so they don't collide
         """
-        return []
+        assert all(unit.id in self.unit_id_to_task for unit in self.game_info.available_workers)
+        actions = []
+        for unit in self.game_info.available_workers:
+            task = self.unit_id_to_task[unit.id]
+            actions.append(unit.move(unit.pos.direction_to(task.pos)))
+        return actions
 
     @staticmethod
     def manage_cities(player) -> List[str]:
@@ -95,3 +122,5 @@ class TaskManagerAgent(BaseAgent):
                 elif player.research_points < GAME_CONSTANTS['PARAMETERS']['RESEARCH_REQUIREMENTS']['URANIUM']:
                     actions.append(city_tile.research())
         return actions
+
+
