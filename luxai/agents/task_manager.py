@@ -106,7 +106,7 @@ class TaskManagerAgent(BaseAgent):
         actions = []
         for unit in self.game_info.available_workers:
             task = self.unit_id_to_task[unit.id]
-            actions.append(unit.move(unit.pos.direction_to(task.pos)))
+            actions.append(task.get_action(unit))
         return actions
 
     @staticmethod
