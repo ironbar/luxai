@@ -25,6 +25,7 @@ from luxai.agents.utils import (
 from luxai.agents.tasks import (
     GatherResourcesTask,
     GoToPositionTask,
+    BuildCityTileTask,
 )
 
 class GameInfo():
@@ -92,8 +93,10 @@ class TaskManagerAgent(BaseAgent):
 
     def assign_new_task_to_unit(self, unit):
         if not unit.get_cargo_space_left():
-            closest_city_tile = find_closest_city_tile(unit, self.player)
-            self.unit_id_to_task[unit.id] = GoToPositionTask(closest_city_tile.pos)
+            # closest_city_tile = find_closest_city_tile(unit, self.player)
+            # self.unit_id_to_task[unit.id] = GoToPositionTask(closest_city_tile.pos)
+            closest_empty_tile = find_closest_tile_to_unit(unit, self.game_info.empty_tiles)
+            self.unit_id_to_task[unit.id] = BuildCityTileTask(closest_empty_tile.pos)
         else:
             closest_resource_tile = find_closest_resource(unit, self.player, self.game_info.resource_tiles)
             self.unit_id_to_task[unit.id] = GatherResourcesTask(closest_resource_tile.pos)
