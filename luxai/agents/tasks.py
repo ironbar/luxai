@@ -15,7 +15,6 @@ from luxai.agents.utils import (
 )
 
 class BaseTask():
-    # TODO: maybe an update method?, could change the target position
     # TODO: priority property?
     def __init__(self):
         self.pos = None
@@ -81,7 +80,6 @@ class BuildCityTileTask(BaseTask):
         else:
             self.pos = closest_empty_tile.pos
 
-    # TODO: this task probably needs more information to decide if it is done
     def is_done(self, unit: Unit) -> bool:
         return unit.pos.equals(self.pos) and self.is_city_built or unit.get_cargo_space_left()
 
