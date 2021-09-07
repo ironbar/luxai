@@ -107,9 +107,11 @@ class TaskManagerAgent(BaseAgent):
         """
         assert all(unit.id in self.unit_id_to_task for unit in self.game_info.available_workers)
         actions = []
+        obstacles = []
         for unit in self.game_info.available_workers:
             task = self.unit_id_to_task[unit.id]
-            actions.append(task.get_action(unit))
+            action, future_position = task.get_action(unit, obstacles)
+            actions.append(action)
         return actions
 
     @staticmethod

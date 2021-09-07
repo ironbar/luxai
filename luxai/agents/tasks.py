@@ -1,45 +1,56 @@
 """
 Tasks for the units
 """
+from typing import List
+
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Player, Unit, CityTile
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_map import Position
 
 class BaseTask():
-    # TODO: maybe an update method?
+    # TODO: maybe an update method?, could change the target position
     # TODO: priority property?
-    def __init__(self, pos):
+    def __init__(self, pos: Position):
         self.pos = pos
 
-    def is_done(self, unit):
+    def is_done(self, unit: Unit) -> bool:
+        """ Returns true when the task is already done """
         raise NotImplementedError()
 
-    def get_action(self, unit):
-        return self.move_to_position(unit)
+    def get_action(self, unit: Unit, obstacles: List[Position]) -> (str, Position):
+        """
+        Given the unit and a list of obstacle positions returns the action that
+        should be taken in order to do the task and also the future position of the unit
+        """
+        return self._move_to_position(unit, obstacles)
 
-    def move_to_position(self, unit):
-        return unit.move(unit.pos.direction_to(self.pos))
+    def _move_to_position(self, unit: Unit, obstacles: List[Position]) -> (str, Position):
+        direction = unit.pos.direction_to(self.pos)
+        future_position = unit.pos.translate(direction, units=1)
+        return unit.move(direction), future_position
 
 
 class GatherResourcesTask(BaseTask):
-    def is_done(self, unit):
+    def is_done(self, unit: Unit) -> bool:
         return not unit.get_cargo_space_left()
 
 
 class GoToPositionTask(BaseTask):
-    def is_done(self, unit):
+    def is_done(self, unit: Unit) -> bool:
         return unit.pos.equals(self.pos)
 
 
 class BuildCityTileTask(BaseTask):
-    def __init__(self, pos):
+    def __init__(self, pos: Position):
         super().__init__(pos)
         self.is_city_built = False
 
     # TODO: this task probably needs more information to decide if it is done
-    def is_done(self, unit):
+    def is_done(self, unit: Unit) -> bool:
         return unit.pos.equals(self.pos) and self.is_city_built
 
-    def get_action(self, unit):
+    def get_action(self, unit: Unit, obstacles: List[Position]) -> (str, Position):
         if not unit.pos.equals(self.pos):
-            return self.move_to_position(unit)
+            return self._move_to_position(unit, obstacles)
         else:
             self.is_city_built = True
-            return unit.build_city()
+            return unit.build_city(), unit.pos
