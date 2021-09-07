@@ -5,6 +5,7 @@ import random
 from typing import List
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_constants import GAME_CONSTANTS
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux import annotate
 
 from luxai.agents.basic import BaseAgent
 from luxai.agents.utils import (
@@ -37,6 +38,8 @@ class GameInfo():
         self.empty_tiles = None
         self.available_workers = None
         self.non_available_workers = None
+        self.city_tile_positions = None
+        self.opponent_city_tile_positions = None
 
 
 class TaskManagerAgent(BaseAgent):
@@ -77,6 +80,9 @@ class TaskManagerAgent(BaseAgent):
         random.shuffle(self.game_info.available_workers)
         self.game_info.non_available_workers = get_non_available_workers(self.player)
 
+        self.game_info.city_tile_positions = [city_tile.pos for city_tile in get_all_city_tiles(self.player)]
+        self.game_info.opponent_city_tile_positions = [city_tile.pos for city_tile in get_all_city_tiles(self.opponent)]
+
     def assign_tasks_to_units(self):
         """
         For the available units check if they already have a task, if that is the
@@ -107,11 +113,16 @@ class TaskManagerAgent(BaseAgent):
         """
         assert all(unit.id in self.unit_id_to_task for unit in self.game_info.available_workers)
         actions = []
-        obstacles = []
+        obstacles = [unit.pos for unit in self.game_info.non_available_workers if \
+                     not is_position_in_list(unit.pos, self.game_info.city_tile_positions)]
+        obstacles += self.game_info.opponent_city_tile_positions
         for unit in self.game_info.available_workers:
             task = self.unit_id_to_task[unit.id]
-            action, future_position = task.get_action(unit, obstacles)
-            actions.append(action)
+            unit_actions, future_position = task.get_actions(unit, obstacles)
+            actions.extend(unit_actions)
+            if not is_position_in_list(future_position, self.game_info.city_tile_positions):
+                obstacles.append(future_position)
+        actions += [annotate.x(position.x, position.y) for position in obstacles]
         return actions
 
     @staticmethod
