@@ -8,12 +8,17 @@ from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_map import
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux import annotate
 
 from luxai.agents.utils import is_position_in_list
+from luxai.agents.utils import (
+    find_closest_resource,
+    find_closest_city_tile,
+    find_closest_tile_to_unit,
+)
 
 class BaseTask():
     # TODO: maybe an update method?, could change the target position
     # TODO: priority property?
-    def __init__(self, pos: Position):
-        self.pos = pos
+    def __init__(self):
+        self.pos = None
 
     def is_done(self, unit: Unit) -> bool:
         """ Returns true when the task is already done """
@@ -29,6 +34,8 @@ class BaseTask():
         return self._move_to_position(unit, obstacles)
 
     def _move_to_position(self, unit: Unit, obstacles: List[Position]) -> (List[str], Position):
+        if self.pos is None:
+            return [], unit.pos
         direction = unit.pos.direction_to(self.pos)
         future_position = unit.pos.translate(direction, units=1)
         if is_position_in_list(future_position, obstacles):
@@ -41,6 +48,17 @@ class BaseTask():
 
 
 class GatherResourcesTask(BaseTask):
+    def __init__(self, unit, player, game_info):
+        super().__init__()
+        self.update(unit, player, game_info)
+
+    def update(self, unit, player, game_info):
+        closest_resource_tile = find_closest_resource(unit, player, game_info.resource_tiles)
+        if closest_resource_tile is None:
+            self.pos = None
+        else:
+            self.pos = closest_resource_tile.pos
+
     def is_done(self, unit: Unit) -> bool:
         return not unit.get_cargo_space_left()
 
@@ -51,9 +69,17 @@ class GoToPositionTask(BaseTask):
 
 
 class BuildCityTileTask(BaseTask):
-    def __init__(self, pos: Position):
-        super().__init__(pos)
+    def __init__(self, unit, game_info):
+        super().__init__()
         self.is_city_built = False
+        self.update(unit, None, game_info)
+
+    def update(self, unit, player, game_info):
+        closest_empty_tile = find_closest_tile_to_unit(unit, game_info.empty_tiles)
+        if closest_empty_tile is None:
+            self.pos = None
+        else:
+            self.pos = closest_empty_tile.pos
 
     # TODO: this task probably needs more information to decide if it is done
     def is_done(self, unit: Unit) -> bool:

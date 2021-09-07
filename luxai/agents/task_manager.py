@@ -94,6 +94,8 @@ class TaskManagerAgent(BaseAgent):
                 task = self.unit_id_to_task[unit.id]
                 if task.is_done(unit):
                     self.assign_new_task_to_unit(unit)
+                else:
+                    task.update(unit, self.player, self.game_info)
             else:
                 self.assign_new_task_to_unit(unit)
 
@@ -101,11 +103,9 @@ class TaskManagerAgent(BaseAgent):
         if not unit.get_cargo_space_left():
             # closest_city_tile = find_closest_city_tile(unit, self.player)
             # self.unit_id_to_task[unit.id] = GoToPositionTask(closest_city_tile.pos)
-            closest_empty_tile = find_closest_tile_to_unit(unit, self.game_info.empty_tiles)
-            self.unit_id_to_task[unit.id] = BuildCityTileTask(closest_empty_tile.pos)
+            self.unit_id_to_task[unit.id] = BuildCityTileTask(unit, self.game_info)
         else:
-            closest_resource_tile = find_closest_resource(unit, self.player, self.game_info.resource_tiles)
-            self.unit_id_to_task[unit.id] = GatherResourcesTask(closest_resource_tile.pos)
+            self.unit_id_to_task[unit.id] = GatherResourcesTask(unit, self.player, self.game_info)
 
     def coordinate_units_movement(self) -> List[str]:
         """
@@ -122,7 +122,7 @@ class TaskManagerAgent(BaseAgent):
             actions.extend(unit_actions)
             if not is_position_in_list(future_position, self.game_info.city_tile_positions):
                 obstacles.append(future_position)
-        actions += [annotate.x(position.x, position.y) for position in obstacles]
+        # actions += [annotate.x(position.x, position.y) for position in obstacles]
         return actions
 
     @staticmethod
