@@ -20,10 +20,9 @@ from luxai.agents.utils import (
 )
 from luxai.agents.tasks import (
     GatherResourcesTask,
-    BuildCityTileTask,
-    GameInfo
+    BuildCityTileTask
 )
-
+from luxai.game_info import GameInfo
 
 class TaskManagerAgent(BaseAgent):
     """
