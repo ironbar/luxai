@@ -4,7 +4,7 @@ from typing import List
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.constants import Constants
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Player, Unit, CityTile
-from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_map import Cell
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_map import Cell, Position
 
 def get_resource_tiles(game_state: Game) -> List[Cell]:
     """ Returns a list with all the Cells that have resources in the map """
@@ -104,3 +104,23 @@ def find_closest_tile_to_unit(unit: Unit, candidate_tiles: List[Cell]) -> Cell:
 
 def is_position_in_list(position, positions):
     return any(position.equals(other_position) for other_position in positions)
+
+
+def get_directions_to(source: Position, target: Position):
+    directions = []
+    x_diff = target.x - source.x
+    if x_diff < 0:
+        directions.append(Constants.DIRECTIONS.WEST)
+    elif x_diff > 0:
+        directions.append(Constants.DIRECTIONS.EAST)
+
+    y_diff = target.y - source.y
+    if y_diff < 0:
+        directions.append(Constants.DIRECTIONS.NORTH)
+    elif y_diff > 0:
+        directions.append(Constants.DIRECTIONS.SOUTH)
+
+    if directions:
+        return directions
+    else:
+        return [Constants.DIRECTIONS.CENTER]

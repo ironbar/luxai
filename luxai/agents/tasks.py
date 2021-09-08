@@ -1,6 +1,7 @@
 """
 Tasks for the units
 """
+import random
 from typing import List
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Player, Unit, CityTile
@@ -12,6 +13,7 @@ from luxai.agents.utils import (
     find_closest_resource,
     find_closest_city_tile,
     find_closest_tile_to_unit,
+    get_directions_to,
 )
 
 class BaseTask():
@@ -35,15 +37,18 @@ class BaseTask():
     def _move_to_position(self, unit: Unit, obstacles: List[Position]) -> (List[str], Position):
         if self.pos is None:
             return [], unit.pos
-        direction = unit.pos.direction_to(self.pos)
-        future_position = unit.pos.translate(direction, units=1)
-        if is_position_in_list(future_position, obstacles):
-            return [], unit.pos
-        else:
+
+        directions = get_directions_to(unit.pos, self.pos)
+        random.shuffle(directions)
+        for direction in directions:
+            future_position = unit.pos.translate(direction, units=1)
+            if is_position_in_list(future_position, obstacles):
+                continue
             annotations = [
                 annotate.line(unit.pos.x, unit.pos.y, self.pos.x, self.pos.y),
             ]
             return [unit.move(direction)] + annotations, future_position
+        return [], unit.pos
 
 
 class GatherResourcesTask(BaseTask):
