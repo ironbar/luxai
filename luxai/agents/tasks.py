@@ -16,6 +16,21 @@ from luxai.agents.utils import (
     get_directions_to,
 )
 
+
+class GameInfo():
+    """
+    Class to store all the relevant information of the game for taking decisions
+    """
+    def __init__(self):
+        self.resource_tiles = None
+        self.empty_tiles = None
+        self.available_workers = None
+        self.non_available_workers = None
+        self.city_tile_positions = None
+        self.opponent_city_tile_positions = None
+        self.obstacles = None
+
+
 class BaseTask():
     # TODO: priority property?
     def __init__(self):
@@ -25,14 +40,14 @@ class BaseTask():
         """ Returns true when the task is already done """
         raise NotImplementedError()
 
-    def get_actions(self, unit: Unit, obstacles: List[Position]) -> (List[str], Position):
+    def get_actions(self, unit: Unit, game_info: GameInfo) -> (List[str], Position):
         """
         Given the unit and a list of obstacle positions returns the actions that
         should be taken in order to do the task and also the future position of the unit
 
         It returns a list of actions because that allows to use annotations
         """
-        return self._move_to_position(unit, obstacles)
+        return self._move_to_position(unit, game_info.obstacles)
 
     def _move_to_position(self, unit: Unit, obstacles: List[Position]) -> (List[str], Position):
         if self.pos is None:
@@ -88,9 +103,9 @@ class BuildCityTileTask(BaseTask):
     def is_done(self, unit: Unit) -> bool:
         return unit.pos.equals(self.pos) and self.is_city_built or unit.get_cargo_space_left()
 
-    def get_actions(self, unit: Unit, obstacles: List[Position]) -> (str, Position):
+    def get_actions(self, unit: Unit, game_info: GameInfo) -> (str, Position):
         if not unit.pos.equals(self.pos):
-            return self._move_to_position(unit, obstacles)
+            return self._move_to_position(unit, game_info.obstacles)
         else:
             self.is_city_built = True
             return [unit.build_city()], unit.pos

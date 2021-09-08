@@ -27,19 +27,8 @@ from luxai.agents.tasks import (
     GatherResourcesTask,
     GoToPositionTask,
     BuildCityTileTask,
+    GameInfo
 )
-
-class GameInfo():
-    """
-    Class to store all the relevant information of the game for taking decisions
-    """
-    def __init__(self):
-        self.resource_tiles = None
-        self.empty_tiles = None
-        self.available_workers = None
-        self.non_available_workers = None
-        self.city_tile_positions = None
-        self.opponent_city_tile_positions = None
 
 
 class TaskManagerAgent(BaseAgent):
@@ -83,6 +72,12 @@ class TaskManagerAgent(BaseAgent):
         self.game_info.city_tile_positions = [city_tile.pos for city_tile in get_all_city_tiles(self.player)]
         self.game_info.opponent_city_tile_positions = [city_tile.pos for city_tile in get_all_city_tiles(self.opponent)]
 
+        obstacles = [unit.pos for unit in self.game_info.non_available_workers if \
+                     not is_position_in_list(unit.pos, self.game_info.city_tile_positions)]
+        obstacles += self.game_info.opponent_city_tile_positions
+        self.game_info.obstacles = obstacles
+
+
     def assign_tasks_to_units(self):
         """
         For the available units check if they already have a task, if that is the
@@ -113,15 +108,12 @@ class TaskManagerAgent(BaseAgent):
         """
         assert all(unit.id in self.unit_id_to_task for unit in self.game_info.available_workers)
         actions = []
-        obstacles = [unit.pos for unit in self.game_info.non_available_workers if \
-                     not is_position_in_list(unit.pos, self.game_info.city_tile_positions)]
-        obstacles += self.game_info.opponent_city_tile_positions
         for unit in self.game_info.available_workers:
             task = self.unit_id_to_task[unit.id]
-            unit_actions, future_position = task.get_actions(unit, obstacles)
+            unit_actions, future_position = task.get_actions(unit, self.game_info)
             actions.extend(unit_actions)
             if not is_position_in_list(future_position, self.game_info.city_tile_positions):
-                obstacles.append(future_position)
+                self.game_info.obstacles.append(future_position)
         # actions += [annotate.x(position.x, position.y) for position in obstacles]
         return actions
 
