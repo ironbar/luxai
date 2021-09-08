@@ -4,19 +4,9 @@ Agents that follow the task manager framework
 import random
 from typing import List
 
-from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_constants import GAME_CONSTANTS
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux import annotate
 
-from luxai.primitives import (
-    get_available_workers,
-    get_non_available_workers,
-    get_available_city_tiles,
-    get_resource_tiles,
-    get_empty_tiles,
-    get_n_buildable_units,
-    get_all_city_tiles,
-    is_position_in_list,
-)
+from luxai.primitives import is_position_in_list
 from luxai.agents.tasks import (
     GatherResourcesTask,
     BuildCityTileTask
@@ -41,7 +31,7 @@ class TaskManagerAgent():
         self.gather_game_information(observation, configuration)
         self.assign_tasks_to_units()
         self.coordinate_units_movement()
-        self.manage_cities(self.game_info.player)
+        self.manage_cities()
         return self.actions
 
     def gather_game_information(self, observation, configuration):
@@ -91,15 +81,11 @@ class TaskManagerAgent():
         # actions += [annotate.x(position.x, position.y) for position in obstacles]
         self.actions.extend(actions)
 
-    def manage_cities(self, player):
-        actions = []
-        available_city_tiles = get_available_city_tiles(player)
-        if available_city_tiles:
-            n_buildable_units = get_n_buildable_units(player)
-            for city_tile in available_city_tiles:
-                if n_buildable_units:
-                    n_buildable_units -= 1
-                    actions.append(city_tile.build_worker())
-                elif player.research_points < GAME_CONSTANTS['PARAMETERS']['RESEARCH_REQUIREMENTS']['URANIUM']:
-                    actions.append(city_tile.research())
-        self.actions.extend(actions)
+    def manage_cities(self):
+        for city_tile in self.game_info.available_city_tiles:
+            if self.game_info.n_buildable_units:
+                self.game_info.n_buildable_units -= 1
+                self.actions.append(city_tile.build_worker())
+            elif self.game_info.research_points_to_uranium:
+                self.game_info.research_points_to_uranium -= 1
+                self.actions.append(city_tile.research())
