@@ -2,7 +2,7 @@
 Tasks for the units
 """
 import random
-from typing import List
+from typing import List, Tuple
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Player, Unit, CityTile
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_map import Position
@@ -12,7 +12,6 @@ from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_constants 
 from luxai.agents.utils import is_position_in_list
 from luxai.agents.utils import (
     find_closest_resource,
-    find_closest_city_tile,
     find_closest_tile_to_unit,
     get_directions_to,
 )
@@ -42,7 +41,7 @@ class BaseTask():
         """ Returns true when the task is already done """
         raise NotImplementedError()
 
-    def get_actions(self, unit: Unit, game_info: GameInfo) -> (List[str], Position):
+    def get_actions(self, unit: Unit, game_info: GameInfo) -> Tuple[List[str], Position]:
         """
         Given the unit and a list of obstacle positions returns the actions that
         should be taken in order to do the task and also the future position of the unit
@@ -51,7 +50,7 @@ class BaseTask():
         """
         return self._move_to_position(unit, game_info)
 
-    def _move_to_position(self, unit: Unit, game_info: GameInfo) -> (List[str], Position):
+    def _move_to_position(self, unit: Unit, game_info: GameInfo) -> Tuple[List[str], Position]:
         if self.pos is None or self._keep_safe_a_home_at_night(unit, game_info):
             return [], unit.pos
 
@@ -113,7 +112,7 @@ class BuildCityTileTask(BaseTask):
     def is_done(self, unit: Unit) -> bool:
         return unit.pos.equals(self.pos) and self.is_city_built or unit.get_cargo_space_left()
 
-    def get_actions(self, unit: Unit, game_info: GameInfo) -> (str, Position):
+    def get_actions(self, unit: Unit, game_info: GameInfo) -> Tuple[List[str], Position]:
         if not unit.pos.equals(self.pos):
             return self._move_to_position(unit, game_info)
         else:

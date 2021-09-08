@@ -16,16 +16,10 @@ from luxai.agents.utils import (
     get_empty_tiles,
     get_n_buildable_units,
     get_all_city_tiles,
-    find_closest_tile_to_unit,
-    find_closest_resource,
-    find_closest_city_tile,
-    move_to_closest_resource,
-    move_to_closest_city_tile,
     is_position_in_list,
 )
 from luxai.agents.tasks import (
     GatherResourcesTask,
-    GoToPositionTask,
     BuildCityTileTask,
     GameInfo
 )
@@ -83,7 +77,6 @@ class TaskManagerAgent(BaseAgent):
         if self.game_info.is_night:
             self.actions.append(annotate.sidetext('Night'))
 
-
     def assign_tasks_to_units(self):
         """
         For the available units check if they already have a task, if that is the
@@ -135,5 +128,3 @@ class TaskManagerAgent(BaseAgent):
                 elif player.research_points < GAME_CONSTANTS['PARAMETERS']['RESEARCH_REQUIREMENTS']['URANIUM']:
                     actions.append(city_tile.research())
         self.actions.extend(actions)
-
-
