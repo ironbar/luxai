@@ -71,15 +71,12 @@ class TaskManagerAgent():
         For the available units coordinate the movements so they don't collide
         """
         assert all(unit.id in self.unit_id_to_task for unit in self.game_info.available_workers)
-        actions = []
         for unit in self.game_info.available_workers:
             task = self.unit_id_to_task[unit.id]
             unit_actions, future_position = task.get_actions(unit, self.game_info)
-            actions.extend(unit_actions)
+            self.actions.extend(unit_actions)
             if not is_position_in_list(future_position, self.game_info.city_tile_positions):
                 self.game_info.obstacles.append(future_position)
-        # actions += [annotate.x(position.x, position.y) for position in obstacles]
-        self.actions.extend(actions)
 
     def manage_cities(self):
         for city_tile in self.game_info.available_city_tiles:
