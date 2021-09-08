@@ -28,19 +28,11 @@ class TaskManagerAgent():
 
     def task_manager(self, observation: dict, configuration: dict) -> List[str]:
         self.actions = []
-        self.gather_game_information(observation, configuration)
+        self.game_info.update(observation, configuration)
         self.assign_tasks_to_units()
         self.coordinate_units_movement()
         self.manage_cities()
         return self.actions
-
-    def gather_game_information(self, observation, configuration):
-        """
-        Updates the game_state and extracts information that later is used to take decisions
-        """
-        self.game_info.update(observation, configuration)
-        if self.game_info.is_night:
-            self.actions.append(annotate.sidetext('Night'))
 
     def assign_tasks_to_units(self):
         """
