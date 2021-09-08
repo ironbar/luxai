@@ -1,4 +1,5 @@
 import time
+import random
 import numpy as np
 from tqdm import tqdm
 from tqdm.notebook import tqdm as tqdm_notebook
@@ -6,6 +7,7 @@ from concurrent.futures import ProcessPoolExecutor
 from kaggle_environments import evaluate
 
 from luxai.definitions import BOARD_SIZES
+from luxai.utils import set_random_seed
 
 
 def play_matches_in_parallel(agents, max_workers=20, n_matches=100,
@@ -34,6 +36,7 @@ def play_matches_in_parallel(agents, max_workers=20, n_matches=100,
 
 
 def play_game(agents, configuration):
+    set_random_seed(configuration['seed'])
     return evaluate(environment="lux_ai_2021", agents=agents, configuration=configuration, num_episodes=1)
 
 

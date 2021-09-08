@@ -2,8 +2,11 @@
 Functions commonly used in the challenge
 """
 import os
+import random
 import time
 import tempfile
+import numpy as np
+
 
 def get_timestamp():
     time_stamp = time.strftime("%Y_%m_%d_%H_%M_%S")
@@ -22,6 +25,7 @@ def render_game_in_html(env, filepath=None):
         f.write(env.render(mode='html'))
     os.system('google-chrome "%s"' % os.path.realpath(filepath))
 
+
 def create_temporal_python_file(text: str) -> str:
     """
     Creates a temporal python file with the provided text and returns the path to the file
@@ -30,3 +34,8 @@ def create_temporal_python_file(text: str) -> str:
     with open(filepath, 'w') as f:
         f.write(text)
     return filepath
+
+
+def set_random_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
