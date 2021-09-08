@@ -29,6 +29,7 @@ class GameInfo():
         self.city_tile_positions = None
         self.opponent_city_tile_positions = None
         self.obstacles = None
+        self.is_night = False
 
 
 class BaseTask():

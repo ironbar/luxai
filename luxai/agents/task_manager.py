@@ -42,16 +42,18 @@ class TaskManagerAgent(BaseAgent):
         self.game_info = GameInfo()
         self.player = None
         self.opponent = None
+        self.actions = []
 
     def __call__(self, observation: dict, configuration: dict) -> List[str]:
         return self.task_manager(observation, configuration)
 
     def task_manager(self, observation: dict, configuration: dict) -> List[str]:
+        self.actions = []
         self.gather_game_information(observation, configuration)
         self.assign_tasks_to_units()
-        actions = self.coordinate_units_movement()
-        actions.extend(self.manage_cities(self.player))
-        return actions
+        self.coordinate_units_movement()
+        self.manage_cities(self.player)
+        return self.actions
 
     def gather_game_information(self, observation, configuration):
         """
@@ -76,6 +78,10 @@ class TaskManagerAgent(BaseAgent):
                      not is_position_in_list(unit.pos, self.game_info.city_tile_positions)]
         obstacles += self.game_info.opponent_city_tile_positions
         self.game_info.obstacles = obstacles
+
+        self.game_info.is_night = observation.step % 40 >= 30
+        if self.game_info.is_night:
+            self.actions.append(annotate.sidetext('Night'))
 
 
     def assign_tasks_to_units(self):
@@ -102,7 +108,7 @@ class TaskManagerAgent(BaseAgent):
         else:
             self.unit_id_to_task[unit.id] = GatherResourcesTask(unit, self.player, self.game_info)
 
-    def coordinate_units_movement(self) -> List[str]:
+    def coordinate_units_movement(self):
         """
         For the available units coordinate the movements so they don't collide
         """
@@ -115,10 +121,9 @@ class TaskManagerAgent(BaseAgent):
             if not is_position_in_list(future_position, self.game_info.city_tile_positions):
                 self.game_info.obstacles.append(future_position)
         # actions += [annotate.x(position.x, position.y) for position in obstacles]
-        return actions
+        self.actions.extend(actions)
 
-    @staticmethod
-    def manage_cities(player) -> List[str]:
+    def manage_cities(self, player):
         actions = []
         available_city_tiles = get_available_city_tiles(player)
         if available_city_tiles:
@@ -129,6 +134,6 @@ class TaskManagerAgent(BaseAgent):
                     actions.append(city_tile.build_worker())
                 elif player.research_points < GAME_CONSTANTS['PARAMETERS']['RESEARCH_REQUIREMENTS']['URANIUM']:
                     actions.append(city_tile.research())
-        return actions
+        self.actions.extend(actions)
 
 
