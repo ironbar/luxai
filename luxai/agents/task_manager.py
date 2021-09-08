@@ -7,8 +7,7 @@ from typing import List
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_constants import GAME_CONSTANTS
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux import annotate
 
-from luxai.agents.basic import BaseAgent
-from luxai.agents.utils import (
+from luxai.primitives import (
     get_available_workers,
     get_non_available_workers,
     get_available_city_tiles,
@@ -24,17 +23,14 @@ from luxai.agents.tasks import (
 )
 from luxai.game_info import GameInfo
 
-class TaskManagerAgent(BaseAgent):
+class TaskManagerAgent():
     """
     The philosophy of the agent is that it first assigns tasks to the agents, and later coordinates
     them based on the priority of their actions
     """
     def __init__(self):
-        super().__init__()
         self.unit_id_to_task = {}
         self.game_info = GameInfo()
-        self.player = None
-        self.opponent = None
         self.actions = []
 
     def __call__(self, observation: dict, configuration: dict) -> List[str]:
@@ -45,34 +41,14 @@ class TaskManagerAgent(BaseAgent):
         self.gather_game_information(observation, configuration)
         self.assign_tasks_to_units()
         self.coordinate_units_movement()
-        self.manage_cities(self.player)
+        self.manage_cities(self.game_info.player)
         return self.actions
 
     def gather_game_information(self, observation, configuration):
         """
         Updates the game_state and extracts information that later is used to take decisions
         """
-        self._update_game_state(observation)
-        self.player = self.game_state.players[observation.player]
-        self.opponent = self.game_state.players[(observation.player + 1) % 2]
-        self.game_info.resource_tiles = get_resource_tiles(self.game_state)
-        self.game_info.empty_tiles = get_empty_tiles(self.game_state)
-        random.shuffle(self.game_info.resource_tiles)
-        random.shuffle(self.game_info.empty_tiles)
-
-        self.game_info.available_workers = get_available_workers(self.player)
-        random.shuffle(self.game_info.available_workers)
-        self.game_info.non_available_workers = get_non_available_workers(self.player)
-
-        self.game_info.city_tile_positions = [city_tile.pos for city_tile in get_all_city_tiles(self.player)]
-        self.game_info.opponent_city_tile_positions = [city_tile.pos for city_tile in get_all_city_tiles(self.opponent)]
-
-        obstacles = [unit.pos for unit in self.game_info.non_available_workers if \
-                     not is_position_in_list(unit.pos, self.game_info.city_tile_positions)]
-        obstacles += self.game_info.opponent_city_tile_positions
-        self.game_info.obstacles = obstacles
-
-        self.game_info.is_night = observation.step % 40 >= 30
+        self.game_info.update(observation, configuration)
         if self.game_info.is_night:
             self.actions.append(annotate.sidetext('Night'))
 
@@ -88,7 +64,7 @@ class TaskManagerAgent(BaseAgent):
                 if task.is_done(unit):
                     self.assign_new_task_to_unit(unit)
                 else:
-                    task.update(unit, self.player, self.game_info)
+                    task.update(unit, self.game_info)
             else:
                 self.assign_new_task_to_unit(unit)
 
@@ -98,7 +74,7 @@ class TaskManagerAgent(BaseAgent):
             # self.unit_id_to_task[unit.id] = GoToPositionTask(closest_city_tile.pos)
             self.unit_id_to_task[unit.id] = BuildCityTileTask(unit, self.game_info)
         else:
-            self.unit_id_to_task[unit.id] = GatherResourcesTask(unit, self.player, self.game_info)
+            self.unit_id_to_task[unit.id] = GatherResourcesTask(unit, self.game_info)
 
     def coordinate_units_movement(self):
         """

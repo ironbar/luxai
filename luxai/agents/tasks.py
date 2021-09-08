@@ -9,8 +9,8 @@ from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_map import
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux import annotate
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_constants import GAME_CONSTANTS
 
-from luxai.agents.utils import is_position_in_list
-from luxai.agents.utils import (
+from luxai.primitives import (
+    is_position_in_list,
     find_closest_resource,
     find_closest_tile_to_unit,
     get_directions_to,
@@ -62,12 +62,12 @@ class BaseTask():
 
 
 class GatherResourcesTask(BaseTask):
-    def __init__(self, unit, player, game_info):
+    def __init__(self, unit, game_info):
         super().__init__()
-        self.update(unit, player, game_info)
+        self.update(unit, game_info)
 
-    def update(self, unit, player, game_info):
-        closest_resource_tile = find_closest_resource(unit, player, game_info.resource_tiles)
+    def update(self, unit, game_info):
+        closest_resource_tile = find_closest_resource(unit, game_info.player, game_info.resource_tiles)
         if closest_resource_tile is None:
             self.pos = None
         else:
@@ -86,9 +86,9 @@ class BuildCityTileTask(BaseTask):
     def __init__(self, unit, game_info):
         super().__init__()
         self.is_city_built = False
-        self.update(unit, None, game_info)
+        self.update(unit, game_info)
 
-    def update(self, unit, player, game_info):
+    def update(self, unit, game_info):
         closest_empty_tile = find_closest_tile_to_unit(unit, game_info.empty_tiles)
         if closest_empty_tile is None:
             self.pos = None
