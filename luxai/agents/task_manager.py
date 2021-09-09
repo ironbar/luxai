@@ -86,4 +86,8 @@ class TaskManagerAgent():
 
     def annotations(self):
         # self.actions.append(annotate.sidetext('Research points to uranium: %i' % self.game_info.research_points_to_uranium))
+        for unit in self.game_info.available_workers + self.game_info.non_available_workers:
+            task = self.unit_id_to_task[unit.id]
+            if task.pos is not None:
+                self.actions.append(annotate.line(unit.pos.x, unit.pos.y, task.pos.x, task.pos.y))
         pass
