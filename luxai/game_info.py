@@ -29,6 +29,7 @@ class GameInfo():
         self.empty_tiles = None
         self.available_workers = None
         self.non_available_workers = None
+        self.city_tiles = None
         self.city_tile_positions = None
         self.opponent_city_tile_positions = None
         self.obstacles = None
@@ -53,7 +54,8 @@ class GameInfo():
         random.shuffle(self.available_workers)
         self.non_available_workers = get_non_available_workers(self.player)
 
-        self.city_tile_positions = [city_tile.pos for city_tile in get_all_city_tiles(self.player)]
+        self.city_tiles = get_all_city_tiles(self.player)
+        self.city_tile_positions = [city_tile.pos for city_tile in self.city_tiles]
         self.opponent_city_tile_positions = [city_tile.pos for city_tile in get_all_city_tiles(self.opponent)]
         self.available_city_tiles = get_available_city_tiles(self.player)
         self.n_buildable_units = get_n_buildable_units(self.player)

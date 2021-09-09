@@ -74,12 +74,23 @@ class GatherResourcesTask(BaseTask):
             self.pos = closest_resource_tile.pos
 
     def is_done(self, unit: Unit) -> bool:
-        return not unit.get_cargo_space_left()
+        return not unit.get_cargo_space_left() or self.pos is None
 
 
-class GoToPositionTask(BaseTask):
+class GoToClosestCity(BaseTask):
+    def __init__(self, unit, game_info):
+        super().__init__()
+        self.update(unit, game_info)
+
+    def update(self, unit, game_info):
+        closest_tile = find_closest_tile_to_unit(unit, game_info.city_tiles)
+        if closest_tile is None:
+            self.pos = None
+        else:
+            self.pos = closest_tile.pos
+
     def is_done(self, unit: Unit) -> bool:
-        return unit.pos.equals(self.pos)
+        return self.pos is None or unit.pos.equals(self.pos)
 
 
 class BuildCityTileTask(BaseTask):
@@ -96,7 +107,7 @@ class BuildCityTileTask(BaseTask):
             self.pos = closest_empty_tile.pos
 
     def is_done(self, unit: Unit) -> bool:
-        return unit.pos.equals(self.pos) and self.is_city_built or unit.get_cargo_space_left()
+        return self.pos is None or unit.pos.equals(self.pos) and self.is_city_built or unit.get_cargo_space_left()
 
     def get_actions(self, unit: Unit, game_info: GameInfo) -> Tuple[List[str], Position]:
         if not unit.pos.equals(self.pos):
@@ -104,3 +115,5 @@ class BuildCityTileTask(BaseTask):
         else:
             self.is_city_built = True
             return [unit.build_city()], unit.pos
+
+
