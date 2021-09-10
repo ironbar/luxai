@@ -64,7 +64,7 @@ class GameInfo():
                           not is_position_in_list(unit.pos, self.city_tile_positions)]
         self.obstacles += self.opponent_city_tile_positions
 
-        self.is_night = observation.step % 40 >= 30
+        self.is_night = observation["step"] % 40 >= 30
 
         self.research_points_to_uranium = GAME_CONSTANTS['PARAMETERS']['RESEARCH_REQUIREMENTS']['URANIUM'] - self.player.research_points
 
