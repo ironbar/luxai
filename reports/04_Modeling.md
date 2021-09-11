@@ -132,6 +132,38 @@ cities or gathering resources. Later I found that a very similar approach was de
 Thus seeing that it has sense I have decided to implement it. I would love to get a bot that is
 able to beat the viral agent more than 90% of the times.
 
+#### 2.2.1 Dwight
+
+After a complete redesign of the agent improving how the agent moves, avoid going out at night and a few
+more small changes I have created agent `dwight` that is able to beat `viral` 65% of the times.
+However in the forum performs very similar. Also I have found that there is a public agent that
+scores around 1250, much better than my ~980.
+
+Some ways of improving:
+
+- Better assignment of targets for agents. They all currently go to the same cell. To be able to do
+that I have to provide the current tasks of the other agents.
+- A method to choose between building a new city or gathering fuel seems to be very important
+- Better handling of night. Planning is needed.
+- Cities should be treated as obstacles when going to build a new one
+
+It seems that planning is crucial. We need to look at the future to be able to maximize the number
+of cities at the end of the game. Simplifications of the game could help to planning, for example
+we could represent the board with a graph being the nodes the clusters of resources and the edges
+the distances between clusters.
+
+A policy may help planning, but each map is different so it seems difficult to have a single policy.
+Instead planning offers a general solution for all the maps.
+
+I could devote a lot of time thinking about good strategies, and it will be funny, but I think planning
+could solve that by brute force and I will learn more by taking the planning approach. Also I could
+take the agent from the forum to fight with.
+
+The game is an optimization problem: how to maximize the cities built at the end of the game given
+the map resources and the opponent behaviour. My intuition is that planning is the best solution
+for that problem, there might be very good solutions with rule-based agents, very good learned
+policies... but I believe planning is the best solution.
+
 ### 2.3 Results
 
 ### 2.4 Next steps
