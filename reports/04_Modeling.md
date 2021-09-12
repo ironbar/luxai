@@ -32,11 +32,6 @@ agent to verify that the new agent is robust.
 
 ## Iteration 1. Rule based agent
 
-<!---
-The work is done using short iterations. Each iteration needs to have a very
-clear goal. This allows to gain greater knowledge of the problem on each iteration.
---->
-
 ### 1.1 Goal
 
 The goal is to identify the difficulties when making a rule based agent
@@ -113,11 +108,6 @@ is better done by code.
 
 ## Iteration 2. Task manager bot
 
-<!---
-The work is done using short iterations. Each iteration needs to have a very
-clear goal. This allows to gain greater knowledge of the problem on each iteration.
---->
-
 ### 2.1 Goal
 
 The goal is to implement a task manager bot. At the start of the turn the bot will assign different
@@ -173,6 +163,48 @@ Meanwhile an agent called `working_title` has been released in the forum that is
 my agents around 95% of the times.
 
 ### 2.4 Next steps
+
+I believe I should focus on planning. I have a strong enough agent from the forum to fight with. On
+previous hungry geese challenge I missed the oportunity to apply planning and now I have to try it.
+
+I could try to optimize an agent for a single map. Instead of thinking which strategies work best
+I might simply overfit an agent to a map to find what is the best strategy for that map. Visualizing
+that match will likely show something very close to the perfect agent. With that knowledge I could
+later try to generalize to all the maps.
+
+## Iteration 3. Optimize an agent for a single map
+
+### 3.1 Goal
+
+The goal is to train/find an agent that is optimized for a single map. The agent needs to maximize
+the available cities at the end of the game.
+
+### 3.2 Development
+
+Since future actions depend on present ones I cannot simply optimize a sequence of actions. I need
+a function that is able to generate actions given the game state. In my head the first option for
+doing that is a neural network.
+
+One option could be to try with neuroevolution. This will directly optimize the number of final cities.
+I haven't tried this method and I don't know how the individuals mutate or mate. A quick read on
+internet says that it is possible but slow.
+
+In the other hand I could try applying Reinforcement learning, this will have more information
+for learning but requires a very careful choosing of the reward function to avoid building a large
+number of houses at the middle of the game that later collapses.
+
+I could even reduce the lenght of the game to see which will be the best start, f.e. play for 30 moves.
+
+### 3.2.1 Reinforcement learning
+
+I think it is much more realistic to try using RL for optimizing an agent to a single map. If the process
+is fast enough I could try to come up with optimal agents for different maps and later try imitation
+learning. This could train a good policy that later can be used to plan.
+
+### 3.3 Results
+
+### 3.4 Next steps
+
 
 ## Iteration n. Iteration_title
 
