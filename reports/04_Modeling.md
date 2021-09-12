@@ -166,6 +166,12 @@ policies... but I believe planning is the best solution.
 
 ### 2.3 Results
 
+After a refactorization of the agent I have created agent `dwight` that is able to beat `viral` 65% of the times.
+However in Kaggle performs very similar or worse.
+
+Meanwhile an agent called `working_title` has been released in the forum that is able to beat
+my agents around 95% of the times.
+
 ### 2.4 Next steps
 
 ## Iteration n. Iteration_title
