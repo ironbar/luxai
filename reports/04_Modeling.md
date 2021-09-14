@@ -172,14 +172,37 @@ I might simply overfit an agent to a map to find what is the best strategy for t
 that match will likely show something very close to the perfect agent. With that knowledge I could
 later try to generalize to all the maps.
 
-## Iteration 3. Optimize an agent for a single map
+## Iteration 3. Interface for playing the game
 
 ### 3.1 Goal
+
+The goal of this iteration is to create an interface to be able to play the game and to explore
+the game to find good strategies.
+
+### 3.2 Development
+
+The idea is to create a simple yet usable game interface. I will have to create a visual representation
+of the game with all the information needed to take the decisions and an interface.
+
+One option is to create the interface using opencv. I have experience with it an it may work. Another
+could be to use jupyter widgets. The first is based on keyboard while the second one relies more on
+mouse.
+
+One interesting thing is that the game representation I'm going to build could be later used for
+training a model. Thus I have to diferentiate between game representation and game rendering.
+
+### 3.3 Results
+
+### 3.4 Next steps
+
+## Iteration 4. Optimize an agent for a single map
+
+### 4.1 Goal
 
 The goal is to train/find an agent that is optimized for a single map. The agent needs to maximize
 the available cities at the end of the game.
 
-### 3.2 Development
+### 4.2 Development
 
 Since future actions depend on present ones I cannot simply optimize a sequence of actions. I need
 a function that is able to generate actions given the game state. In my head the first option for
@@ -195,13 +218,13 @@ number of houses at the middle of the game that later collapses.
 
 I could even reduce the lenght of the game to see which will be the best start, f.e. play for 30 moves.
 
-### 3.2.1 Reinforcement learning
+### 4.2.1 Reinforcement learning
 
 I think it is much more realistic to try using RL for optimizing an agent to a single map. If the process
 is fast enough I could try to come up with optimal agents for different maps and later try imitation
 learning. This could train a good policy that later can be used to plan.
 
-### 3.3 Results
+### 4.3 Results
 
 ### 3.4 Next steps
 
