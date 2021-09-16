@@ -191,6 +191,17 @@ mouse.
 One interesting thing is that the game representation I'm going to build could be later used for
 training a model. Thus I have to diferentiate between game representation and game rendering.
 
+#### 3.2.1 OpenCV
+
+While doing the first renderings on a notebook I have noticed that pyplot is slow on the notebook.
+It takes 400ms to show an image while only 100ms to create it. Thus it seems that I should better
+use opencv just for speed reasons. 
+The idea is to first render the game and then add an overlay of movements and visualization of the
+current unit.
+
+I'm going to first read some tutorials because I remember there were problems with some opencv versions
+for conda that were not able to show images, and also there were different types of windows.
+
 ### 3.3 Results
 
 ### 3.4 Next steps
