@@ -57,13 +57,13 @@ def visualize_game(renders, captions, window_name='render'):
 
 
 def update_window(step_idx, window_name, renders, captions):
-    cv2.imshow(window_name, renders[step_idx])
+    cv2.imshow(window_name, renders[step_idx][:, :, [2, 1, 0]])
     cv2.displayOverlay(window_name, captions[step_idx])
 
 
 def parse_args(args):
     epilog = """
-    pyt
+    python scripts/game_visualizer/game_visualizer.py notebooks/sample_game.json
     """
     description = """
     Simple demonstration of game visualization using opencv
