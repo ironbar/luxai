@@ -1,10 +1,16 @@
 """
 Utils for rendering games
+
+TODO:
+- [x] Improve background for opencv
+- [ ] Add information about resources, cooldown...
+- [ ] Add caption information
 """
 import glob
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+import cv2
 
 
 img_paths = glob.glob('/home/gbarbadillo/Desktop/luxai_icons/128px/*.png')
@@ -22,17 +28,26 @@ def render_game_state(game_state):
 
 def create_cell_images(game_state, img_size=128):
     cell_images = []
+    emtpy_cell = _get_emtpy_cell(img_size)
     for y in range(game_state.map_height):
         row = []
         for x in range(game_state.map_width):
             cell = game_state.map.get_cell(x, y)
             if cell.has_resource():
-                row.append(icons[cell.resource.type])
+                row.append(stack_images(emtpy_cell.copy(), icons[cell.resource.type]))
                 #cell.resource.amount
             else:
-                row.append(np.zeros((img_size, img_size, 4)))
+                row.append(emtpy_cell.copy())
         cell_images.append(row)
     return cell_images
+
+
+def _get_emtpy_cell(img_size):
+    """ Creates a green empty cell """
+    emtpy_cell = np.ones((img_size, img_size, 4))*0.75
+    emtpy_cell[:, :, 1] = 1 # green
+    emtpy_cell[:, :, 3] = 1 # alpha channel
+    return emtpy_cell
 
 
 def add_player_info(game_state, cell_images):
