@@ -3,7 +3,7 @@ Game visualizer
 
 TODO:
 
-- [ ] Render game on the fly instead of rendering the whole game at the start of the game
+- [x] Render game on the fly instead of rendering the whole game at the start of the game
 """
 import sys
 import argparse
@@ -38,24 +38,48 @@ class GameVisualizer():
     """
     def __init__(self, game_path):
         with open(game_path, 'r') as json_file:
-            self.game_info = json.load(json_file)['steps'][:20]
-        self.renders, self.captions = render_whole_game(self.game_info)
+            self.game_info = json.load(json_file)['steps']
+        self.renders, self.captions = dict(), dict()
 
     def run(self):
-        visualize_game(self.renders, self.captions)
+        self.visualize_game()
+
+    def _get_step_render_info(self, epoch):
+        if epoch not in self.renders:
+            game_state = get_game_state_for_epoch(self.game_info, epoch)
+            self.renders[epoch] = render_game_state(game_state)
+            self.captions[epoch] = ''
+        return self.renders[epoch], self.captions[epoch]
+
+    def visualize_game(self, window_name='render'):
+        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+        callback = partial(self.update_window, window_name=window_name)
+        cv2.createTrackbar('step', window_name, 0, len(self.game_info)-1, callback)
+        callback(0)
+        while 1:
+            k = cv2.waitKey(1) & 0xFF
+            if k == 27: # ESC
+                break
+        cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
+
+    def update_window(self, epoch, window_name):
+        render, caption = self._get_step_render_info(epoch)
+        cv2.imshow(window_name, render)
+        cv2.displayOverlay(window_name, caption)
 
 
-def render_whole_game(game_info):
-    renders, captions = [], []
+def get_game_state_for_epoch(game_info, epoch):
+    """ Returns the game state for the desired epoch [0-360] """
     game_state = Game()
-    for step_info in tqdm(game_info, desc='rendering game'):
-        _update_game_state(game_state, step_info)
-        renders.append(render_game_state(game_state))
-        captions.append('')
-    return renders, captions
+    for step_info in game_info[:epoch+1]:
+        update_game_state(game_state, step_info)
+    return game_state
 
 
-def _update_game_state(game_state, step_info):
+def update_game_state(game_state, step_info):
     observation = step_info[0]['observation']
     if observation["step"] == 0:
         game_state._initialize(observation["updates"])
@@ -63,26 +87,6 @@ def _update_game_state(game_state, step_info):
         game_state.id = observation['player']
     else:
         game_state._update(observation["updates"])
-
-
-def visualize_game(renders, captions, window_name='render'):
-    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
-    callback = partial(update_window, window_name=window_name, renders=renders, captions=captions)
-    cv2.createTrackbar('step', window_name, 0, len(renders)-1, callback)
-    callback(0)
-    while 1:
-        k = cv2.waitKey(1) & 0xFF
-        if k == 27: # ESC
-            break
-    cv2.destroyAllWindows()
-    cv2.destroyAllWindows()
-    cv2.destroyAllWindows()
-    cv2.destroyAllWindows()
-
-
-def update_window(step_idx, window_name, renders, captions):
-    cv2.imshow(window_name, renders[step_idx][:, :, [2, 1, 0]])
-    cv2.displayOverlay(window_name, captions[step_idx])
 
 
 def parse_args(args):
