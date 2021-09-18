@@ -5,6 +5,7 @@ TODO:
 - [x] Improve background for opencv
 - [ ] Add information about resources, cooldown...
 - [ ] Add caption information
+- [ ] Day and night
 """
 import glob
 import os
@@ -72,9 +73,9 @@ def stack_images(bottom, top):
 
 def apply_player_color(icon, player_idx):
     if player_idx:
-        return icon[:, :, [2, 1, 0, 3]]
-    else:
         return icon
+    else:
+        return icon[:, :, [2, 1, 0, 3]]
 
 
 def add_grid(cell_images, thickness=2, grid_color=(0, 0, 0, 1)):
