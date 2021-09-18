@@ -3,7 +3,8 @@ Utils for rendering games
 
 TODO:
 - [x] Improve background for opencv
-- [ ] Add information about resources, cooldown...
+- [x] Add information about resources
+- [x] Add information about cooldown
 - [x] Add caption information
 - [x] Day and night
 - [ ] Refactor
@@ -46,10 +47,12 @@ def create_cell_images(game_state, img_size=128):
     return cell_images
 
 
-def draw_text(img, text, position, color=(0, 0, 0, 1)):
+def draw_text(img, text, position, color=(0, 0, 0, 1), border_color=(0.5, 0.5, 0.5, 1)):
     """ Modifies the input image by writing the desired text at position """
+    # cv2.putText(img, text, position, cv2.FONT_HERSHEY_SIMPLEX,
+    #             fontScale=1, color=border_color, thickness=5)
     cv2.putText(img, text, position, cv2.FONT_HERSHEY_SIMPLEX,
-                fontScale=1, color=color, thickness=3)
+                fontScale=1, color=color, thickness=5)
 
 
 def _get_emtpy_cell(img_size, game_state):
@@ -68,13 +71,25 @@ def is_night(game_state):
 def add_player_info(game_state, cell_images):
     for player_idx, player in enumerate(game_state.players):
         for city in player.cities.values():
+            turns_can_survive_at_night = int(city.fuel//city.get_light_upkeep())
             for city_tile in city.citytiles:
                 img_base = cell_images[city_tile.pos.y][city_tile.pos.x]
-                cell_images[city_tile.pos.y][city_tile.pos.x] = stack_images(img_base, apply_player_color(icons['city'], player_idx))
+                img = stack_images(img_base, apply_player_color(icons['city'], player_idx))
+                draw_text(img, str(turns_can_survive_at_night), position=(5, 30))
+                if city_tile.cooldown:
+                    draw_text(img, str(int(city_tile.cooldown)), position=(5, 60))
+                cell_images[city_tile.pos.y][city_tile.pos.x] = img
 
         for unit in player.units:
             img_base = cell_images[unit.pos.y][unit.pos.x]
-            cell_images[unit.pos.y][unit.pos.x] = stack_images(img_base, apply_player_color(icons[unit_number_to_name[unit.type]], player_idx))
+            img = stack_images(img_base, apply_player_color(icons[unit_number_to_name[unit.type]], player_idx))
+            # TODO: do not use hardcoded constant
+            cargo = 100 - unit.get_cargo_space_left()
+            if cargo:
+                draw_text(img, str(cargo), position=(img.shape[1]-55, img.shape[0]-15))
+            if unit.cooldown:
+                    draw_text(img, str(int(unit.cooldown)), position=(img.shape[1]-40, img.shape[0]-45))
+            cell_images[unit.pos.y][unit.pos.x] = img
 
 
 def stack_images(bottom, top):
