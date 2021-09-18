@@ -1,3 +1,10 @@
+"""
+Game visualizer
+
+TODO:
+
+- [ ] Render game on the fly instead of rendering the whole game at the start of the game
+"""
 import sys
 import argparse
 import json
@@ -14,11 +21,28 @@ def main(args=None):
         args = sys.argv[1:]
     args = parse_args(args)
 
-    with open(args.game_path, 'r') as json_file:
-        game_info = json.load(json_file)['steps'][:20]
+    game_visualizer = GameVisualizer(args.game_path)
+    game_visualizer.run()
 
-    renders, captions = render_whole_game(game_info)
-    visualize_game(renders, captions)
+    # with open(args.game_path, 'r') as json_file:
+    #     game_info = json.load(json_file)['steps'][:20]
+
+    # renders, captions = render_whole_game(game_info)
+    # visualize_game(renders, captions)
+
+
+class GameVisualizer():
+    """
+    Class that stores renders and captions for visualizing the game
+    and avoiding using global variables
+    """
+    def __init__(self, game_path):
+        with open(game_path, 'r') as json_file:
+            self.game_info = json.load(json_file)['steps'][:20]
+        self.renders, self.captions = render_whole_game(self.game_info)
+
+    def run(self):
+        visualize_game(self.renders, self.captions)
 
 
 def render_whole_game(game_info):
