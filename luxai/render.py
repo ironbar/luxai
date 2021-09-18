@@ -96,3 +96,14 @@ def add_grid(cell_images, thickness=2, grid_color=(0, 0, 0, 1)):
 def combine_cells_to_single_image(cell_images):
     rows = [np.hstack(row) for row in cell_images]
     return np.vstack(rows)
+
+
+def get_captions(game_state):
+    captions = ''
+    for player_idx, player in enumerate(game_state.players):
+        captions += 'Player %i. Research points: %i. Citytiles: %i. Units: %i\n' % (
+            player_idx,
+            player.research_points,
+            sum(len(city.citytiles) for city in player.cities.values()),
+            len(player.units))
+    return captions[:-1]

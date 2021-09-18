@@ -14,7 +14,7 @@ from functools import partial
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
 
-from luxai.render import render_game_state
+from luxai.render import render_game_state, get_captions
 
 def main(args=None):
     if args is None:
@@ -44,11 +44,14 @@ class GameVisualizer():
     def run(self):
         self.visualize_game()
 
-    def _get_step_render_info(self, epoch):
+    def _get_step_render_info(self, epoch, top_border=128):
         if epoch not in self.renders:
             game_state = get_game_state_for_epoch(self.game_info, epoch)
-            self.renders[epoch] = render_game_state(game_state)
-            self.captions[epoch] = ''
+            render = render_game_state(game_state)
+            if top_border:
+                render = cv2.copyMakeBorder(render, top_border, 0, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0])
+            self.renders[epoch] = render
+            self.captions[epoch] = get_captions(game_state)
         return self.renders[epoch], self.captions[epoch]
 
     def visualize_game(self, window_name='render'):
