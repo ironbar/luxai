@@ -5,7 +5,8 @@ TODO:
 - [x] Improve background for opencv
 - [ ] Add information about resources, cooldown...
 - [ ] Add caption information
-- [ ] Day and night
+- [x] Day and night
+- [ ] Refactor
 """
 import glob
 import os
@@ -29,7 +30,7 @@ def render_game_state(game_state):
 
 def create_cell_images(game_state, img_size=128):
     cell_images = []
-    emtpy_cell = _get_emtpy_cell(img_size)
+    emtpy_cell = _get_emtpy_cell(img_size, game_state)
     for y in range(game_state.map_height):
         row = []
         for x in range(game_state.map_width):
@@ -43,12 +44,17 @@ def create_cell_images(game_state, img_size=128):
     return cell_images
 
 
-def _get_emtpy_cell(img_size):
+def _get_emtpy_cell(img_size, game_state):
     """ Creates a green empty cell """
     emtpy_cell = np.ones((img_size, img_size, 4))*0.75
-    emtpy_cell[:, :, 1] = 1 # green
     emtpy_cell[:, :, 3] = 1 # alpha channel
+    if not is_night(game_state):
+        emtpy_cell[:, :, 1] = 1 # green
     return emtpy_cell
+
+
+def is_night(game_state):
+    return game_state.turn % 40 >= 30
 
 
 def add_player_info(game_state, cell_images):
