@@ -4,7 +4,7 @@ Utils for rendering games
 TODO:
 - [x] Improve background for opencv
 - [ ] Add information about resources, cooldown...
-- [ ] Add caption information
+- [x] Add caption information
 - [x] Day and night
 - [ ] Refactor
 """
@@ -101,9 +101,14 @@ def combine_cells_to_single_image(cell_images):
 def get_captions(game_state):
     captions = ''
     for player_idx, player in enumerate(game_state.players):
-        captions += 'Player %i. Research points: %i. Citytiles: %i. Units: %i\n' % (
+        captions += 'Player %i. Research points: %i. Citytiles: %i. Units: %i ' % (
             player_idx,
             player.research_points,
             sum(len(city.citytiles) for city in player.cities.values()),
             len(player.units))
+        if player.researched_uranium():
+            captions += 'Uranium era'
+        elif player.researched_coal():
+            captions += 'Coal era'
+        captions += '\n'
     return captions[:-1]
