@@ -25,7 +25,8 @@ def render_game_state(game_state):
     cell_images = create_cell_images(game_state)
     add_player_info(game_state, cell_images)
     add_grid(cell_images)
-    return combine_cells_to_single_image(cell_images)
+    render = combine_cells_to_single_image(cell_images)
+    return render
 
 
 def create_cell_images(game_state, img_size=128):
@@ -36,12 +37,19 @@ def create_cell_images(game_state, img_size=128):
         for x in range(game_state.map_width):
             cell = game_state.map.get_cell(x, y)
             if cell.has_resource():
-                row.append(stack_images(emtpy_cell.copy(), icons[cell.resource.type]))
-                #cell.resource.amount
+                cell_img = icons[cell.resource.type].copy()
+                draw_text(cell_img, str(cell.resource.amount), position=(5, 30))
+                row.append(stack_images(emtpy_cell.copy(), cell_img))
             else:
                 row.append(emtpy_cell.copy())
         cell_images.append(row)
     return cell_images
+
+
+def draw_text(img, text, position, color=(0, 0, 0, 1)):
+    """ Modifies the input image by writing the desired text at position """
+    cv2.putText(img, text, position, cv2.FONT_HERSHEY_SIMPLEX,
+                fontScale=1, color=color, thickness=3)
 
 
 def _get_emtpy_cell(img_size, game_state):
