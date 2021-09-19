@@ -86,7 +86,7 @@ def add_player_info(game_state, cell_images):
             # TODO: do not use hardcoded constant
             cargo = 100 - unit.get_cargo_space_left()
             if cargo:
-                draw_text(img, str(cargo), position=(img.shape[1]-55, img.shape[0]-15))
+                draw_text(img, str(cargo), position=(img.shape[1]-65, img.shape[0]-10))
             if unit.cooldown:
                     draw_text(img, str(int(unit.cooldown)), position=(img.shape[1]-40, img.shape[0]-45))
             cell_images[unit.pos.y][unit.pos.x] = img
