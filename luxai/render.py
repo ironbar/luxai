@@ -135,3 +135,20 @@ def get_captions(game_state):
             captions += 'Coal era'
         captions += '\n'
     return captions[:-1]
+
+
+def add_actions_to_render(render, actions, game_state):
+    render = render.copy()
+    for action in actions:
+        _add_action_to_render(render, action, game_state)
+    return render
+
+
+def _add_action_to_render(render, action, game_state):
+    if any(action.startswith(start) for start in ['r ', 'bw ', 'bc ']):
+        x, y = get_citytile_pos_from_action(action)
+        draw_text(render, action.split(' ')[0].upper(), position=(x*128+5, y*128 + 60))
+
+
+def get_citytile_pos_from_action(action):
+    return [int(x) for x in action.split(' ')[1:]]
