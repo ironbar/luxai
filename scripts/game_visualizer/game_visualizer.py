@@ -15,6 +15,7 @@ from functools import partial
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
 
 from luxai.render import render_game_state, get_captions
+from luxai.utils import update_game_state
 
 def main(args=None):
     if args is None:
@@ -78,18 +79,8 @@ def get_game_state_for_epoch(game_info, epoch):
     """ Returns the game state for the desired epoch [0-360] """
     game_state = Game()
     for step_info in game_info[:epoch+1]:
-        update_game_state(game_state, step_info)
+        update_game_state(game_state, step_info[0]['observation'])
     return game_state
-
-
-def update_game_state(game_state, step_info):
-    observation = step_info[0]['observation']
-    if observation["step"] == 0:
-        game_state._initialize(observation["updates"])
-        game_state._update(observation["updates"][2:])
-        game_state.id = observation['player']
-    else:
-        game_state._update(observation["updates"])
 
 
 def parse_args(args):
