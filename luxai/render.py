@@ -148,7 +148,30 @@ def _add_action_to_render(render, action, game_state):
     if any(action.startswith(start) for start in ['r ', 'bw ', 'bc ']):
         x, y = get_citytile_pos_from_action(action)
         draw_text(render, action.split(' ')[0].upper(), position=(x*128+5, y*128 + 60))
-
+    else:
+        x, y = get_unit_pos_from_action(action, game_state)
+        if action.startswith('bcity '):
+            draw_text(render, 'B', position=((x + 1)*128 -40, (y+1)*128 - 45))
+        elif action.startswith('m '):
+            direction = action.split(' ')[-1]
+            arrow_origin = ((x + 1)*128 -43, (y+1)*128 - 60)
+            arrow_len = 20
+            if direction == 'n':
+                arrow_end = (arrow_origin[0], arrow_origin[1] - arrow_len)
+            elif direction == 's':
+                arrow_end = (arrow_origin[0], arrow_origin[1] + arrow_len)
+            elif direction == 'e':
+                arrow_end = (arrow_origin[0] + arrow_len, arrow_origin[1])
+            elif direction == 'w':
+                arrow_end = (arrow_origin[0] - arrow_len, arrow_origin[1])
+            cv2.arrowedLine(render, arrow_origin, arrow_end, (0, 0, 0, 0.5), 5, tipLength=0.5)
 
 def get_citytile_pos_from_action(action):
     return [int(x) for x in action.split(' ')[1:]]
+
+
+def get_unit_pos_from_action(action, game_state):
+    unit_id = action.split(' ')[1]
+    for unit in game_state.players[0].units:
+        if unit.id == unit_id:
+            return unit.pos.x, unit.pos.y
