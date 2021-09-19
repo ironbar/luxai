@@ -10,6 +10,7 @@ from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Gam
 
 from luxai.utils import render_game_in_html, set_random_seed, update_game_state
 from luxai.render import render_game_state, get_captions, add_actions_to_render
+from luxai.primitives import get_available_city_tiles, get_available_workers
 
 DEFAULT_AGENT = '/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/agent.py'
 
@@ -53,7 +54,8 @@ class GameInterface():
     def game_interface(self, render, caption, observation, configuration):
         actions = self.agent.agent(observation, configuration)
         actions = remove_annotations(actions)
-        while self.game_interface_is_on:
+        available_objects = get_available_units_and_cities(self.game_state.players[0])
+        while self.game_interface_is_on and available_objects:
             key = self.display_render(
                 add_actions_to_render(render, actions, self.game_state),
                 caption + '\nActions: %s' % str(actions))
@@ -83,12 +85,18 @@ def remove_annotations(actions):
     return list(filter(is_action, actions))
     return actions
 
+
 def is_action(action):
     return any(action.startswith(start) for start in ['m ', 't ', 'bcity ', 'p ', 'r ', 'bw ', 'bc '])
 
 
+def get_available_units_and_cities(player):
+    return get_available_workers(player) + get_available_city_tiles(player)
+
+
 def parse_args(args):
     epilog = """
+    python scripts/game_player.py/game_player.py
     """
     description = """
     Interface for playing luxai game
