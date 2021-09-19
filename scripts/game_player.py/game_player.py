@@ -59,6 +59,7 @@ class GameInterface():
         unit_idx = 0
         while self.game_interface_is_on and available_units:
             unit = available_units[unit_idx]
+            # TODO: show focus on unit
             key = self.display_render(
                 add_actions_to_render(render, actions, self.game_state),
                 caption + '\nActions: %s' % str(actions))
@@ -80,9 +81,11 @@ class GameInterface():
             if isinstance(unit, Unit):
                 for letter, direction in [('w', 'n'), ('s', 's'), ('a', 'w'), ('d', 'e'), ('c', 'c')]:
                     if key == ord(letter):
-                        update_actions_with_movement(actions, unit, direction)
+                        new_action = 'm %s %s' % (unit.id, direction)
+                        update_unit_action(actions, unit, new_action)
                 if key == ord('b'):
-                    update_actions_with_movement(actions, unit, direction)
+                    new_action = 'bcity %s' % (unit.id)
+                    update_unit_action(actions, unit, new_action)
             if isinstance(unit, CityTile):
                 pass
 
@@ -118,6 +121,11 @@ def get_available_units_and_cities(player):
 
 def update_actions_with_movement(actions, unit, direction):
     new_action = 'm %s %s' % (unit.id, direction)
+    for idx, action in enumerate(actions):
+        if action.split(' ')[1] == unit.id:
+            actions[idx] = new_action
+
+def update_unit_action(actions, unit, new_action):
     for idx, action in enumerate(actions):
         if action.split(' ')[1] == unit.id:
             actions[idx] = new_action
