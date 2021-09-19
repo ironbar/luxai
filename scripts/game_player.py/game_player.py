@@ -7,6 +7,7 @@ from kaggle_environments import make
 import cv2
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Unit, CityTile
 
 from luxai.utils import render_game_in_html, set_random_seed, update_game_state
 from luxai.render import render_game_state, get_captions, add_actions_to_render
@@ -54,16 +55,37 @@ class GameInterface():
     def game_interface(self, render, caption, observation, configuration):
         actions = self.agent.agent(observation, configuration)
         actions = remove_annotations(actions)
-        available_objects = get_available_units_and_cities(self.game_state.players[0])
-        while self.game_interface_is_on and available_objects:
+        available_units = get_available_units_and_cities(self.game_state.players[0])
+        unit_idx = 0
+        while self.game_interface_is_on and available_units:
+            unit = available_units[unit_idx]
             key = self.display_render(
                 add_actions_to_render(render, actions, self.game_state),
                 caption + '\nActions: %s' % str(actions))
-            if key == ord('d'):
-                break
+            # print(key)
             if key == 27: # ESC
                 print('Turning off game interface, game will continue automatically until the end')
                 self.game_interface_is_on = False
+            if key == 13: # ENTER:
+                pass
+            if key == 32: # SPACE:
+                break
+            if key == 83: # ->:
+                pass
+            # Change between objects
+            if key == ord('4'):
+                unit_idx = (unit_idx - 1)%len(available_units)
+            if key == ord('6'):
+                unit_idx = (unit_idx + 1)%len(available_units)
+            if isinstance(unit, Unit):
+                for letter, direction in [('w', 'n'), ('s', 's'), ('a', 'w'), ('d', 'e'), ('c', 'c')]:
+                    if key == ord(letter):
+                        update_actions_with_movement(actions, unit, direction)
+                if key == ord('b'):
+                    update_actions_with_movement(actions, unit, direction)
+            if isinstance(unit, CityTile):
+                pass
+
         return actions
 
     def display_render(self, render, caption, top_border=128):
@@ -71,7 +93,7 @@ class GameInterface():
             render = cv2.copyMakeBorder(render, top_border, 0, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0])
         cv2.imshow(self.window_name, render)
         cv2.displayOverlay(self.window_name, caption)
-        key = cv2.waitKey(1) & 0xFF
+        key = cv2.waitKey(500) & 0xFF
         return key
 
     def __del__(self):
@@ -92,6 +114,14 @@ def is_action(action):
 
 def get_available_units_and_cities(player):
     return get_available_workers(player) + get_available_city_tiles(player)
+
+
+def update_actions_with_movement(actions, unit, direction):
+    new_action = 'm %s %s' % (unit.id, direction)
+    for idx, action in enumerate(actions):
+        if action.split(' ')[1] == unit.id:
+            actions[idx] = new_action
+
 
 
 def parse_args(args):

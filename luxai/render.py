@@ -154,6 +154,8 @@ def _add_action_to_render(render, action, game_state):
             draw_text(render, 'B', position=((x + 1)*128 -40, (y+1)*128 - 45))
         elif action.startswith('m '):
             direction = action.split(' ')[-1]
+            if direction == 'c':
+                return
             arrow_origin = ((x + 1)*128 -43, (y+1)*128 - 60)
             arrow_len = 20
             if direction == 'n':
