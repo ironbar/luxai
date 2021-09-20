@@ -7,6 +7,7 @@ TODO:
 - [x] Add information about cooldown
 - [x] Add caption information
 - [x] Day and night
+- [ ] Update cart icon, it would be better if it has a similar size to the worker
 - [ ] Refactor
 """
 import glob

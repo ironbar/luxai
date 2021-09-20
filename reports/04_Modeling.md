@@ -209,6 +209,8 @@ all units following it could move without stopping.
 - It is possible to build road on resources like wood, uranium and coal
 - A cart cannot gather resources, it can only carry them
 - If a house is built on a road, then the cell loses its previous road level when demolished
+- Thus using carts may have sense when we want to speedup movement (maybe to go to another resource, or
+to move faster in the forest) and also to carry resources from a resource to the city.
 
 ### 3.3 Results
 
