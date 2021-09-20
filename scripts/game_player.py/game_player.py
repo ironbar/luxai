@@ -130,13 +130,18 @@ def update_unit_action(actions, unit, new_action):
     for idx, action in enumerate(actions):
         if action.split(' ')[1] == unit.id:
             actions[idx] = new_action
+            return
+    actions.append(new_action)
 
 
 def update_citytile_action(actions, citytile, command):
     end = ' %i %i' % (citytile.pos.x, citytile.pos.y)
+    new_action = command + end
     for idx, action in enumerate(actions):
         if action.endswith(end):
-            actions[idx] = command + end
+            actions[idx] = new_action
+            return
+    actions.append(new_action)
 
 
 def parse_args(args):

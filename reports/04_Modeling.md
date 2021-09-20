@@ -202,6 +202,14 @@ current unit.
 I'm going to first read some tutorials because I remember there were problems with some opencv versions
 for conda that were not able to show images, and also there were different types of windows.
 
+#### 3.2.2 Learnings
+
+- A cart is able to move during day as fast as a worker, but leaves a road level of 1.5 behind so
+all units following it could move without stopping.
+- It is possible to build road on resources like wood, uranium and coal
+- A cart cannot gather resources, it can only carry them
+- If a house is built on a road, then the cell loses its previous road level when demolished
+
 ### 3.3 Results
 
 ### 3.4 Next steps
