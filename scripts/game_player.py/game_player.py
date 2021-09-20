@@ -10,7 +10,7 @@ from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Gam
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Unit, CityTile
 
 from luxai.utils import render_game_in_html, set_random_seed, update_game_state
-from luxai.render import render_game_state, get_captions, add_actions_to_render
+from luxai.render import render_game_state, get_captions, add_actions_to_render, show_focus_on_active_unit
 from luxai.primitives import get_available_city_tiles, get_available_workers
 
 DEFAULT_AGENT = '/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/agent.py'
@@ -59,10 +59,9 @@ class GameInterface():
         unit_idx = 0
         while self.game_interface_is_on and available_units:
             unit = available_units[unit_idx]
-            # TODO: show focus on unit
-            key = self.display_render(
-                add_actions_to_render(render, actions, self.game_state),
-                caption + '\nActions: %s' % str(actions))
+            updated_render = add_actions_to_render(render, actions, self.game_state)
+            show_focus_on_active_unit(updated_render, unit)
+            key = self.display_render(updated_render, caption + '\nActions: %s' % str(actions))
             # print(key)
             if key == 27: # ESC
                 print('Turning off game interface, game will continue automatically until the end')
@@ -99,6 +98,7 @@ class GameInterface():
     def display_render(self, render, caption, top_border=128):
         if top_border:
             render = cv2.copyMakeBorder(render, top_border, 0, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0])
+        # TODO: check bgr rgb convention
         cv2.imshow(self.window_name, render)
         cv2.displayOverlay(self.window_name, caption)
         key = cv2.waitKey(500) & 0xFF

@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Unit, CityTile
 
 img_paths = glob.glob('/home/gbarbadillo/Desktop/luxai_icons/128px/*.png')
 icons = {os.path.splitext(os.path.basename(img_path))[0]: plt.imread(img_path) for img_path in img_paths}
@@ -177,3 +178,14 @@ def get_unit_pos_from_action(action, game_state):
     for unit in game_state.players[0].units:
         if unit.id == unit_id:
             return unit.pos.x, unit.pos.y
+
+
+def show_focus_on_active_unit(render, unit, color=(0.5, 0, 0, 1)):
+    """ Modifies the input render by adding a circle around the active unit """
+    if isinstance(unit, CityTile):
+        center = (int(unit.pos.x*128 + 64), int(unit.pos.y*128 + 64))
+        radius = 96
+    else:
+        center = (int(unit.pos.x*128 + 85), int(unit.pos.y*128 + 96))
+        radius = 64
+    cv2.circle(render, center, radius, color=color, thickness=3)
