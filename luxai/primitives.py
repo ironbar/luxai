@@ -1,6 +1,7 @@
 import math
 from typing import List
 
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_constants import GAME_CONSTANTS
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.constants import Constants
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Player, Unit, CityTile
@@ -129,3 +130,10 @@ def get_directions_to(source: Position, target: Position):
         return directions
     else:
         return [Constants.DIRECTIONS.CENTER]
+
+
+def get_unit_cargo(unit):
+    cargo = GAME_CONSTANTS['PARAMETERS']['RESOURCE_CAPACITY']['CART']*unit.type \
+        + GAME_CONSTANTS['PARAMETERS']['RESOURCE_CAPACITY']['WORKER']*(1 - unit.type) \
+        - unit.get_cargo_space_left()
+    return cargo

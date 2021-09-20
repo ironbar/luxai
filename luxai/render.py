@@ -18,6 +18,8 @@ import cv2
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Unit, CityTile
 
+from luxai.primitives import get_unit_cargo
+
 img_paths = glob.glob('/home/gbarbadillo/Desktop/luxai_icons/128px/*.png')
 icons = {os.path.splitext(os.path.basename(img_path))[0]: plt.imread(img_path) for img_path in img_paths}
 
@@ -86,8 +88,7 @@ def add_player_info(game_state, cell_images):
         for unit in player.units:
             img_base = cell_images[unit.pos.y][unit.pos.x]
             img = stack_images(img_base, apply_player_color(icons[unit_number_to_name[unit.type]], player_idx))
-            # TODO: do not use hardcoded constant
-            cargo = 100 - unit.get_cargo_space_left()
+            cargo = get_unit_cargo(unit)
             if cargo:
                 draw_text(img, str(cargo), position=(img.shape[1]-65, img.shape[0]-10))
             if unit.cooldown:
