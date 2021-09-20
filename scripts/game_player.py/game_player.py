@@ -32,8 +32,7 @@ def main(args=None):
     env = make("lux_ai_2021", debug=True, configuration=game_conf)
     game_inteface = GameInterface(args.player0)
     game_info = env.run([game_inteface, args.player1])
-    # TODO: better naming for saving the file
-    with open('delete.json', 'w') as f:
+    with open(args.output_path, 'w') as f:
         f.write(env.render(mode='json'))
 
 
@@ -165,6 +164,7 @@ def parse_args(args):
     parser.add_argument('--size', help='Size of the map', default=12, type=int)
     parser.add_argument('--random_seed', help='Seed for the agents', default=7, type=int)
     parser.add_argument('--episode_steps', help='Number of steps of the game', default=361, type=int)
+    parser.add_argument('--output_path', help='Path to save json file with the game', default='delete.json', type=str)
     # TODO: add the option to use checkpoints
     return parser.parse_args(args)
 
