@@ -1,3 +1,7 @@
+"""
+TODO:
+- [ ] allow to use checkpoints (file and turn)
+"""
 import sys
 import os
 import argparse
