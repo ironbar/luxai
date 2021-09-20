@@ -7,7 +7,8 @@ TODO:
 - [x] Add information about cooldown
 - [x] Add caption information
 - [x] Day and night
-- [ ] Update cart icon, it would be better if it has a similar size to the worker
+- [x] Update cart icon, it would be better if it has a similar size to the worker
+- [ ] Move icons to the repo
 - [ ] Refactor
 """
 import glob
@@ -41,13 +42,13 @@ def create_cell_images(game_state, img_size=128):
         row = []
         for x in range(game_state.map_width):
             cell = game_state.map.get_cell(x, y)
-            # TODO: add road level
+            cell_img = emtpy_cell.copy()
             if cell.has_resource():
-                cell_img = icons[cell.resource.type].copy()
+                cell_img = stack_images(cell_img, icons[cell.resource.type].copy())
                 draw_text(cell_img, str(cell.resource.amount), position=(5, 30))
-                row.append(stack_images(emtpy_cell.copy(), cell_img))
-            else:
-                row.append(emtpy_cell.copy())
+            if cell.road:
+                draw_text(cell_img, '%.1f' % cell.road, position=(5, 118))
+            row.append(cell_img.copy())
         cell_images.append(row)
     return cell_images
 
