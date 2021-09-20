@@ -98,8 +98,7 @@ class GameInterface():
     def display_render(self, render, caption, top_border=128):
         if top_border:
             render = cv2.copyMakeBorder(render, top_border, 0, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0])
-        # TODO: check bgr rgb convention
-        cv2.imshow(self.window_name, render)
+        cv2.imshow(self.window_name, render[:, :, [2, 1, 0]]) # opencv uses bgr convention while the images are rgb
         cv2.displayOverlay(self.window_name, caption)
         key = cv2.waitKey(500) & 0xFF
         return key

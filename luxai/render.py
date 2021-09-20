@@ -103,9 +103,9 @@ def stack_images(bottom, top):
 
 def apply_player_color(icon, player_idx):
     if player_idx:
-        return icon
-    else:
         return icon[:, :, [2, 1, 0, 3]]
+    else:
+        return icon
 
 
 def add_grid(cell_images, thickness=2, grid_color=(0, 0, 0, 1)):
@@ -180,7 +180,7 @@ def get_unit_pos_from_action(action, game_state):
             return unit.pos.x, unit.pos.y
 
 
-def show_focus_on_active_unit(render, unit, color=(0.5, 0, 0, 1)):
+def show_focus_on_active_unit(render, unit, color=(0, 0, 0.5, 1)):
     """ Modifies the input render by adding a circle around the active unit """
     if isinstance(unit, CityTile):
         center = (int(unit.pos.x*128 + 64), int(unit.pos.y*128 + 64))

@@ -71,7 +71,7 @@ class GameVisualizer():
 
     def update_window(self, epoch, window_name):
         render, caption = self._get_step_render_info(epoch)
-        cv2.imshow(window_name, render)
+        cv2.imshow(window_name, render[:, :, [2, 1, 0]]) # opencv uses bgr convention while the images are rgb
         cv2.displayOverlay(window_name, caption)
 
 
