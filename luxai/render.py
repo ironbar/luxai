@@ -38,6 +38,7 @@ def create_cell_images(game_state, img_size=128):
         row = []
         for x in range(game_state.map_width):
             cell = game_state.map.get_cell(x, y)
+            # TODO: add road level
             if cell.has_resource():
                 cell_img = icons[cell.resource.type].copy()
                 draw_text(cell_img, str(cell.resource.amount), position=(5, 30))
@@ -89,7 +90,8 @@ def add_player_info(game_state, cell_images):
             if cargo:
                 draw_text(img, str(cargo), position=(img.shape[1]-65, img.shape[0]-10))
             if unit.cooldown:
-                    draw_text(img, str(int(unit.cooldown)), position=(img.shape[1]-40, img.shape[0]-45))
+                # TODO: float cooldown
+                draw_text(img, str(int(unit.cooldown)), position=(img.shape[1]-40, img.shape[0]-45))
             cell_images[unit.pos.y][unit.pos.x] = img
 
 

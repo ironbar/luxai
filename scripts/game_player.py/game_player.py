@@ -24,11 +24,13 @@ def main(args=None):
     set_random_seed(args.random_seed)
     game_conf = {'width': args.size, 'height': args.size, 'seed': args.map_seed,
                  'actTimeout': int(1e6), 'runTimeout': int(1e6),
-                 'episodeSteps': 361, 'annotations':True}
+                 'episodeSteps': args.episode_steps, 'annotations':True}
     env = make("lux_ai_2021", debug=True, configuration=game_conf)
     game_inteface = GameInterface(args.player0)
     game_info = env.run([game_inteface, args.player1])
-    # render_game_in_html(env)
+    # TODO: better naming for saving the file
+    with open('delete.json', 'w') as f:
+        f.write(env.render(mode='json'))
 
 
 class GameInterface():
@@ -153,6 +155,7 @@ def parse_args(args):
     parser.add_argument('--map_seed', help='Seed to generate the map', default=0, type=int)
     parser.add_argument('--size', help='Size of the map', default=12, type=int)
     parser.add_argument('--random_seed', help='Seed for the agents', default=7, type=int)
+    parser.add_argument('--episode_steps', help='Number of steps of the game', default=361, type=int)
     # TODO: add the option to use checkpoints
     return parser.parse_args(args)
 
