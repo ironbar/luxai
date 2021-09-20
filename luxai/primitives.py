@@ -137,3 +137,6 @@ def get_unit_cargo(unit):
         + GAME_CONSTANTS['PARAMETERS']['RESOURCE_CAPACITY']['WORKER']*(1 - unit.type) \
         - unit.get_cargo_space_left()
     return cargo
+
+def is_cart(unit):
+    return unit.type

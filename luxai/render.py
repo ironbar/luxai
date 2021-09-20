@@ -18,7 +18,7 @@ import cv2
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Unit, CityTile
 
-from luxai.primitives import get_unit_cargo
+from luxai.primitives import get_unit_cargo, is_cart
 
 img_paths = glob.glob('/home/gbarbadillo/Desktop/luxai_icons/128px/*.png')
 icons = {os.path.splitext(os.path.basename(img_path))[0]: plt.imread(img_path) for img_path in img_paths}
@@ -92,8 +92,10 @@ def add_player_info(game_state, cell_images):
             if cargo:
                 draw_text(img, str(cargo), position=(img.shape[1]-65, img.shape[0]-10))
             if unit.cooldown:
-                # TODO: float cooldown
-                draw_text(img, str(int(unit.cooldown)), position=(img.shape[1]-40, img.shape[0]-45))
+                if is_cart(unit):
+                    draw_text(img, '%.1f' % unit.cooldown, position=(img.shape[1]-60, img.shape[0]-45))
+                else:
+                    draw_text(img, str(int(unit.cooldown)), position=(img.shape[1]-40, img.shape[0]-45))
             cell_images[unit.pos.y][unit.pos.x] = img
 
 
