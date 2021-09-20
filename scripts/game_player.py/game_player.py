@@ -9,6 +9,7 @@ import importlib
 from typing import List
 from kaggle_environments import make
 import cv2
+from tqdm import tqdm
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Unit, CityTile
@@ -44,9 +45,10 @@ class GameInterface():
         cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
         self.window_name = window_name
         self.game_interface_is_on = True
-        # TODO: add a tqdm to show game progress
+        self.progress_bar = tqdm()
 
     def __call__(self, observation: dict, configuration: dict) -> List[str]:
+        self.progress_bar.update(1)
         update_game_state(self.game_state, observation)
         render, caption = self.render_step()
         return self.game_interface(render, caption, observation, configuration)
@@ -114,6 +116,7 @@ class GameInterface():
         cv2.destroyAllWindows()
         cv2.destroyAllWindows()
         cv2.destroyAllWindows()
+        self.progress_bar.close()
 
 
 def remove_annotations(actions):
