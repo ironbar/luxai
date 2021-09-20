@@ -87,7 +87,12 @@ class GameInterface():
                     new_action = 'bcity %s' % (unit.id)
                     update_unit_action(actions, unit, new_action)
             if isinstance(unit, CityTile):
-                pass
+                if key == ord('r'):
+                    update_citytile_action(actions, unit, 'r')
+                if key == ord('w'):
+                    update_citytile_action(actions, unit, 'bw')
+                if key == ord('c'):
+                    update_citytile_action(actions, unit, 'bc')
 
         return actions
 
@@ -119,17 +124,17 @@ def get_available_units_and_cities(player):
     return get_available_workers(player) + get_available_city_tiles(player)
 
 
-def update_actions_with_movement(actions, unit, direction):
-    new_action = 'm %s %s' % (unit.id, direction)
-    for idx, action in enumerate(actions):
-        if action.split(' ')[1] == unit.id:
-            actions[idx] = new_action
-
 def update_unit_action(actions, unit, new_action):
     for idx, action in enumerate(actions):
         if action.split(' ')[1] == unit.id:
             actions[idx] = new_action
 
+
+def update_citytile_action(actions, citytile, command):
+    end = ' %i %i' % (citytile.pos.x, citytile.pos.y)
+    for idx, action in enumerate(actions):
+        if action.endswith(end):
+            actions[idx] = command + end
 
 
 def parse_args(args):
