@@ -11,7 +11,7 @@ from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects im
 
 from luxai.utils import render_game_in_html, set_random_seed, update_game_state
 from luxai.render import render_game_state, get_captions, add_actions_to_render, show_focus_on_active_unit
-from luxai.primitives import get_available_city_tiles, get_available_workers
+from luxai.primitives import get_available_city_tiles, get_available_units
 
 DEFAULT_AGENT = '/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/agent.py'
 
@@ -61,7 +61,8 @@ class GameInterface():
             unit = available_units[unit_idx]
             updated_render = add_actions_to_render(render, actions, self.game_state)
             show_focus_on_active_unit(updated_render, unit)
-            key = self.display_render(updated_render, caption + '\nActions: %s' % str(actions))
+            updated_caption = caption + '\nAvailable units: %i Actions: %s' % (len(available_units), str(actions))
+            key = self.display_render(updated_render, updated_caption)
             # print(key)
             if key == 27: # ESC
                 print('Turning off game interface, game will continue automatically until the end')
@@ -120,7 +121,7 @@ def is_action(action):
 
 
 def get_available_units_and_cities(player):
-    return get_available_workers(player) + get_available_city_tiles(player)
+    return get_available_units(player) + get_available_city_tiles(player)
 
 
 def update_unit_action(actions, unit, new_action):

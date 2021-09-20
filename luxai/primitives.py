@@ -28,6 +28,11 @@ def get_empty_tiles(game_state: Game) -> List[Cell]:
     return empty_tiles
 
 
+def get_available_units(player: Player) -> List[Unit]:
+    """ Returns a list with the workers that are available to do actions """
+    return [unit for unit in player.units if unit.can_act()]
+
+
 def get_available_workers(player: Player) -> List[Unit]:
     """ Returns a list with the workers that are available to do actions """
     return [unit for unit in player.units if unit.is_worker() and unit.can_act()]
