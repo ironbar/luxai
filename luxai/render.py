@@ -8,7 +8,7 @@ TODO:
 - [x] Add caption information
 - [x] Day and night
 - [x] Update cart icon, it would be better if it has a similar size to the worker
-- [ ] Move icons to the repo
+- [x] Move icons to the repo
 - [ ] Refactor
 """
 import glob
@@ -21,7 +21,7 @@ from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects im
 
 from luxai.primitives import get_unit_cargo, is_cart
 
-img_paths = glob.glob('/home/gbarbadillo/Desktop/luxai_icons/128px/*.png')
+img_paths = glob.glob('/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/data/render_icons/*.png')
 icons = {os.path.splitext(os.path.basename(img_path))[0]: plt.imread(img_path) for img_path in img_paths}
 
 unit_number_to_name = {0: 'worker', 1: 'cart'}
