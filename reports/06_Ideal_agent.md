@@ -36,3 +36,11 @@ Once we have access to coal or uranium the goal is to build the largest sustaina
 
 Thus it seems to have sense to have multiple policies. That way we can train them with different
 reward functions and this will simplify the training process.
+
+## Competitive game
+
+The behaviour of the agent should change if the enemy is near. If it is near we should be careful
+to avoid losing resources. We could trap the enemy inside its forest just by standing on the surroundings
+and prevent him from building houses.
+
+**TODO:** play and save some captures here.

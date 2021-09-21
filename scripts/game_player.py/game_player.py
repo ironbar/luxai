@@ -1,6 +1,6 @@
 """
 TODO:
-- [ ] allow to use checkpoints (file and turn)
+- [ ] allow to use checkpoints (file and turn). This will be done by a class that returns actions until it reaches the turn
 """
 import sys
 import os
@@ -10,6 +10,7 @@ from typing import List
 from kaggle_environments import make
 import cv2
 from tqdm import tqdm
+import json
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Unit, CityTile
@@ -27,12 +28,20 @@ def main(args=None):
     args = parse_args(args)
 
     set_random_seed(args.random_seed)
-    game_conf = {'width': args.size, 'height': args.size, 'seed': args.map_seed,
-                 'actTimeout': int(1e6), 'runTimeout': int(1e6),
-                 'episodeSteps': args.episode_steps, 'annotations':True}
+    if args.checkpoint_path is not None:
+        with open(args.checkpoint_path, 'r') as f:
+            checkpoint = json.load(f)
+        game_conf = {'width': checkpoint['configuration']['width'],
+                     'height': checkpoint['configuration']['height'],
+                     'seed': checkpoint['configuration']['seed'],}
+    else:
+        game_conf = {'width': args.size, 'height': args.size, 'seed': args.map_seed}
+    game_conf.update({'actTimeout': int(1e6), 'runTimeout': int(1e6),
+                      'episodeSteps': args.episode_steps, 'annotations':True})
+
     env = make("lux_ai_2021", debug=True, configuration=game_conf)
-    game_inteface = GameInterface(args.player0)
-    game_info = env.run([game_inteface, args.player1])
+    game_interface = GameInterface(args.player0)
+    game_info = env.run([game_interface, args.player1])
     with open(args.output_path, 'w') as f:
         f.write(env.render(mode='json'))
 
@@ -168,7 +177,8 @@ def parse_args(args):
     parser.add_argument('--random_seed', help='Seed for the agents', default=7, type=int)
     parser.add_argument('--episode_steps', help='Number of steps of the game', default=361, type=int)
     parser.add_argument('--output_path', help='Path to save json file with the game', default='delete.json', type=str)
-    # TODO: add the option to use checkpoints
+    parser.add_argument('--checkpoint_path', help='Path to the game that we want to use as a start point', default=None, type=str)
+    parser.add_argument('--checkpoint_step', help='Step when we want to start playing with the checkpoint', default=0, type=int)
     return parser.parse_args(args)
 
 
