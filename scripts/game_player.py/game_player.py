@@ -14,6 +14,7 @@ import json
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Unit, CityTile
+from kaggle_environments.agent import build_agent
 
 from luxai.utils import render_game_in_html, set_random_seed, update_game_state
 from luxai.render import render_game_state, get_captions, add_actions_to_render, show_focus_on_active_unit
@@ -41,16 +42,49 @@ def main(args=None):
 
     env = make("lux_ai_2021", debug=True, configuration=game_conf)
     game_interface = GameInterface(args.player0)
-    game_info = env.run([game_interface, args.player1])
+    if args.checkpoint_path is not None:
+        game_info = env.run([
+            game_interface,
+            # CheckpointAgent(game_interface, checkpoint, args.checkpoint_step, player_idx=0),
+            # args.player1])
+            CheckpointAgent(args.player1, checkpoint, args.checkpoint_step, player_idx=1),])
+    else:
+        game_info = env.run([game_interface, args.player1])
     with open(args.output_path, 'w') as f:
         f.write(env.render(mode='json'))
+
+
+class CheckpointAgent():
+    def __init__(self, agent, checkpoint, checkpoint_step, player_idx):
+        self.checkpoint = checkpoint.copy()
+        self.checkpoint_step = checkpoint_step
+        self.player_idx = player_idx
+        self.agent, _ = build_agent(agent, {}, None)
+        self.step = 0
+
+    def __call__(self, observation: dict, configuration: dict) -> List[str]:
+        # There seems to be a problem with game_state initialization, apparently I cannot initialize from an step different than zero
+        # I could play on a notebook and use the render of the game state to be sure everything works fine
+        # It seems I have to provide an id, and next width and height on the first call
+        # However the internal agent breaks, so it is safer to always call the agent no matter the initial checkpoint
+        # print(observation)
+        self.step += 1
+        if self.step <= self.checkpoint_step:
+            return self.checkpoint['steps'][self.step][self.player_idx]['action']
+        elif self.step == self.checkpoint_step + 1 and self.step > 1:
+            observation['updates'].insert(0, '12 12')
+            observation['updates'].insert(0, '0')
+            return self.agent(observation, configuration)
+        else:
+            return self.agent(observation, configuration)
 
 
 class GameInterface():
     def __init__(self, agent_script, window_name='luxai game player'):
         self.game_state = Game()
-        sys.path.append(os.path.dirname(agent_script))
-        self.agent = importlib.import_module(os.path.splitext(os.path.basename(agent_script))[0])
+        # sys.path.append(os.path.dirname(agent_script))
+        # self.agent = importlib.import_module(os.path.splitext(os.path.basename(agent_script))[0])
+        self.agent, _ = build_agent(agent_script, {}, None)
         cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
         self.window_name = window_name
         self.game_interface_is_on = True
@@ -59,17 +93,17 @@ class GameInterface():
     def __call__(self, observation: dict, configuration: dict) -> List[str]:
         self.progress_bar.update(1)
         update_game_state(self.game_state, observation)
-        render, caption = self.render_step()
+        render, caption = self.render_step(observation)
         return self.game_interface(render, caption, observation, configuration)
 
-    def render_step(self):
+    def render_step(self, observation):
         render = render_game_state(self.game_state)
         caption = get_captions(self.game_state)
-        caption = 'Turn %i/360\n%s' % (self.game_state.turn, caption)
+        caption = 'Turn %i/360\n%s' % (observation['step'], caption)
         return render, caption
 
     def game_interface(self, render, caption, observation, configuration):
-        actions = self.agent.agent(observation, configuration)
+        actions = self.agent(observation, configuration)
         actions = remove_annotations(actions)
         available_units = get_available_units_and_cities(self.game_state.players[0])
         unit_idx = 0
