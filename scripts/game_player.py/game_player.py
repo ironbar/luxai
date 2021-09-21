@@ -1,6 +1,6 @@
 """
 TODO:
-- [ ] allow to use checkpoints (file and turn). This will be done by a class that returns actions until it reaches the turn
+- [x] allow to use checkpoints (file and turn). This will be done by a class that returns actions until it reaches the turn
 """
 import sys
 import os
@@ -64,8 +64,7 @@ class CheckpointAgent():
         # There seems to be a problem with game_state initialization, apparently I cannot initialize from an step different than zero
         # I could play on a notebook and use the render of the game state to be sure everything works fine
         # It seems I have to provide an id, and next width and height on the first call
-        # However the internal agent breaks, so it is safer to always call the agent no matter the initial checkpoint
-        # print(observation)
+        # I had to make a small modification on how the game state is updated to account for this
         self.step += 1
         if self.step <= self.checkpoint_step:
             return self.checkpoint['steps'][self.step][self.player_idx]['action']
@@ -91,13 +90,13 @@ class GameInterface():
     def __call__(self, observation: dict, configuration: dict) -> List[str]:
         self.progress_bar.update(1)
         update_game_state(self.game_state, observation)
-        render, caption = self.render_step(observation)
+        render, caption = self.render_step()
         return self.game_interface(render, caption, observation, configuration)
 
-    def render_step(self, observation):
+    def render_step(self):
         render = render_game_state(self.game_state)
         caption = get_captions(self.game_state)
-        caption = 'Turn %i/360\n%s' % (observation['step'], caption)
+        caption = 'Turn %i/360\n%s' % (self.game_state.turn, caption)
         return render, caption
 
     def game_interface(self, render, caption, observation, configuration):

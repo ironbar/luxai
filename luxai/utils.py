@@ -48,3 +48,4 @@ def update_game_state(game_state, observation):
         game_state.id = observation['player']
     else:
         game_state._update(observation["updates"])
+    game_state.turn = observation['step']
