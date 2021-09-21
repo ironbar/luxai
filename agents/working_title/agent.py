@@ -115,7 +115,7 @@ def agent(observation, configuration, DEBUG=False):
     del configuration  # unused
     global game_state, missions
 
-    if observation["step"] == 0:
+    if observation["step"] == 0 or not hasattr(game_state, 'map_width'):
         game_state = Game()
         game_state._initialize(observation["updates"])
         game_state.player_id = observation.player
