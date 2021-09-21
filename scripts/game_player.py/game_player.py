@@ -44,9 +44,7 @@ def main(args=None):
     game_interface = GameInterface(args.player0)
     if args.checkpoint_path is not None:
         game_info = env.run([
-            game_interface,
-            # CheckpointAgent(game_interface, checkpoint, args.checkpoint_step, player_idx=0),
-            # args.player1])
+            CheckpointAgent(game_interface, checkpoint, args.checkpoint_step, player_idx=0),
             CheckpointAgent(args.player1, checkpoint, args.checkpoint_step, player_idx=1),])
     else:
         game_info = env.run([game_interface, args.player1])
