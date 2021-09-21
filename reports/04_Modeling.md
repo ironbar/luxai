@@ -202,6 +202,10 @@ current unit.
 I'm going to first read some tutorials because I remember there were problems with some opencv versions
 for conda that were not able to show images, and also there were different types of windows.
 
+On 21/09/2021 I have a working version of the game interface. Now It's time to start playing and write
+how I play and what would be the optimal way of playing. I can use the checkpoints to play alternative
+strategies.
+
 #### 3.2.2 Learnings
 
 - A cart is able to move during day as fast as a worker, but leaves a road level of 1.5 behind so
