@@ -120,6 +120,8 @@ class GameInterface():
                 break
             if key == 83: # ->:
                 pass
+            if key == 8: # DELETE:
+                actions = [action for action in actions if any(action.startswith(start) for start in ['r ', 'bw ', 'bc '])]
             # Change between objects
             if key == ord('4'):
                 unit_idx = (unit_idx - 1)%len(available_units)
