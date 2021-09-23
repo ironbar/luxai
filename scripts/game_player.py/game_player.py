@@ -95,8 +95,8 @@ class GameInterface():
 
     def render_step(self):
         render = render_game_state(self.game_state)
-        caption = get_captions(self.game_state)
-        caption = 'Turn %i/360\n%s' % (self.game_state.turn, caption)
+        caption = 'Turn %i/360 (next night in %i steps)\n' % (self.game_state.turn, 30 - self.game_state.turn%40)
+        caption += get_captions(self.game_state)
         return render, caption
 
     def game_interface(self, render, caption, observation, configuration):
@@ -110,7 +110,7 @@ class GameInterface():
             show_focus_on_active_unit(updated_render, unit)
             updated_caption = caption + '\nAvailable units: %i Actions: %s' % (len(available_units), str(actions))
             key = self.display_render(updated_render, updated_caption)
-            # print(key)
+            print(key)
             if key == 27: # ESC
                 print('Turning off game interface, game will continue automatically until the end')
                 self.game_interface_is_on = False
@@ -120,8 +120,10 @@ class GameInterface():
                 break
             if key == 83: # ->:
                 pass
-            if key == 8: # DELETE:
+            if key == 8: # DELETE, delete actions from units:
                 actions = [action for action in actions if any(action.startswith(start) for start in ['r ', 'bw ', 'bc '])]
+            if key == 9: # TAB, delete actions from cities:
+                actions = [action for action in actions if any(action.startswith(start) for start in ['m ', 't ', 'bcity ', 'p '])]
             # Change between objects
             if key == ord('4'):
                 unit_idx = (unit_idx - 1)%len(available_units)
@@ -142,6 +144,8 @@ class GameInterface():
                     update_citytile_action(actions, unit, 'bw')
                 if key == ord('c'):
                     update_citytile_action(actions, unit, 'bc')
+                if key == ord('n'):
+                    remove_citytile_action(actions, unit)
 
         return actions
 
@@ -190,6 +194,14 @@ def update_citytile_action(actions, citytile, command):
             actions[idx] = new_action
             return
     actions.append(new_action)
+
+
+def remove_citytile_action(actions, citytile):
+    end = ' %i %i' % (citytile.pos.x, citytile.pos.y)
+    for idx, action in enumerate(actions):
+        if action.endswith(end):
+            actions.pop(idx)
+            break
 
 
 def parse_args(args):
