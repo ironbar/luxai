@@ -82,7 +82,7 @@ def add_player_info(game_state, cell_images):
                 img_base = cell_images[city_tile.pos.y][city_tile.pos.x]
                 img = stack_images(img_base, apply_player_color(icons['city'], player_idx))
                 draw_text(img, str(turns_can_survive_at_night), position=(5, 30))
-                if city_tile.cooldown:
+                if city_tile.cooldown >= 1:
                     draw_text(img, str(int(city_tile.cooldown)), position=(5, 60))
                 cell_images[city_tile.pos.y][city_tile.pos.x] = img
 
@@ -92,7 +92,7 @@ def add_player_info(game_state, cell_images):
             cargo = get_unit_cargo(unit)
             if cargo:
                 draw_text(img, str(cargo), position=(img.shape[1]-65, img.shape[0]-10))
-            if unit.cooldown:
+            if unit.cooldown >= 1:
                 if is_cart(unit):
                     draw_text(img, '%.1f' % unit.cooldown, position=(img.shape[1]-60, img.shape[0]-45))
                 else:
@@ -164,17 +164,33 @@ def _add_action_to_render(render, action, game_state):
             direction = action.split(' ')[-1]
             if direction == 'c':
                 return
-            arrow_origin = ((x + 1)*128 -43, (y+1)*128 - 60)
-            arrow_len = 20
-            if direction == 'n':
-                arrow_end = (arrow_origin[0], arrow_origin[1] - arrow_len)
-            elif direction == 's':
-                arrow_end = (arrow_origin[0], arrow_origin[1] + arrow_len)
-            elif direction == 'e':
-                arrow_end = (arrow_origin[0] + arrow_len, arrow_origin[1])
-            elif direction == 'w':
-                arrow_end = (arrow_origin[0] - arrow_len, arrow_origin[1])
-            cv2.arrowedLine(render, arrow_origin, arrow_end, (0, 0, 0, 0.5), 5, tipLength=0.5)
+            draw_movement_arrow(render, x, y, direction)
+        elif action.startswith('t '):
+            destination_x, destination_y = get_unit_pos_from_unit_id(action.split(' ')[2], game_state)
+            if destination_x < x:
+                direction = 'w'
+            elif destination_x > x:
+                direction = 'e'
+            elif destination_y < y:
+                direction = 'n'
+            elif destination_y > y:
+                direction = 's'
+            draw_movement_arrow(render, x, y, direction, (0, 0, 1., 0.5))
+
+
+def draw_movement_arrow(render, x, y, direction, color=(0, 0, 0, 0.5)):
+    arrow_origin = ((x + 1)*128 -43, (y+1)*128 - 60)
+    arrow_len = 20
+    if direction == 'n':
+        arrow_end = (arrow_origin[0], arrow_origin[1] - arrow_len)
+    elif direction == 's':
+        arrow_end = (arrow_origin[0], arrow_origin[1] + arrow_len)
+    elif direction == 'e':
+        arrow_end = (arrow_origin[0] + arrow_len, arrow_origin[1])
+    elif direction == 'w':
+        arrow_end = (arrow_origin[0] - arrow_len, arrow_origin[1])
+    cv2.arrowedLine(render, arrow_origin, arrow_end, color, 5, tipLength=0.5)
+
 
 def get_citytile_pos_from_action(action):
     return [int(x) for x in action.split(' ')[1:]]
@@ -182,6 +198,10 @@ def get_citytile_pos_from_action(action):
 
 def get_unit_pos_from_action(action, game_state):
     unit_id = action.split(' ')[1]
+    return get_unit_pos_from_unit_id(unit_id, game_state)
+
+
+def get_unit_pos_from_unit_id(unit_id, game_state):
     for unit in game_state.players[0].units:
         if unit.id == unit_id:
             return unit.pos.x, unit.pos.y

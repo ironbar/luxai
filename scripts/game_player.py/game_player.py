@@ -11,6 +11,7 @@ from kaggle_environments import make
 import cv2
 from tqdm import tqdm
 import json
+import numpy as np
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game import Game
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_objects import Unit, CityTile
@@ -18,7 +19,7 @@ from kaggle_environments.agent import build_agent
 
 from luxai.utils import render_game_in_html, set_random_seed, update_game_state
 from luxai.render import render_game_state, get_captions, add_actions_to_render, show_focus_on_active_unit
-from luxai.primitives import get_available_city_tiles, get_available_units
+from luxai.primitives import get_available_city_tiles, get_available_units, is_cart
 
 DEFAULT_AGENT = '/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/agent.py'
 
@@ -137,6 +138,11 @@ class GameInterface():
                 if key == ord('b'):
                     new_action = 'bcity %s' % (unit.id)
                     update_unit_action(actions, unit, new_action)
+                for letter, direction in [('i', 'n'), ('k', 's'), ('j', 'w'), ('l', 'e')]:
+                    if key == ord(letter):
+                        new_action = create_transfer_action(unit, direction, self.game_state.players[0].units)
+                        if new_action is not None:
+                            update_unit_action(actions, unit, new_action)
             if isinstance(unit, CityTile):
                 if key == ord('r'):
                     update_citytile_action(actions, unit, 'r')
@@ -202,6 +208,20 @@ def remove_citytile_action(actions, citytile):
         if action.endswith(end):
             actions.pop(idx)
             break
+
+
+def create_transfer_action(unit, direction, units):
+    """
+    Creates a transfer action to the unit in the given direction with the most abundante resource
+    """
+    transfer_pos = unit.pos.translate(direction, 1)
+    unit_cargo = [unit.cargo.wood, unit.cargo.coal, unit.cargo.uranium]
+    resource_types = ['wood', 'coal', 'uranium']
+    resource_idx = np.argmax(unit_cargo)
+    for other_unit in units:
+        if other_unit.pos.equals(transfer_pos):
+            action = 't %s %s %s %i' % (unit.id, other_unit.id, resource_types[resource_idx], unit_cargo[resource_idx])
+            return action
 
 
 def parse_args(args):
