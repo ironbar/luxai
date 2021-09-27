@@ -215,8 +215,20 @@ all units following it could move without stopping.
 - If a house is built on a road, then the cell loses its previous road level when demolished
 - Thus using carts may have sense when we want to speedup movement (maybe to go to another resource, or
 to move faster in the forest) and also to carry resources from a resource to the city.
+- To mine coal or uranium I believe the best strategy is to have workers on mining positions without moving and transferring resources to a cart. This ensures that the enemy cannot take the resource and at the same time I can move the cargo to the nearest city.
+- In the other hand I believe forest should be mined with workers because collection speed is much faster.
+- Carts can really speed processes because once they have visited a place the workers can move twice as fast
+- Cities can be walls that protect the forrest
 
 ### 3.3 Results
+
+I have implemented a user interface for playing the game and played on two maps. Playing is slow
+because the current base agent I'm using creates wrong actions and I have to delete them and create from
+zero. Having a more human agent could speedup playing.
+
+At this point I have a much better understanding of the game and I believe I know a better strategy than
+the one that is being used by top agents on the leaderboard. I have to think of how I can create an agent
+that can play with that strategy.
 
 ### 3.4 Next steps
 
