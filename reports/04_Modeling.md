@@ -284,6 +284,30 @@ people on the leaderboard.
 - [ ] Optimize input features
 - [ ] Optimize training strategy (single train, pretrain and fine-tuning)
 
+#### 4.2.2 Download matches from the leaderboard
+
+As a start point I have a [notebook from the forum](https://www.kaggle.com/robga/simulations-episode-scraper-match-downloader)
+and also for hungry geese I developed my own [notebook on colab](https://colab.research.google.com/drive/1SBm3BG0ZvlDKuiu02zuLrZ7oU6Dsp-se).
+
+I remember that it was only possible to download 10k matches each session, that is why I started
+using colab to avoid that limitation.
+
+I only want to download matches from the best agents. To do so I should rank the agents based on their
+latest score.
+
+I have created a [kaggle notebook](https://www.kaggle.com/ironbar/select-agents-for-downloading-matches) to
+select matches for downloading them. Now I'm going to download the matches using [colab](https://colab.research.google.com/drive/1XtHHPVzrSnLGoqZ_A0CKdz21gSFkN_CI?usp=sharing).
+
+#### 4.2.4 Implement a conditioned Unet architecture
+
+I want the model to generate actions for all the units and buildings at the same time. I also want to
+use global information for taking the actions. Thus Unet seems like a very good fit for this problem.
+However I also need to provide information such as day/night cycle, research points... So I have searched
+for a conditioned Unet and I have found this paper [Conditioned-U-Net: Introducing a Control Mechanism in the U-Net for Multiple Source Separations](https://arxiv.org/abs/1907.01277)
+
+It seems the right way to tackle the problem. The ouput of the model will have binary cross-entropy loss
+because sometimes there are multiple actions for the same cell (imagine a unit inside a house)
+
 ### 4.3 Results
 
 ### 4.4 Next steps
