@@ -44,3 +44,30 @@ to avoid losing resources. We could trap the enemy inside its forest just by sta
 and prevent him from building houses.
 
 **TODO:** play and save some captures here.
+
+## A different policy for each era
+
+### Wood Era
+
+- Grow as fast as possible
+- Advance to coal era as fast as possible
+- Let the cities die at night
+- Preserve the forest
+- Block the enemy from entering our forests
+- Expand to new areas as soon as possible
+- At night each forest can only allocate as many workers as trees. Thus it does not have sense to have
+more workers on a forest unless we want to protect from an invasion
+- If there is an excess of workers send them to invade other forests
+- When coal era is approaching send workers to conquer the coal resources
+
+### Coal Era
+
+- Now cities are built to be preserved, unless we use them as walls
+- Coal areas are permanently settled and resources transferred to a city with carts
+- When coal and forest are close is a good idea to surround coal with cities
+- Advance to uranium era as fast as possible
+- Send workers to conquer uranium when uranium era is approaching
+
+### Uranium Era
+
+- Be careful not to grow the cities so they are not sustainable
