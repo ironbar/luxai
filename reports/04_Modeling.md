@@ -232,6 +232,64 @@ that can play with that strategy.
 
 ### 3.4 Next steps
 
+I can think of two different paths from here, I have already chosen Imitation learning but let's
+document the two for reference.
+
+#### 3.4.1 Hard coded agent
+
+I have already written rules of how the agent should play on [Ideal agent](06_Ideal_agent.md). It should
+be possible to translate those ideas to code. I believe a test-drive approach could work very well
+for this case. I will prepare pairs of game state and actions and verify that my agent works as expected.
+The number of tests will grow as the implementation gets more complex. I can use the game interface
+to create those pairs.
+
+However I don't think I will learn too much from this approach. Moreover people has already been taking this
+approach for a long time so it will be difficult to catch up. And it is not easy to write a hard coded
+agent as I have already seen on previous iterations.
+
+#### 3.4.2 Imitation learning
+
+Given enough resources I'm sure RL will be able to find a better strategy. But I don't believe I have
+those resources. After studying the game complexity and considering the slow simulation of the game 
+I believe RL would be very difficult for this game.
+
+In the other hand imitation learning might work. The biggest drawback of imitation learning is that 
+the agent may act strangely when it reaches a state of the game that was not encountered before. 
+My idea of overcoming that problem is to pretrain the agent on matches from the forum, 
+and then fine-tune on human matches. That could be a good combination.
+
+The beauty of this approach is that I don't have to hard-code the agent and I will learn more about
+imitation learning. That is why I have chosen to follow this approach.
+
+## Iteration 4. Imitation learning from leaderboard agents
+
+### 4.1 Goal
+
+The goal is to explore how good an agent can become just by imitation learning and how many matches
+do we need to imitate an agent.
+
+In the best scenario we will end this iteration having an agent that performs close to the best
+people on the leaderboard.
+
+### 4.2 Development
+
+#### 4.2.1 Tasks
+
+- [ ] Download matches from the leaderboard
+- [ ] Create features from game state
+- [ ] Implement a conditioned Unet architecture
+- [ ] Training script
+- [ ] Agent that uses a model for playing, it will need some post-processing of the predictions
+- [ ] Optimize the model architecture (optimize validation loss, but also measure agent score to see if they are correlated)
+- [ ] Optimize input features
+- [ ] Optimize training strategy (single train, pretrain and fine-tuning)
+
+### 4.3 Results
+
+### 4.4 Next steps
+
+
+
 ## Iteration n. Iteration_title
 
 <!---
