@@ -232,40 +232,6 @@ that can play with that strategy.
 
 ### 3.4 Next steps
 
-## Iteration 4. Optimize an agent for a single map
-
-### 4.1 Goal
-
-The goal is to train/find an agent that is optimized for a single map. The agent needs to maximize
-the available cities at the end of the game.
-
-### 4.2 Development
-
-Since future actions depend on present ones I cannot simply optimize a sequence of actions. I need
-a function that is able to generate actions given the game state. In my head the first option for
-doing that is a neural network.
-
-One option could be to try with neuroevolution. This will directly optimize the number of final cities.
-I haven't tried this method and I don't know how the individuals mutate or mate. A quick read on
-internet says that it is possible but slow.
-
-In the other hand I could try applying Reinforcement learning, this will have more information
-for learning but requires a very careful choosing of the reward function to avoid building a large
-number of houses at the middle of the game that later collapses.
-
-I could even reduce the lenght of the game to see which will be the best start, f.e. play for 30 moves.
-
-### 4.2.1 Reinforcement learning
-
-I think it is much more realistic to try using RL for optimizing an agent to a single map. If the process
-is fast enough I could try to come up with optimal agents for different maps and later try imitation
-learning. This could train a good policy that later can be used to plan.
-
-### 4.3 Results
-
-### 3.4 Next steps
-
-
 ## Iteration n. Iteration_title
 
 <!---
