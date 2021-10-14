@@ -29,11 +29,22 @@ CHANNELS_MAP = dict(
 )
 
 
+FEATURES_MAP = dict(
+    step=0, is_night=1, is_last_day=2,
+    player_research_points=3, opponent_research_points=4,
+    is_player_in_coal_era=5, is_player_in_uranium_era=6,
+    is_opponent_in_coal_era=7, is_opponent_in_uranium_era=8,
+    player_n_cities=9, player_n_units=10,
+    opponent_n_cities=11, opponent_n_units=12,
+)
+
+
 def make_input(obs, unit_id):
     width, height = obs['width'], obs['height']
     city_id_to_survive_turns = {}
 
     board = np.zeros((len(CHANNELS_MAP), height, width), dtype=np.float32)
+    features = np.zeros(len(FEATURES_MAP), dtype=np.float32)
 
     for update in obs['updates']:
         splits = update.split(' ')
@@ -59,10 +70,15 @@ def make_input(obs, unit_id):
         elif object_type == 'resource':
             resource_type, x, y, amount = parse_resource_info(splits)
             board[CHANNELS_MAP[resource_type], x, y] = amount / 800
-        elif input_identifier == 'rp':
+        elif object_type == 'research':
             team, research_points = parse_research_points_info(splits)
-            board[15 + (team - obs['player']) % 2, :] = min(research_points, 200) / 200
-        elif input_identifier == 'c':
+            features[FEATURES_MAP['%s_research_points' % prefix]] = \
+                research_points / GAME_CONSTANTS['PARAMETERS']['RESEARCH_REQUIREMENTS']['URANIUM']
+            features[FEATURES_MAP['is_%s_in_coal_era' % prefix]] = \
+                research_points >= GAME_CONSTANTS['PARAMETERS']['RESEARCH_REQUIREMENTS']['COAL']
+            features[FEATURES_MAP['is_%s_in_uranium_era' % prefix]] = \
+                research_points >= GAME_CONSTANTS['PARAMETERS']['RESEARCH_REQUIREMENTS']['URANIUM']
+        elif object_type == 'city':
             team, city_id, fuel, lightupkeep = parse_city_info(splits)
             city_id_to_survive_turns[city_id] = fuel / lightupkeep
         elif object_type == 'road':
@@ -76,7 +92,7 @@ def make_input(obs, unit_id):
     # # Map Size
     # board[19, x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
 
-    return board
+    return board, features
 
 
 def parse_unit_info(splits):
