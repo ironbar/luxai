@@ -86,12 +86,13 @@ def make_input(obs):
             x, y, road_level = parse_road_info(splits)
             board[CHANNELS_MAP['road_level'], x, y] = road_level
 
-    # # Day/Night Cycle
-    # board[17, :] = obs['step'] % 40 / 40
-    # # Turns
-    # board[18, :] = obs['step'] / 360
-    # # Map Size
-    # board[19, x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
+    features[FEATURES_MAP['step']] = obs['step'] / 360
+    features[FEATURES_MAP['is_night']] = obs['step'] % 40 >= 30
+    features[FEATURES_MAP['is_last_day']] = obs['step'] >= 40*8
+    for prefix in ['player', 'opponent']:
+        features[FEATURES_MAP['%s_n_cities' % prefix]] = np.sum(board[CHANNELS_MAP['%s_city' % prefix]])
+        features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_worker' % prefix]])
+        features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_cart' % prefix]])
 
     return board, features
 
