@@ -39,7 +39,7 @@ FEATURES_MAP = dict(
 )
 
 
-def make_input(obs, unit_id):
+def make_input(obs):
     width, height = obs['width'], obs['height']
     city_id_to_survive_turns = {}
 
@@ -49,17 +49,17 @@ def make_input(obs, unit_id):
     for update in obs['updates']:
         splits = update.split(' ')
         input_identifier = splits[0]
-        object_type = IDENTIFIER_TO_OBJECT[input_identifier]
+        object_type = IDENTIFIER_TO_OBJECT.get(input_identifier, None)
 
         if object_type == 'unit':
             unit_type, team, unit_id, x, y, cooldown, wood, coal, uranium = parse_unit_info(splits)
             prefix = get_prefix_for_channels_map(team, obs)
             if is_worker(unit_type):
-                board[CHANNELS_MAP['%s_worker'], x, y] += 1
+                board[CHANNELS_MAP['%s_worker' % prefix], x, y] += 1
             else:
-                board[CHANNELS_MAP['%s_cart'], x, y] += 1
-            board[CHANNELS_MAP['%s_unit_cargo'], x, y] = get_normalized_cargo(unit_type, wood, coal, uranium)
-            board[CHANNELS_MAP['%s_unit_fuel'], x, y] = get_normalized_unit_fuel(unit_type, wood, coal, uranium)
+                board[CHANNELS_MAP['%s_cart' % prefix], x, y] += 1
+            board[CHANNELS_MAP['%s_unit_cargo' % prefix], x, y] = get_normalized_cargo(unit_type, wood, coal, uranium)
+            board[CHANNELS_MAP['%s_unit_fuel' % prefix], x, y] = get_normalized_unit_fuel(unit_type, wood, coal, uranium)
             board[CHANNELS_MAP['cooldown'], x, y] = cooldown
         elif object_type == 'city_tile':
             team, city_id, x, y, cooldown = parse_city_tile_info(splits)
@@ -72,6 +72,7 @@ def make_input(obs, unit_id):
             board[CHANNELS_MAP[resource_type], x, y] = amount / 800
         elif object_type == 'research':
             team, research_points = parse_research_points_info(splits)
+            prefix = get_prefix_for_channels_map(team, obs)
             features[FEATURES_MAP['%s_research_points' % prefix]] = \
                 research_points / GAME_CONSTANTS['PARAMETERS']['RESEARCH_REQUIREMENTS']['URANIUM']
             features[FEATURES_MAP['is_%s_in_coal_era' % prefix]] = \
@@ -96,7 +97,7 @@ def make_input(obs, unit_id):
 
 
 def parse_unit_info(splits):
-    unit_type = int(splits(1))
+    unit_type = int(splits[1])
     team = int(splits[2])
     unit_id = splits[3]
     x = int(splits[4])
@@ -142,7 +143,7 @@ def parse_city_info(splits):
 def parse_road_info(splits):
     x = int(splits[1])
     y = int(splits[2])
-    road_level = float(splits(3))
+    road_level = float(splits[3])
     return x, y, road_level
 
 

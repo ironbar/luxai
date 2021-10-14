@@ -275,7 +275,7 @@ people on the leaderboard.
 
 #### 4.2.1 Tasks
 
-- [ ] Download matches from the leaderboard
+- [x] Download matches from the leaderboard
 - [ ] Create features from game state
 - [ ] Implement a conditioned Unet architecture
 - [ ] Training script
@@ -298,6 +298,43 @@ latest score.
 I have created a [kaggle notebook](https://www.kaggle.com/ironbar/select-agents-for-downloading-matches) to
 select matches for downloading them. Now I'm going to download the matches using [colab](https://colab.research.google.com/drive/1XtHHPVzrSnLGoqZ_A0CKdz21gSFkN_CI?usp=sharing).
 
+#### 4.2.3 Create features from game state
+
+Board cell features:
+
+- Resources
+- Road level
+
+Board global features:
+
+- Day/night cycle
+- Turn
+- Is Last day?
+
+Player cell features:
+
+- Units
+- Cities
+- Cooldown
+- City size
+- Cargo
+- is active
+- Fuel that can be gathered a turn (take into account research points)
+- Resources that can be gathered a turn (take into account research points)
+- Number of turns a city can survive at night
+
+Player global features:
+
+- Research points (normalized to coal and uranium era)
+- Number of cities
+- Number of units
+
+This [Imitation learning notebook](https://www.kaggle.com/shoheiazuma/lux-ai-with-imitation-learning)
+has a very interesting way to compute the input features because it does not use the object provided
+by luxai but directly parses the observation.
+
+I need to compute the features, the actions and the masks for the predictions.
+
 #### 4.2.4 Implement a conditioned Unet architecture
 
 I want the model to generate actions for all the units and buildings at the same time. I also want to
@@ -305,8 +342,11 @@ use global information for taking the actions. Thus Unet seems like a very good 
 However I also need to provide information such as day/night cycle, research points... So I have searched
 for a conditioned Unet and I have found this paper [Conditioned-U-Net: Introducing a Control Mechanism in the U-Net for Multiple Source Separations](https://arxiv.org/abs/1907.01277)
 
-It seems the right way to tackle the problem. The ouput of the model will have binary cross-entropy loss
-because sometimes there are multiple actions for the same cell (imagine a unit inside a house)
+I have read the paper and it seems the right way to tackle the problem. The ouput of the model will 
+have binary cross-entropy loss because sometimes there are multiple actions for the same cell (imagine a unit inside a house)
+
+It already has a [github implementation](https://github.com/gabolsgabs/cunet) that uses keras, so I
+could try to use that code directly and see if it works.
 
 ### 4.3 Results
 
