@@ -1,5 +1,5 @@
 """
-Input and output features for training imitation learning model
+Input features for training imitation learning model
 
 The start point is https://www.kaggle.com/shoheiazuma/lux-ai-with-imitation-learning
 """
@@ -46,12 +46,21 @@ def make_input(obs):
     """
     Creates 3d board and 1d features that can be used as input to a model
     Values are normalized to avoid having quantities much bigger than one
+
+    It also computes some dictionaries that could be later used to create the output for the model
+
+    Returns
+    -------
+    board, features, active_units_to_position, active_cities_to_position, units_to_position
     """
     width, height = obs['width'], obs['height']
     city_id_to_survive_nights = {}
 
     board = np.zeros((len(CHANNELS_MAP), height, width), dtype=np.float32)
     features = np.zeros(len(FEATURES_MAP), dtype=np.float32)
+    active_units_to_position = {}
+    active_cities_to_position = {}
+    units_to_position = {}
 
     for update in obs['updates']:
         splits = update.split(' ')
@@ -68,6 +77,10 @@ def make_input(obs):
             board[CHANNELS_MAP['%s_unit_cargo' % prefix], x, y] = get_normalized_cargo(unit_type, wood, coal, uranium)
             board[CHANNELS_MAP['%s_unit_fuel' % prefix], x, y] = get_normalized_unit_fuel(unit_type, wood, coal, uranium)
             board[CHANNELS_MAP['cooldown'], x, y] = normalize_cooldown(cooldown)
+            if prefix == 'player':
+                units_to_position[unit_id] = (x, y)
+                if cooldown < 1:
+                    active_units_to_position[unit_id] = (x, y)
         elif object_type == 'city_tile':
             team, city_id, x, y, cooldown = parse_city_tile_info(splits)
             prefix = get_prefix_for_channels_map(team, obs)
@@ -78,6 +91,8 @@ def make_input(obs):
             board[CHANNELS_MAP['%s_city_can_survive_until_end' % prefix], x, y] = \
                 city_id_to_survive_nights[city_id] > (360 - obs['step'] ) // 40 + (10 - max(obs['step'] % 40 - 30, 0))/10
             board[CHANNELS_MAP['cooldown'], x, y] = normalize_cooldown(cooldown)
+            if prefix == 'player' and cooldown < 1:
+                active_cities_to_position[city_id] = (x, y)
         elif object_type == 'resource':
             resource_type, x, y, amount = parse_resource_info(splits)
             board[CHANNELS_MAP[resource_type], x, y] = amount / 800
@@ -108,7 +123,7 @@ def make_input(obs):
         features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_worker' % prefix]])/10
         features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_cart' % prefix]])/10
 
-    return board, features
+    return board, features, active_units_to_position, active_cities_to_position, units_to_position
 
 
 def parse_unit_info(splits):
