@@ -26,6 +26,8 @@ CHANNELS_MAP = dict(
     player_city_fuel=11, opponent_city_fuel=12,
     player_unit_cargo=13, opponent_unit_cargo=14,
     player_unit_fuel=15, opponent_unit_fuel=16,
+    player_city_can_survive_next_night=17, opponent_city_can_survive_next_night=18,
+    player_city_can_survive_until_end=19, opponent_city_can_survive_until_end=20,
 )
 
 
@@ -40,8 +42,12 @@ FEATURES_MAP = dict(
 
 
 def make_input(obs):
+    """
+    Creates 3d board and 1d features that can be used as input to a model
+    Values are normalized to avoid having quantities much bigger than one
+    """
     width, height = obs['width'], obs['height']
-    city_id_to_survive_turns = {}
+    city_id_to_survive_nights = {}
 
     board = np.zeros((len(CHANNELS_MAP), height, width), dtype=np.float32)
     features = np.zeros(len(FEATURES_MAP), dtype=np.float32)
@@ -60,13 +66,17 @@ def make_input(obs):
                 board[CHANNELS_MAP['%s_cart' % prefix], x, y] += 1
             board[CHANNELS_MAP['%s_unit_cargo' % prefix], x, y] = get_normalized_cargo(unit_type, wood, coal, uranium)
             board[CHANNELS_MAP['%s_unit_fuel' % prefix], x, y] = get_normalized_unit_fuel(unit_type, wood, coal, uranium)
-            board[CHANNELS_MAP['cooldown'], x, y] = cooldown
+            board[CHANNELS_MAP['cooldown'], x, y] = normalize_cooldown(cooldown)
         elif object_type == 'city_tile':
             team, city_id, x, y, cooldown = parse_city_tile_info(splits)
             prefix = get_prefix_for_channels_map(team, obs)
             board[CHANNELS_MAP['%s_city' % prefix], x, y] = 1
-            board[CHANNELS_MAP['%s_city_fuel' % prefix], x, y] = city_id_to_survive_turns[city_id]
-            board[CHANNELS_MAP['cooldown'], x, y] = cooldown
+            board[CHANNELS_MAP['%s_city_fuel' % prefix], x, y] = city_id_to_survive_nights[city_id]
+            board[CHANNELS_MAP['%s_city_can_survive_next_night' % prefix], x, y] = \
+                city_id_to_survive_nights[city_id] > (10 - max(obs['step'] % 40 - 30, 0))/10
+            board[CHANNELS_MAP['%s_city_can_survive_until_end' % prefix], x, y] = \
+                city_id_to_survive_nights[city_id] > (360 - obs['step'] ) // 40 + (10 - max(obs['step'] % 40 - 30, 0))/10
+            board[CHANNELS_MAP['cooldown'], x, y] = normalize_cooldown(cooldown)
         elif object_type == 'resource':
             resource_type, x, y, amount = parse_resource_info(splits)
             board[CHANNELS_MAP[resource_type], x, y] = amount / 800
@@ -81,18 +91,19 @@ def make_input(obs):
                 research_points >= GAME_CONSTANTS['PARAMETERS']['RESEARCH_REQUIREMENTS']['URANIUM']
         elif object_type == 'city':
             team, city_id, fuel, lightupkeep = parse_city_info(splits)
-            city_id_to_survive_turns[city_id] = fuel / lightupkeep
+            city_id_to_survive_nights[city_id] = fuel / lightupkeep / 10 # number of nights a city can survive (a night is 10 steps)
         elif object_type == 'road':
             x, y, road_level = parse_road_info(splits)
-            board[CHANNELS_MAP['road_level'], x, y] = road_level
+            board[CHANNELS_MAP['road_level'], x, y] = road_level/6
 
     features[FEATURES_MAP['step']] = obs['step'] / 360
     features[FEATURES_MAP['is_night']] = obs['step'] % 40 >= 30
     features[FEATURES_MAP['is_last_day']] = obs['step'] >= 40*8
     for prefix in ['player', 'opponent']:
-        features[FEATURES_MAP['%s_n_cities' % prefix]] = np.sum(board[CHANNELS_MAP['%s_city' % prefix]])
-        features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_worker' % prefix]])
-        features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_cart' % prefix]])
+        # Features are divided by 10 to avoid very big numbers
+        features[FEATURES_MAP['%s_n_cities' % prefix]] = np.sum(board[CHANNELS_MAP['%s_city' % prefix]])/10
+        features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_worker' % prefix]])/10
+        features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_cart' % prefix]])/10
 
     return board, features
 
@@ -187,3 +198,7 @@ def get_normalized_unit_fuel(unit_type, wood, coal, uranium):
         fuel /= GAME_CONSTANTS['PARAMETERS']['RESOURCE_CAPACITY']['CART']
     fuel /= GAME_CONSTANTS['PARAMETERS']['RESOURCE_TO_FUEL_RATE']['URANIUM']
     return fuel
+
+
+def normalize_cooldown(cooldown):
+    return (cooldown - 1)/10
