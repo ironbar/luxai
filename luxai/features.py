@@ -28,6 +28,7 @@ CHANNELS_MAP = dict(
     player_unit_fuel=15, opponent_unit_fuel=16,
     player_city_can_survive_next_night=17, opponent_city_can_survive_next_night=18,
     player_city_can_survive_until_end=19, opponent_city_can_survive_until_end=20,
+    resources_available=21, fuel_available=22,
 )
 
 
@@ -95,6 +96,8 @@ def make_input(obs):
         elif object_type == 'road':
             x, y, road_level = parse_road_info(splits)
             board[CHANNELS_MAP['road_level'], x, y] = road_level/6
+
+    add_resources_and_fuel_available_to_gather(board, features)
 
     features[FEATURES_MAP['step']] = obs['step'] / 360
     features[FEATURES_MAP['is_night']] = obs['step'] % 40 >= 30
@@ -189,16 +192,48 @@ def get_normalized_unit_fuel(unit_type, wood, coal, uranium):
     Returns a value between 0 and 1 where 0 means the unit has no fuel, and 1 means that the unit
     is full with uranium
     """
-    fuel = wood*GAME_CONSTANTS['PARAMETERS']['RESOURCE_TO_FUEL_RATE']['WOOD'] \
-        + coal*GAME_CONSTANTS['PARAMETERS']['RESOURCE_TO_FUEL_RATE']['COAL'] \
-        + uranium*GAME_CONSTANTS['PARAMETERS']['RESOURCE_TO_FUEL_RATE']['URANIUM']
+    fuel_rate = GAME_CONSTANTS['PARAMETERS']['RESOURCE_TO_FUEL_RATE']
+    resource_capacity = GAME_CONSTANTS['PARAMETERS']['RESOURCE_CAPACITY']
+
+    fuel = wood*fuel_rate['WOOD'] \
+        + coal*fuel_rate['COAL'] \
+        + uranium*fuel_rate['URANIUM']
     if is_worker(unit_type):
-        fuel /= GAME_CONSTANTS['PARAMETERS']['RESOURCE_CAPACITY']['WORKER']
+        fuel /= resource_capacity['WORKER']
     else:
-        fuel /= GAME_CONSTANTS['PARAMETERS']['RESOURCE_CAPACITY']['CART']
-    fuel /= GAME_CONSTANTS['PARAMETERS']['RESOURCE_TO_FUEL_RATE']['URANIUM']
+        fuel /= resource_capacity['CART']
+    fuel /= fuel_rate['URANIUM']
     return fuel
 
 
 def normalize_cooldown(cooldown):
     return (cooldown - 1)/10
+
+
+def add_resources_and_fuel_available_to_gather(board, features):
+    collection_rate = GAME_CONSTANTS['PARAMETERS']['WORKER_COLLECTION_RATE']
+    fuel_rate = GAME_CONSTANTS['PARAMETERS']['RESOURCE_TO_FUEL_RATE']
+
+    board[CHANNELS_MAP['resources_available']] += (board[CHANNELS_MAP['wood']] > 0)*collection_rate['WOOD']
+    if features[FEATURES_MAP['is_player_in_coal_era']]:
+        board[CHANNELS_MAP['resources_available']] += (board[CHANNELS_MAP['coal']] > 0)*collection_rate['COAL']
+    if features[FEATURES_MAP['is_player_in_uranium_era']]:
+        board[CHANNELS_MAP['resources_available']] += (board[CHANNELS_MAP['uranium']] > 0)*collection_rate['URANIUM']
+    _expand_available_resource(board[CHANNELS_MAP['resources_available']])
+    board[CHANNELS_MAP['resources_available']] /= collection_rate['WOOD']*5
+
+    board[CHANNELS_MAP['fuel_available']] += (board[CHANNELS_MAP['wood']] > 0)*collection_rate['WOOD']*fuel_rate['WOOD']
+    if features[FEATURES_MAP['is_player_in_coal_era']]:
+        board[CHANNELS_MAP['fuel_available']] += (board[CHANNELS_MAP['coal']] > 0)*collection_rate['COAL']*fuel_rate['COAL']
+    if features[FEATURES_MAP['is_player_in_uranium_era']]:
+        board[CHANNELS_MAP['fuel_available']] += (board[CHANNELS_MAP['uranium']] > 0)*collection_rate['URANIUM']*fuel_rate['URANIUM']
+    _expand_available_resource(board[CHANNELS_MAP['fuel_available']])
+    board[CHANNELS_MAP['fuel_available']] /= collection_rate['URANIUM']*fuel_rate['URANIUM']*5
+
+
+def _expand_available_resource(channel):
+    channel_original = channel.copy()
+    channel[:-1] += channel_original[1:]
+    channel[1:] += channel_original[:-1]
+    channel[:, :-1] += channel_original[:, 1:]
+    channel[:, 1:] += channel_original[:, :-1]
