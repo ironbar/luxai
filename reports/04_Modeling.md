@@ -302,32 +302,32 @@ select matches for downloading them. Now I'm going to download the matches using
 
 Board cell features:
 
-- Resources
-- Road level
+- [x] Resources
+- [x] Road level
 
 Board global features:
 
-- Day/night cycle
-- Turn
-- Is Last day?
+- [x] Day/night cycle
+- [x] Turn
+- [x] Is Last day?
 
 Player cell features:
 
-- Units
-- Cities
-- Cooldown
-- City size
-- Cargo
-- is active
-- Fuel that can be gathered a turn (take into account research points)
-- Resources that can be gathered a turn (take into account research points)
-- Number of turns a city can survive at night
+- [x] Units
+- [x] Cities
+- [x] Cooldown
+- [ ] City size (I don't have this feature available, but I don't think is very important)
+- [x] Cargo
+- [ ] is active (I'm not adding this one because I have set negative values for cooldown for an active city)
+- [x] Fuel that can be gathered a turn (take into account research points)
+- [x] Resources that can be gathered a turn (take into account research points)
+- [x] Number of turns a city can survive at night
 
 Player global features:
 
-- Research points (normalized to coal and uranium era)
-- Number of cities
-- Number of units
+- [x] Research points (normalized to coal and uranium era)
+- [x] Number of cities
+- [x] Number of units
 
 This [Imitation learning notebook](https://www.kaggle.com/shoheiazuma/lux-ai-with-imitation-learning)
 has a very interesting way to compute the input features because it does not use the object provided
