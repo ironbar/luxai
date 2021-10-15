@@ -12,8 +12,18 @@ def create_actions_mask(active_units_to_position, observation):
         mask[x, y] = 1
     return mask
 
-UNIT_ACTIONS_MAP = {
 
+UNIT_ACTIONS_MAP = {
+    'm n': 0, # move north
+    'm e': 1, # move east
+    'm s': 2, # move south
+    'm w': 3, # move west
+    't n': 4, # transfer north
+    't e': 5, # transfer east
+    't s': 6, # transfer south
+    't w': 7, # transfer west
+    'bcity': 8, # build city
+    'p': 9, # pillage
 }
 
 
@@ -27,6 +37,7 @@ CITY_ACTIONS_MAP = {
 def create_output_features(actions, units_to_position, observation):
     width, height = observation['width'], observation['height']
 
+    unit_actions = np.zeros((len(UNIT_ACTIONS_MAP), width, height), dtype=np.float32)
     city_actions = np.zeros((len(CITY_ACTIONS_MAP), width, height), dtype=np.float32)
     for action in actions:
         splits = action.split(' ')
@@ -34,4 +45,33 @@ def create_output_features(actions, units_to_position, observation):
         if action_id in CITY_ACTIONS_MAP:
             x, y = int(splits[1]), int(splits[2])
             city_actions[CITY_ACTIONS_MAP[action_id], x, y] = 1
-    return city_actions
+        elif action_id == 'm': # move
+            unit_id, direction = splits[1], splits[2]
+            x, y = units_to_position[unit_id]
+            if direction == 'c':
+                continue
+            unit_actions[UNIT_ACTIONS_MAP['%s %s' % (action_id, direction)], x, y] = 1
+        elif action_id == 't': # transfer
+            unit_id, dst_id = splits[1], splits[2]
+            x, y = units_to_position[unit_id]
+            x_dst, y_dst = units_to_position[dst_id]
+            direction = get_transfer_direction(x, y, x_dst, y_dst)
+            unit_actions[UNIT_ACTIONS_MAP['%s %s' % (action_id, direction)], x, y] = 1
+        elif action_id in {'bcity', 'p'}:
+            unit_id = splits[1]
+            x, y = units_to_position[unit_id]
+            unit_actions[UNIT_ACTIONS_MAP[action_id], x, y] = 1
+    return unit_actions, city_actions
+
+
+def get_transfer_direction(x_source, y_source, x_dst, y_dst):
+    if x_dst < x_source:
+        return 'w'
+    elif x_dst > x_source:
+        return 'e'
+    elif y_dst < y_source:
+        return 'n'
+    elif y_dst > y_source:
+        return 's'
+    else:
+        raise Exception('Could not compute transfer direction for: %s' % str((x_source, y_source, x_dst, y_dst)))
