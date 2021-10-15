@@ -56,7 +56,7 @@ def make_input(obs):
     width, height = obs['width'], obs['height']
     city_id_to_survive_nights = {}
 
-    board = np.zeros((len(CHANNELS_MAP), height, width), dtype=np.float32)
+    board = np.zeros((len(CHANNELS_MAP), width, height), dtype=np.float32)
     features = np.zeros(len(FEATURES_MAP), dtype=np.float32)
     active_units_to_position = {}
     active_cities_to_position = {}
