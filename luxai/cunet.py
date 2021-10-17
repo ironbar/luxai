@@ -40,9 +40,13 @@ def cunet_luxai_model(config):
             gamma = slice_tensor_range(init, end)(gammas)
             beta = slice_tensor_range(init, end)(betas)
             complex_index += n_filters
+        if i == 0: # do not reduce dimensionality on the first encoding layer
+            strides = (1, 1)
+        else:
+            strides = (2, 2)
         x = u_net_conv_block(
             x, n_filters, initializer, gamma, beta,
-            kernel_size=(3, 3), strides=(2, 2),
+            kernel_size=(3, 3), strides=strides,
             activation=config.ACTIVATION_ENCODER, film_type=config.FILM_TYPE
         )
         encoder_layers.append(x)
@@ -57,9 +61,13 @@ def cunet_luxai_model(config):
 
         n_filters = encoder_layer.get_shape().as_list()[-1] // 2
         activation = config.ACTIVATION_DECODER
+        if is_final_block: # do not reduce dimensionality on the first encoding layer
+            strides = (1, 1)
+        else:
+            strides = (2, 2)
         x = u_net_deconv_block(
             x, encoder_layer, n_filters, initializer, activation, dropout, skip,
-            kernel_size=(3, 3), strides=(2, 2),
+            kernel_size=(3, 3), strides=strides,
         )
     outputs = [
         Conv2D(filters=10, kernel_size=1, activation=config.ACT_LAST, name='unit_action')(x),

@@ -6,3 +6,4 @@ notebooks/.ipynb_checkpoints/*
 .eggs/*
 .pytest_cache/*
 forum/simple/*
+notebooks/model.png
