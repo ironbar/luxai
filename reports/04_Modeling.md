@@ -360,7 +360,7 @@ pip install effortless_config
 conda install -c conda-forge cudatoolkit==11.2
 conda install -c conda-forge cudnn=8.1
 conda install -c conda-forge cudatoolkit-dev==11.2.2
-pip install pydot
+pip install pydot graphviz
 ```
 
 

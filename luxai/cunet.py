@@ -42,12 +42,12 @@ def cunet_luxai_model(config):
             complex_index += n_filters
         x = u_net_conv_block(
             x, n_filters, initializer, gamma, beta,
+            kernel_size=(3, 3), strides=(2, 2),
             activation=config.ACTIVATION_ENCODER, film_type=config.FILM_TYPE
         )
         encoder_layers.append(x)
     # Decoder
     for i in range(n_layers):
-        # parameters each decoder layer
         is_final_block = i == n_layers - 1  # the las layer is different
         # not dropout in the first block and the last two encoder blocks
         dropout = not (i == 0 or i == n_layers - 1 or i == n_layers - 2)
@@ -58,7 +58,8 @@ def cunet_luxai_model(config):
         n_filters = encoder_layer.get_shape().as_list()[-1] // 2
         activation = config.ACTIVATION_DECODER
         x = u_net_deconv_block(
-            x, encoder_layer, n_filters, initializer, activation, dropout, skip
+            x, encoder_layer, n_filters, initializer, activation, dropout, skip,
+            kernel_size=(3, 3), strides=(2, 2),
         )
     outputs = [
         Conv2D(filters=10, kernel_size=1, activation=config.ACT_LAST, name='unit_action')(x),
