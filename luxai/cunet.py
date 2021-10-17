@@ -82,8 +82,8 @@ def cunet_luxai_model(config):
 
 
 def masked_binary_crossentropy(y_true, y_pred):
-    mask = y_true[:, :, -1]
-    y_true = y_true[:, :, :-1]
+    mask = y_true[:, :, :, -1:]
+    y_true = y_true[:, :, :, :-1]
     loss = binary_crossentropy(y_true, y_pred, from_logits=False)*mask
     # todo: I should probably divide by the number of channels of y_true
     loss_summary = tf.reduce_sum(loss)/(tf.reduce_sum(mask)*y_true.shape[-1])
