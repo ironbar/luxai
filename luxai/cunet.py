@@ -7,6 +7,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import (
     Input, Conv2D, BatchNormalization
 )
+from tensorflow.keras.backend import binary_crossentropy
 
 import sys
 sys.path.append('/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/forum/cunet')
@@ -75,6 +76,15 @@ def cunet_luxai_model(config):
     ]
     model = Model(inputs=[board_input, input_conditions], outputs=outputs)
     model.compile(
-        optimizer=Adam(lr=config.LR, beta_1=0.5), loss=config.LOSS)
+        optimizer=Adam(lr=config.LR, beta_1=0.5), loss=masked_binary_crossentropy)
         # experimental_run_tf_function=False)
     return model
+
+
+def masked_binary_crossentropy(y_true, y_pred):
+    mask = y_true[:, :, -1]
+    y_true = y_true[:, :, :-1]
+    loss = binary_crossentropy(y_true, y_pred, from_logits=False)*mask
+    # todo: I should probably divide by the number of channels of y_true
+    loss_summary = tf.reduce_sum(loss)/(tf.reduce_sum(mask)*y_true.shape[-1])
+    return loss_summary

@@ -348,6 +348,11 @@ have binary cross-entropy loss because sometimes there are multiple actions for 
 It already has a [github implementation](https://github.com/gabolsgabs/cunet) that uses keras, so I
 could try to use that code directly and see if it works.
 
+Using that implementation as a start point I have prepared my own model that looks good. I also
+need to implement a loss function that allows to use masks over the binary cross-entropy loss. Also
+I have found that this implementation does not allow to use variable input size, so I will have to
+add borders to boards smaller than 32x32.
+
 ##### 4.2.4.1 Tensorflow installation
 
 I have found that in the kaggle notebooks tensorflow `2.4.0` is being used. However I had already installed
