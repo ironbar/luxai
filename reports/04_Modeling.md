@@ -276,7 +276,7 @@ people on the leaderboard.
 #### 4.2.1 Tasks
 
 - [x] Download matches from the leaderboard
-- [ ] Create features from game state
+- [x] Create features from game state
 - [ ] Implement a conditioned Unet architecture
 - [ ] Training script
 - [ ] Agent that uses a model for playing, it will need some post-processing of the predictions
@@ -347,6 +347,22 @@ have binary cross-entropy loss because sometimes there are multiple actions for 
 
 It already has a [github implementation](https://github.com/gabolsgabs/cunet) that uses keras, so I
 could try to use that code directly and see if it works.
+
+##### 4.2.4.1 Tensorflow installation
+
+I have found that in the kaggle notebooks tensorflow `2.4.0` is being used. However I had already installed
+version `2.6.0` on my computer. To avoid losing time I will continue using `2.6.0` unless I find problems
+when making the submissions. Thus I have an incentive to make a submission as soon as possible.
+
+```bash
+pip install tensorflow==2.6.0
+pip install effortless_config
+conda install -c conda-forge cudatoolkit==11.2
+conda install -c conda-forge cudnn=8.1
+conda install -c conda-forge cudatoolkit-dev==11.2.2
+pip install pydot
+```
+
 
 ### 4.3 Results
 
