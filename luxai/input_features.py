@@ -123,6 +123,10 @@ def make_input(obs):
         features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_worker' % prefix]])/10
         features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_cart' % prefix]])/10
 
+    board = np.transpose(board, axes=(1, 2, 0))
+    features = np.expand_dims(features, axis=0)
+    # TODO: add border to the board if necessary
+
     return board, features, active_units_to_position, active_cities_to_position, units_to_position
 
 

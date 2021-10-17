@@ -61,6 +61,9 @@ def create_output_features(actions, units_to_position, observation):
             unit_id = splits[1]
             x, y = units_to_position[unit_id]
             unit_actions[UNIT_ACTIONS_MAP[action_id], x, y] = 1
+    # to channels last convention
+    unit_actions = np.transpose(unit_actions, axes=(1, 2, 0))
+    city_actions = np.transpose(city_actions, axes=(1, 2, 0))
     return unit_actions, city_actions
 
 
