@@ -7,3 +7,4 @@ notebooks/.ipynb_checkpoints/*
 .pytest_cache/*
 forum/simple/*
 notebooks/model.png
+notebooks/model.h5
