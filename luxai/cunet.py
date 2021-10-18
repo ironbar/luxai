@@ -7,7 +7,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import (
     Input, Conv2D, BatchNormalization
 )
-from tensorflow.keras.backend import binary_crossentropy
+import tensorflow.keras.backend as K
 
 import sys
 sys.path.append('/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/forum/cunet')
@@ -76,14 +76,28 @@ def cunet_luxai_model(config):
     ]
     model = Model(inputs=[board_input, input_conditions], outputs=outputs)
     model.compile(
-        optimizer=Adam(lr=config.LR, beta_1=0.5), loss=masked_binary_crossentropy)
-        # experimental_run_tf_function=False)
+        optimizer=Adam(lr=config.LR, beta_1=0.5),
+        loss=masked_binary_crossentropy,
+        metrics=[masked_error],
+    )
     return model
 
 
 def masked_binary_crossentropy(y_true, y_pred):
+    mask, labels = _split_y_true_on_labels_and_mask(y_true)
+    loss = K.binary_crossentropy(labels, y_pred, from_logits=False)*mask
+    loss_summary = tf.reduce_sum(loss)/(tf.reduce_sum(mask)*labels.shape[-1])
+    return loss_summary
+
+
+def masked_error(y_true, y_pred):
+    mask, labels = _split_y_true_on_labels_and_mask(y_true)
+    error = 1 - K.cast_to_floatx(labels == K.round(y_pred))
+    masked_error = K.sum(error*mask)/(K.sum(mask)*labels.shape[-1])
+    return masked_error
+
+
+def _split_y_true_on_labels_and_mask(y_true):
     mask = y_true[:, :, :, -1:]
     y_true = y_true[:, :, :, :-1]
-    loss = binary_crossentropy(y_true, y_pred, from_logits=False)*mask
-    loss_summary = tf.reduce_sum(loss)/(tf.reduce_sum(mask)*y_true.shape[-1])
-    return loss_summary
+    return mask, y_true
