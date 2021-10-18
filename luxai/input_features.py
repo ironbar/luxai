@@ -29,6 +29,7 @@ CHANNELS_MAP = dict(
     player_city_can_survive_next_night=17, opponent_city_can_survive_next_night=18,
     player_city_can_survive_until_end=19, opponent_city_can_survive_until_end=20,
     resources_available=21, fuel_available=22,
+    playable_area=23,
 )
 
 
@@ -112,6 +113,7 @@ def make_input(obs):
             x, y, road_level = parse_road_info(splits)
             board[CHANNELS_MAP['road_level'], x, y] = road_level/6
 
+    board[CHANNELS_MAP['playable_area']] = 1
     add_resources_and_fuel_available_to_gather(board, features)
 
     features[FEATURES_MAP['step']] = obs['step'] / 360
@@ -256,3 +258,19 @@ def _expand_available_resource(channel):
     channel[1:] += channel_original[:-1]
     channel[:, :-1] += channel_original[:, 1:]
     channel[:, 1:] += channel_original[:, :-1]
+
+
+def expand_board_size_adding_zeros(board, size=32):
+    """
+    Increases the board size by default to 32x32 by adding zeros. The input should be a 3d array
+    """
+    board_size = board.shape[0]
+    if board_size < size:
+        expanded_board = np.zeros((size, size, board.shape[2]), dtype=board.dtype)
+        offset = (size - board_size)//2
+        expanded_board[offset:-offset, offset:-offset] = board
+        return expanded_board
+    elif board_size == size:
+        return board
+    else:
+        raise NotImplementedError()
