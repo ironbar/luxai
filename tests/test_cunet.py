@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from luxai.cunet import masked_binary_crossentropy, masked_error
+from luxai.cunet import masked_binary_crossentropy, masked_error, cunet_luxai_model, config
 
 
 @pytest.mark.parametrize('y_pred, y_true, mask, loss', [
@@ -52,3 +52,32 @@ def test_masked_error(y_pred, y_true, mask, loss):
     y_true = np.concatenate([np.array(y_true, dtype=np.float32), np.array(mask, dtype=np.float32)], axis=-1)
     y_pred = np.array(y_pred, dtype=np.float32)
     assert pytest.approx(loss) == masked_error(y_true, y_pred)
+
+
+def test_cunet_model_changes_when_modifying_both_inputs():
+    # Unet parameters
+    config.INPUT_SHAPE = [32, 32, 22] #[512, 128, 1]
+    config.FILTERS_LAYER_1 = 32 # 16
+    config.N_LAYERS = 3 # 6
+    config.ACT_LAST = 'sigmoid' # sigmoid
+    # Condition parameters
+    config.Z_DIM = 12 # 4
+    config.CONTROL_TYPE = 'dense' # dense
+    config.FILM_TYPE = 'simple' # simple
+    config.N_NEURONS = [16] # [16, 64, 256]
+    config.N_CONDITIONS = config.N_LAYERS # 6 this should be the same as the number of layers
+
+
+    model = cunet_luxai_model(config)
+    np.random.seed(7)
+    inputs = [np.random.normal(size=([1] + config.INPUT_SHAPE)), np.random.normal(size=([1, 1, config.Z_DIM]))]
+    pred = model.predict(inputs)[0]
+
+    inputs_2 = [inputs[0], np.random.normal(size=([1, 1, config.Z_DIM]))]
+    pred_2 = model.predict(inputs_2)[0]
+    assert pytest.approx(pred) != pred_2
+
+
+    inputs_3 = [np.random.normal(size=([1] + config.INPUT_SHAPE)), inputs[1]]
+    pred_3 = model.predict(inputs_3)[0]
+    assert pytest.approx(pred) != pred_3
