@@ -92,7 +92,7 @@ def make_input(obs):
                 city_id_to_survive_nights[city_id] > (360 - obs['step'] ) // 40 + (10 - max(obs['step'] % 40 - 30, 0))/10
             board[CHANNELS_MAP['cooldown'], x, y] = normalize_cooldown(cooldown)
             if prefix == 'player' and cooldown < 1:
-                active_cities_to_position[city_id] = (x, y)
+                active_cities_to_position['%s_%i' % (city_id, len(active_cities_to_position))] = (x, y)
         elif object_type == 'resource':
             resource_type, x, y, amount = parse_resource_info(splits)
             board[CHANNELS_MAP[resource_type], x, y] = amount / 800
