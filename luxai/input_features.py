@@ -262,13 +262,13 @@ def _expand_available_resource(channel):
 
 def expand_board_size_adding_zeros(board, size=32):
     """
-    Increases the board size by default to 32x32 by adding zeros. The input should be a 3d array
+    Increases the board size by default to 32x32 by adding zeros. The input should be a 4d array
     """
-    board_size = board.shape[0]
+    board_size = board.shape[1]
     if board_size < size:
-        expanded_board = np.zeros((size, size, board.shape[2]), dtype=board.dtype)
+        expanded_board = np.zeros((board.shape[0], size, size, board.shape[3]), dtype=board.dtype)
         offset = (size - board_size)//2
-        expanded_board[offset:-offset, offset:-offset] = board
+        expanded_board[:, offset:-offset, offset:-offset] = board
         return expanded_board
     elif board_size == size:
         return board
