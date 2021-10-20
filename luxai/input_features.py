@@ -274,3 +274,18 @@ def expand_board_size_adding_zeros(board, size=32):
         return board
     else:
         raise NotImplementedError()
+
+
+def crop_board_to_original_size(board, observation):
+    """
+    Increases the board size by default to 32x32 by adding zeros. The input should be a 4d array
+    """
+    original_size = observation['width']
+    board_size = board.shape[1]
+    if board_size > original_size:
+        offset = (board_size - original_size)//2
+        return board[:, offset:-offset, offset:-offset]
+    elif board_size == original_size:
+        return board
+    else:
+        raise NotImplementedError()

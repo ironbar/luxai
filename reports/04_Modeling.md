@@ -362,12 +362,12 @@ when making the submissions. Thus I have an incentive to make a submission as so
 ```bash
 pip install tensorflow==2.6.0
 pip install effortless_config
-conda install -c conda-forge cudatoolkit==11.2
-conda install -c conda-forge cudnn=8.1
+conda install -c conda-forge cudatoolkit==11.2.2 cudnn=8.1 -y
 conda install -c conda-forge cudatoolkit-dev==11.2.2
 pip install pydot graphviz
 ```
 
+It is not founding `ptxas` even if I have installed `cudatoolkit-dev`.
 
 ### 4.3 Results
 
