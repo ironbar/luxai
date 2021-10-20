@@ -1,6 +1,7 @@
 """
 Output features for imitation learning
 """
+import warnings
 import numpy as np
 
 
@@ -53,10 +54,14 @@ def create_output_features(actions, units_to_position, observation):
             unit_actions[UNIT_ACTIONS_MAP['%s %s' % (action_id, direction)], x, y] = 1
         elif action_id == 't': # transfer
             unit_id, dst_id = splits[1], splits[2]
-            x, y = units_to_position[unit_id]
-            x_dst, y_dst = units_to_position[dst_id]
-            direction = get_transfer_direction(x, y, x_dst, y_dst)
-            unit_actions[UNIT_ACTIONS_MAP['%s %s' % (action_id, direction)], x, y] = 1
+            try:
+                x, y = units_to_position[unit_id]
+                x_dst, y_dst = units_to_position[dst_id]
+                direction = get_transfer_direction(x, y, x_dst, y_dst)
+                unit_actions[UNIT_ACTIONS_MAP['%s %s' % (action_id, direction)], x, y] = 1
+            except KeyError:
+                # I have found that for 26458198.json player 0 there is an incorrect transfer action
+                warnings.warn('Could not create transfer action because there were missing units')
         elif action_id in {'bcity', 'p'}:
             unit_id = splits[1]
             x, y = units_to_position[unit_id]
