@@ -46,16 +46,18 @@ def create_actions_for_units_from_model_predictions(preds, active_units_to_posit
     action_threshold : float
         A threshold that filters predictions with a smaller value than that
     """
+    preds = preds.copy()
     actions = []
     idx_to_action = {idx: name for name, idx in UNIT_ACTIONS_MAP.items()}
     for unit_id, position in active_units_to_position.items():
         x, y = position
         unit_preds = preds[x, y]
-        # TODO: be able to deal with multiple units on same place
         action_idx = np.argmax(unit_preds)
         if unit_preds[action_idx] > action_threshold:
             action_key = idx_to_action[action_idx]
             actions.append(create_unit_action(action_key, unit_id))
+            # This ensures that units with overlap do not repeat actions
+            preds[x, y, action_idx] = 0
     # TODO: deal with collisions
     return actions
 
