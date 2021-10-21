@@ -19,20 +19,12 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 def test_city_actions_can_be_recovered_from_ground_truth(filepath, player):
     with open(filepath, 'r') as f:
         match = json.load(f)['steps']
-    for step in range(len(match) - 1):
-        observation = match[step][0]['observation']
-        if player:
-            observation.update(match[step][player]['observation'])
-        actions = match[step+1][player]['action'] # notice the step + 1
-        if actions is None: # this can happen on timeout
-            continue
-
-        ret = make_input(observation)
-        active_units_to_position, active_cities_to_position, units_to_position = ret[2:]
+    for observation, actions in step_generator(match, player):
+        active_cities_to_position, units_to_position = make_input(observation)[3:]
         _, city_actions = create_output_features(actions, units_to_position, observation)
+        true_city_actions = [action for action in actions if action.split(' ')[0] in CITY_ACTIONS_MAP]
 
         recovered_actions = create_actions_for_cities_from_model_predictions(city_actions, active_cities_to_position)
-        true_city_actions = [action for action in actions if action.split(' ')[0] in CITY_ACTIONS_MAP]
 
         msg = 'actions: %s\ncity actions: %s\nrecovered city actions: %s' % (actions, true_city_actions, recovered_actions)
         if recovered_actions:
@@ -49,16 +41,8 @@ def test_city_actions_can_be_recovered_from_ground_truth(filepath, player):
 def test_unit_actions_can_be_recovered_from_ground_truth_if_no_unit_overlaps_and_skipping_transfer(filepath, player):
     with open(filepath, 'r') as f:
         match = json.load(f)['steps']
-    for step in range(len(match) - 1):
-        observation = match[step][0]['observation']
-        if player:
-            observation.update(match[step][player]['observation'])
-        actions = match[step+1][player]['action'] # notice the step + 1
-        if actions is None: # this can happen on timeout
-            continue
-
-        ret = make_input(observation)
-        active_units_to_position, active_cities_to_position, units_to_position = ret[2:]
+    for observation, actions in step_generator(match, player):
+        active_units_to_position, _, units_to_position = make_input(observation)[2:]
         unit_actions_ground_truth, _ = create_output_features(actions, units_to_position, observation)
 
         recovered_actions = create_actions_for_units_from_model_predictions(
@@ -97,3 +81,14 @@ def _get_units_with_overlap(units_to_position):
 
 def _is_action_from_unit(action, unit_id):
     return ' %s ' % unit_id in action or action.endswith(unit_id)
+
+
+def step_generator(match, player):
+    for step in range(len(match) - 1):
+        observation = match[step][0]['observation']
+        if player:
+            observation.update(match[step][player]['observation'])
+        actions = match[step+1][player]['action'] # notice the step + 1
+        if actions is None: # this can happen on timeout
+            continue
+        yield observation, actions
