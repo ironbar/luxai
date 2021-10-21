@@ -55,14 +55,14 @@ def create_actions_for_units_from_model_predictions(preds, active_units_to_posit
         action_idx = np.argmax(unit_preds)
         if unit_preds[action_idx] > action_threshold:
             action_key = idx_to_action[action_idx]
-            actions.append(create_unit_action(action_key, unit_id))
+            actions.append(create_unit_action(action_key, unit_id, units_to_position))
             # This ensures that units with overlap do not repeat actions
             preds[x, y, action_idx] = 0
     # TODO: deal with collisions
     return actions
 
 
-def create_unit_action(action_key, unit_id):
+def create_unit_action(action_key, unit_id, units_to_position):
     action_id = action_key.split(' ')[0]
     if action_id == 'm':
         action = 'm %s %s' % (unit_id, action_key.split(' ')[-1])
@@ -71,8 +71,29 @@ def create_unit_action(action_key, unit_id):
         action = '%s %s' % (action_id, unit_id)
         return action
     elif action_id == 't':
+        direction = action_key.split(' ')[1]
+        position = units_to_position[unit_id]
+        dst_position = _get_dst_position(position, direction)
+        dst_unit_id = _find_unit_in_position(dst_position, units_to_position)
         # TODO: implement transfer
-        return 't %s' % unit_id
-        # return 'm %s c' % unit_id
+        return 't %s %s' % (unit_id, dst_unit_id)
     else:
         raise KeyError(action_id)
+
+
+def _get_dst_position(position, direction):
+    if direction == 'n':
+        dst_position = (position[0], position[1] - 1)
+    elif direction == 'e':
+        dst_position = (position[0] + 1, position[1])
+    elif direction == 's':
+        dst_position = (position[0], position[1] + 1)
+    elif direction == 'w':
+        dst_position = (position[0] - 1, position[1])
+    return dst_position
+
+
+def _find_unit_in_position(position, units_to_position):
+    for other_unit_id, other_position in units_to_position.items():
+        if other_position == position:
+            return other_unit_id
