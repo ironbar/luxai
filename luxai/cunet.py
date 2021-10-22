@@ -144,7 +144,6 @@ def masked_focal_loss(y_true, y_pred, zeta=1):
 
 def focal_loss(y_true, y_pred, zeta):
     """https://github.com/umbertogriffo/focal-loss-keras"""
-    loss = y_true*K.log(y_pred + K.epsilon())*(1 - y_pred)**zeta
-    loss += (1 - y_true)*K.log(1 - y_pred + K.epsilon())*y_pred**zeta
+    loss = y_true*K.log(y_pred + K.epsilon())*(1 - y_pred + K.epsilon())**zeta
+    loss += (1 - y_true)*K.log(1 - y_pred + K.epsilon())*(y_pred + K.epsilon())**zeta
     return -loss
-
