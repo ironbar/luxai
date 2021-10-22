@@ -13,7 +13,7 @@ test: clean-pyc
 	CUDA_VISIBLE_DEVICES="" python setup.py test
 
 coverage: clean-pyc
-	coverage run -m --source luxai pytest tests
+	CUDA_VISIBLE_DEVICES="" coverage run -m --source luxai pytest tests
 	coverage html --omit="tests/*,*/__init__.py"
 	xdg-open  htmlcov/index.html
 
