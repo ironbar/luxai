@@ -5,38 +5,51 @@ import os
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 import sys
-import json
 import yaml
 import argparse
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import numpy as np
-import tensorflow.keras as keras
-from kaggle_environments import make
-import pandas as pd
-from tqdm.notebook import tqdm
+import tensorflow as tf
 
 from luxai.cunet import cunet_luxai_model
 from luxai.cunet import config as cunet_config
 from luxai.data import load_train_and_test_data
-
+from luxai.callbacks import (
+    LogLearningRate, LogEpochTime, LogRAM, LogCPU, LogGPU, GarbageCollector
+)
 
 
 def main(args=None):
     if args is None:
         args = sys.argv[1:]
     args = parse_args(args)
+    train(args.config_path)
 
-    with open(args.config_path) as f:
+
+def train(config_path):
+    with open(config_path) as f:
         train_conf = yaml.safe_load(f)
-    train(train_conf)
+    output_folder = os.path.dirname(os.path.realpath(config_path))
 
-
-def train(train_conf):
     train_data, test_data = load_train_and_test_data(**train_conf['data'])
     model = create_model(train_conf['model_params'])
-    # TODO: callbacks
-    model.fit(x=train_data[0], y=train_data[1], validation_data=test_data, **train_conf['train_kwargs'])
+    callbacks = create_callbacks(train_conf['callbacks'], output_folder)
+    model.fit(x=train_data[0], y=train_data[1], validation_data=test_data, callbacks=callbacks,
+              **train_conf['train_kwargs'])
+
+
+def create_callbacks(callback_conf, output_folder):
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(
+        log_dir=os.path.join(output_folder, 'logs'), profile_batch=0)
+    tensorboard_callback._supports_tf_logs = False
+    callbacks = [
+        LogEpochTime(),
+        LogLearningRate(),
+        LogRAM(),
+        LogCPU(),
+        LogGPU(),
+        tensorboard_callback,
+        GarbageCollector(),
+    ]
+    return callbacks
 
 
 def create_model(model_params: dict):
