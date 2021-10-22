@@ -9,3 +9,4 @@ forum/simple/*
 notebooks/model.png
 notebooks/model.h5
 htmlcov/*
+.coverage

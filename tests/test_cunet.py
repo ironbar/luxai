@@ -1,7 +1,8 @@
 import pytest
 import numpy as np
 
-from luxai.cunet import masked_binary_crossentropy, masked_error, cunet_luxai_model, config
+from luxai.cunet import (
+    masked_binary_crossentropy, masked_error, cunet_luxai_model, config, focal_loss)
 
 
 @pytest.mark.parametrize('y_pred, y_true, mask, loss', [
@@ -83,3 +84,13 @@ def test_cunet_model_changes_when_modifying_both_inputs():
     inputs_3 = [np.random.normal(size=([1] + config.INPUT_SHAPE)), inputs[1]]
     pred_3 = model.predict(inputs_3)[0]
     assert pytest.approx(pred) != pred_3
+
+
+@pytest.mark.parametrize('y_pred, y_true, zeta, loss', [
+    (1, 1, 0, 0),
+    (0.75, 1, 0, -np.log(0.75)),
+    (0.75, 1, 1, -np.log(0.75)*0.25),
+    (0.75, 1, 2, -np.log(0.75)*0.25**2),
+])
+def test_focal_loss(y_pred, y_true, zeta, loss):
+    assert pytest.approx(loss, abs=1e-6) == focal_loss(y_true, y_pred, zeta)
