@@ -87,7 +87,7 @@ def cunet_luxai_model(config):
 def get_loss_function(loss_name, kwargs):
     name_to_loss = {
         'masked_binary_crossentropy': masked_binary_crossentropy,
-        'masked_focal_loss_crossentropy': masked_focal_loss,
+        'masked_focal_loss': masked_focal_loss,
     }
     return partial(name_to_loss[loss_name], **kwargs)
 
