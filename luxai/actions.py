@@ -3,6 +3,7 @@ Functions for generating actions from model predictions
 """
 import numpy as np
 
+from luxai.input_features import parse_unit_info
 from luxai.output_features import CITY_ACTIONS_MAP, UNIT_ACTIONS_MAP
 
 
@@ -31,7 +32,8 @@ def create_actions_for_cities_from_model_predictions(preds, active_cities_to_pos
     return actions
 
 
-def create_actions_for_units_from_model_predictions(preds, active_units_to_position, units_to_position, action_threshold=0.5):
+def create_actions_for_units_from_model_predictions(
+        preds, active_units_to_position, units_to_position, observation, action_threshold=0.5):
     """
     Creates actions in the luxai format from the predictions of the model
 
@@ -55,14 +57,14 @@ def create_actions_for_units_from_model_predictions(preds, active_units_to_posit
         action_idx = np.argmax(unit_preds)
         if unit_preds[action_idx] > action_threshold:
             action_key = idx_to_action[action_idx]
-            actions.append(create_unit_action(action_key, unit_id, units_to_position))
+            actions.append(create_unit_action(action_key, unit_id, units_to_position, observation))
             # This ensures that units with overlap do not repeat actions
             preds[x, y, action_idx] = 0
     # TODO: deal with collisions
     return actions
 
 
-def create_unit_action(action_key, unit_id, units_to_position):
+def create_unit_action(action_key, unit_id, units_to_position, observation):
     action_id = action_key.split(' ')[0]
     if action_id == 'm':
         action = 'm %s %s' % (unit_id, action_key.split(' ')[-1])
@@ -75,8 +77,8 @@ def create_unit_action(action_key, unit_id, units_to_position):
         position = units_to_position[unit_id]
         dst_position = _get_dst_position(position, direction)
         dst_unit_id = _find_unit_in_position(dst_position, units_to_position)
-        # TODO: implement transfer
-        return 't %s %s' % (unit_id, dst_unit_id)
+        resource, amount = _get_most_abundant_resource_from_unit(unit_id, observation)
+        return 't %s %s %s %i' % (unit_id, dst_unit_id, resource, amount)
     else:
         raise KeyError(action_id)
 
@@ -97,3 +99,14 @@ def _find_unit_in_position(position, units_to_position):
     for other_unit_id, other_position in units_to_position.items():
         if other_position == position:
             return other_unit_id
+
+
+def _get_most_abundant_resource_from_unit(unit_id, observation):
+    key = ' %s ' % unit_id
+    for update in observation['updates']:
+        if key in update:
+            resources = parse_unit_info(update.split(' '))[-3:]
+            resource_names = ['wood', 'coal', 'uranium']
+            idx = np.argmax(resources)
+            return resource_names[idx], resources[idx]
+    raise KeyError(unit_id)

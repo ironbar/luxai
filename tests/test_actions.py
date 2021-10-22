@@ -138,7 +138,7 @@ def test_transfer_actions_can_be_recovered_from_ground_truth_if_no_unit_overlaps
         unit_actions_ground_truth, _ = create_output_features(actions, units_to_position, observation)
 
         recovered_actions = create_actions_for_units_from_model_predictions(
-            unit_actions_ground_truth, active_units_to_position, units_to_position)
+            unit_actions_ground_truth, active_units_to_position, units_to_position, observation)
 
         units_with_overlap = _get_units_with_overlap(units_to_position)
         true_unit_actions = _remove_actions_with_overlap_or_without_transfer(actions, units_with_overlap)
