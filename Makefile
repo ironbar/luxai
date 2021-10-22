@@ -10,7 +10,7 @@ clean-pyc:
 	find . -name '__pycache__' -exec rm -fr {} +
 
 test: clean-pyc
-	python setup.py test
+	CUDA_VISIBLE_DEVICES="" python setup.py test
 
 coverage: clean-pyc
 	coverage run -m --source luxai pytest tests
