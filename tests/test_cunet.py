@@ -66,6 +66,8 @@ def test_cunet_model_changes_when_modifying_both_inputs():
     config.FILM_TYPE = 'simple' # simple
     config.N_NEURONS = [16] # [16, 64, 256]
     config.N_CONDITIONS = config.N_LAYERS # 6 this should be the same as the number of layers
+    config.loss_name = 'masked_binary_crossentropy'
+    config.loss_kwargs = dict()
 
 
     model = cunet_luxai_model(config)

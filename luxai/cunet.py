@@ -1,6 +1,7 @@
 """
 Customized version of cunet adapted from https://github.com/gabolsgabs/cunet
 """
+from functools import partial
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
@@ -77,10 +78,18 @@ def cunet_luxai_model(config):
     model = Model(inputs=[board_input, input_conditions], outputs=outputs)
     model.compile(
         optimizer=Adam(lr=config.LR, beta_1=0.5),
-        loss=masked_binary_crossentropy,
+        loss=get_loss_function(config.loss_name, config.loss_kwargs),
         metrics=[masked_error, true_positive_error, true_negative_error],
     )
     return model
+
+
+def get_loss_function(loss_name, kwargs):
+    name_to_loss = {
+        'masked_binary_crossentropy': masked_binary_crossentropy,
+        'masked_focal_loss_crossentropy': masked_focal_loss,
+    }
+    return partial(name_to_loss[loss_name], **kwargs)
 
 
 def masked_binary_crossentropy(y_true, y_pred, true_weight=1):
@@ -128,9 +137,14 @@ def _split_y_true_on_labels_and_mask(y_true):
     return mask, y_true
 
 
-def masked_focal_loss_crossentropy(y_true, y_pred, zeta=1):
-    """https://github.com/umbertogriffo/focal-loss-keras"""
+def masked_focal_loss(y_true, y_pred, zeta=1):
     mask, labels = _split_y_true_on_labels_and_mask(y_true)
-    focal_loss = labels*K.log(y_pred + K.epsilon())*(1 - y_pred)**zeta
-    focal_loss += (1 - labels)*K.log(1 - y_pred + K.epsilon())*y_pred**zeta
-    return apply_mask_to_loss(focal_loss, mask)
+    return apply_mask_to_loss(focal_loss(labels, y_pred, zeta), mask)
+
+
+def focal_loss(y_true, y_pred, zeta):
+    """https://github.com/umbertogriffo/focal-loss-keras"""
+    loss = y_true*K.log(y_pred + K.epsilon())*(1 - y_pred)**zeta
+    loss += (1 - y_true)*K.log(1 - y_pred + K.epsilon())*y_pred**zeta
+    return loss
+

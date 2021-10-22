@@ -67,6 +67,8 @@ def create_model(model_params: dict):
     cunet_config.N_CONDITIONS = cunet_config.N_LAYERS # 6 this should be the same as the number of layers
     # Other
     cunet_config.LR = 1e-3 # 1e-3
+    cunet_config.loss_name = model_params['loss']
+    cunet_config.loss_kwargs = model_params['loss_kwargs']
 
     model = cunet_luxai_model(cunet_config)
     return model
