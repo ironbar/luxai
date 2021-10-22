@@ -48,6 +48,7 @@ def create_callbacks(callback_conf, output_folder):
         LogGPU(),
         tensorboard_callback,
         GarbageCollector(),
+        tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
     ]
     return callbacks
 

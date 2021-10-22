@@ -25,7 +25,7 @@ from luxai.cunet import masked_binary_crossentropy, masked_error, cunet_luxai_mo
 def test_masked_binary_crossentropy(y_pred, y_true, mask, loss):
     y_true = np.concatenate([np.array(y_true, dtype=np.float32), np.array(mask, dtype=np.float32)], axis=-1)
     y_pred = np.array(y_pred, dtype=np.float32)
-    assert pytest.approx(loss) == masked_binary_crossentropy(y_true, y_pred)
+    assert pytest.approx(loss, abs=1e-6) == masked_binary_crossentropy(y_true, y_pred)
 
 
 @pytest.mark.parametrize('y_pred, y_true, mask, loss', [

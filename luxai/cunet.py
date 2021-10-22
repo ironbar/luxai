@@ -83,19 +83,27 @@ def cunet_luxai_model(config):
     return model
 
 
-def masked_binary_crossentropy(y_true, y_pred):
+def masked_binary_crossentropy(y_true, y_pred, true_weight=1):
     mask, labels = _split_y_true_on_labels_and_mask(y_true)
-    loss = K.binary_crossentropy(labels, y_pred, from_logits=False)*mask
-    loss_summary = tf.reduce_sum(loss)/(tf.reduce_sum(mask)*labels.shape[-1])
-    return loss_summary
+    loss = custom_binary_crossentropy(labels, y_pred, true_weight=true_weight)
+    return apply_mask_to_loss(loss, mask)
+
+
+def apply_mask_to_loss(loss, mask):
+    return K.sum(loss*mask)/(K.sum(mask)*loss.shape[-1])
+
+
+def custom_binary_crossentropy(y_true, y_pred, true_weight=1):
+    """https://github.com/keras-team/keras/blob/3a33d53ea4aca312c5ad650b4883d9bac608a32e/keras/backend.py#L5014"""
+    bce = true_weight*y_true*K.log(y_pred + K.epsilon()) + (1 - y_true)*K.log(1 - y_pred + K.epsilon())
+    return -bce
 
 
 def masked_error(y_true, y_pred):
     mask, labels = _split_y_true_on_labels_and_mask(y_true)
     accuracy = K.cast_to_floatx(labels == K.round(y_pred))
     error = 1 - accuracy
-    masked_error = K.sum(error*mask)/(K.sum(mask)*labels.shape[-1])
-    return masked_error
+    return apply_mask_to_loss(error, mask)
 
 
 def true_positive_error(y_true, y_pred):
@@ -111,11 +119,18 @@ def true_generic_error(y_true, y_pred, label):
     mask = mask * K.cast_to_floatx(labels == label)
     accuracy = K.cast_to_floatx(labels == K.round(y_pred))
     error = 1 - accuracy
-    masked_error = K.sum(error*mask)/(K.sum(mask)*labels.shape[-1])
-    return masked_error
+    return apply_mask_to_loss(error, mask)
 
 
 def _split_y_true_on_labels_and_mask(y_true):
     mask = y_true[:, :, :, -1:]
     y_true = y_true[:, :, :, :-1]
     return mask, y_true
+
+
+def masked_focal_loss_crossentropy(y_true, y_pred, zeta=1):
+    """https://github.com/umbertogriffo/focal-loss-keras"""
+    mask, labels = _split_y_true_on_labels_and_mask(y_true)
+    focal_loss = labels*K.log(y_pred + K.epsilon())*(1 - y_pred)**zeta
+    focal_loss += (1 - labels)*K.log(1 - y_pred + K.epsilon())*y_pred**zeta
+    return apply_mask_to_loss(focal_loss, mask)
