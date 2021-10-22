@@ -369,7 +369,14 @@ pip install pydot graphviz
 
 It is not founding `ptxas` even if I have installed `cudatoolkit-dev`.
 
+#### 4.2.6 Agent that uses a model for playing, it will need some post-processing of the predictions
+
+I have implemented functions that allow to recover actions from predictions and verified that they
+work when given the ground truth.
+
 ### 4.3 Results
+
+
 
 ### 4.4 Next steps
 

@@ -78,7 +78,7 @@ def cunet_luxai_model(config):
     model.compile(
         optimizer=Adam(lr=config.LR, beta_1=0.5),
         loss=masked_binary_crossentropy,
-        metrics=[masked_error],
+        metrics=[masked_error, true_positive_error, true_negative_error],
     )
     return model
 
@@ -92,7 +92,25 @@ def masked_binary_crossentropy(y_true, y_pred):
 
 def masked_error(y_true, y_pred):
     mask, labels = _split_y_true_on_labels_and_mask(y_true)
-    error = 1 - K.cast_to_floatx(labels == K.round(y_pred))
+    accuracy = K.cast_to_floatx(labels == K.round(y_pred))
+    error = 1 - accuracy
+    masked_error = K.sum(error*mask)/(K.sum(mask)*labels.shape[-1])
+    return masked_error
+
+
+def true_positive_error(y_true, y_pred):
+    return true_generic_error(y_true, y_pred, label=1)
+
+
+def true_negative_error(y_true, y_pred):
+    return true_generic_error(y_true, y_pred, label=0)
+
+
+def true_generic_error(y_true, y_pred, label):
+    mask, labels = _split_y_true_on_labels_and_mask(y_true)
+    mask = mask * K.cast_to_floatx(labels == label)
+    accuracy = K.cast_to_floatx(labels == K.round(y_pred))
+    error = 1 - accuracy
     masked_error = K.sum(error*mask)/(K.sum(mask)*labels.shape[-1])
     return masked_error
 
