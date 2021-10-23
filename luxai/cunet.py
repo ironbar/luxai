@@ -138,13 +138,13 @@ def _split_y_true_on_labels_and_mask(y_true):
     return mask, y_true
 
 
-def masked_focal_loss(y_true, y_pred, zeta=1):
+def masked_focal_loss(y_true, y_pred, zeta=1, true_weight=1):
     mask, labels = _split_y_true_on_labels_and_mask(y_true)
-    return apply_mask_to_loss(focal_loss(labels, y_pred, zeta), mask)
+    return apply_mask_to_loss(focal_loss(labels, y_pred, zeta, true_weight=true_weight), mask)
 
 
-def focal_loss(y_true, y_pred, zeta):
+def focal_loss(y_true, y_pred, zeta, true_weight=1):
     """https://github.com/umbertogriffo/focal-loss-keras"""
-    loss = y_true*K.log(y_pred + K.epsilon())*(1 - y_pred + K.epsilon())**zeta
+    loss = true_weight*y_true*K.log(y_pred + K.epsilon())*(1 - y_pred + K.epsilon())**zeta
     loss += (1 - y_true)*K.log(1 - y_pred + K.epsilon())*(y_pred + K.epsilon())**zeta
     return -loss
