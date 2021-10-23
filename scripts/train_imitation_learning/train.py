@@ -36,7 +36,7 @@ def train(config_path):
               **train_conf['train_kwargs'])
 
 
-def create_callbacks(callback_conf, output_folder):
+def create_callbacks(callbacks_conf, output_folder):
     tensorboard_callback = tf.keras.callbacks.TensorBoard(
         log_dir=os.path.join(output_folder, 'logs'), profile_batch=0)
     tensorboard_callback._supports_tf_logs = False
@@ -48,8 +48,13 @@ def create_callbacks(callback_conf, output_folder):
         LogGPU(),
         tensorboard_callback,
         GarbageCollector(),
-        tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
     ]
+    if 'EarlyStopping' in callbacks_conf:
+        callbacks.append(tf.keras.callbacks.EarlyStopping(**callbacks_conf['EarlyStopping']))
+    for name, callback_kwargs in callbacks_conf.items():
+        if 'ModelCheckpoint' in name:
+            callback_kwargs['filepath'] = callback_kwargs['filepath'] % output_folder
+            callbacks.append(tf.keras.callbacks.ModelCheckpoint(**callback_kwargs))
     return callbacks
 
 
@@ -66,7 +71,7 @@ def create_model(model_params: dict):
     cunet_config.N_NEURONS = model_params['n_neurons']
     cunet_config.N_CONDITIONS = cunet_config.N_LAYERS # 6 this should be the same as the number of layers
     # Other
-    cunet_config.LR = 1e-3 # 1e-3
+    cunet_config.LR = model_params['lr']
     cunet_config.loss_name = model_params['loss']
     cunet_config.loss_kwargs = model_params['loss_kwargs']
 

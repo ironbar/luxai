@@ -76,6 +76,7 @@ def cunet_luxai_model(config):
         Conv2D(filters=3, kernel_size=1, activation=config.ACT_LAST, name='city_action')(x)
     ]
     model = Model(inputs=[board_input, input_conditions], outputs=outputs)
+    model.save = partial(model.save, include_optimizer=False) # this allows to use ModelCheckpoint callback, otherwise fails to serialize the loss function
     model.compile(
         optimizer=Adam(lr=config.LR, beta_1=0.5),
         loss=get_loss_function(config.loss_name, config.loss_kwargs),
