@@ -54,19 +54,22 @@ def test_masked_error(y_pred, y_true, mask, loss):
     y_pred = np.array(y_pred, dtype=np.float32)
     assert pytest.approx(loss) == masked_error(y_true, y_pred)
 
-
-def test_cunet_model_changes_when_modifying_both_inputs():
+@pytest.mark.parametrize('film_type', ['simple', 'complex'])
+def test_cunet_model_changes_when_modifying_both_inputs(film_type):
     # Unet parameters
     config.INPUT_SHAPE = [32, 32, 22] #[512, 128, 1]
-    config.FILTERS_LAYER_1 = 32 # 16
+    config.FILTERS_LAYER_1 = 4 # 16
     config.N_LAYERS = 3 # 6
     config.ACT_LAST = 'sigmoid' # sigmoid
     # Condition parameters
     config.Z_DIM = 12 # 4
     config.CONTROL_TYPE = 'dense' # dense
-    config.FILM_TYPE = 'simple' # simple
+    config.FILM_TYPE = film_type # simple
     config.N_NEURONS = [16] # [16, 64, 256]
-    config.N_CONDITIONS = config.N_LAYERS # 6 this should be the same as the number of layers
+    if film_type == 'simple':
+        config.N_CONDITIONS = config.N_LAYERS # 6 this should be the same as the number of layers
+    else:
+        config.N_CONDITIONS = sum(config.FILTERS_LAYER_1*2**layer_idx for layer_idx in range(config.N_LAYERS))
     config.loss_name = 'masked_binary_crossentropy'
     config.loss_kwargs = dict()
 

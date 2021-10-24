@@ -30,10 +30,12 @@ def train(config_path):
     output_folder = os.path.dirname(os.path.realpath(config_path))
 
     train_data, test_data = load_train_and_test_data(**train_conf['data'])
+    # strategy = tf.distribute.MirroredStrategy()
+    # with strategy.scope():
     model = create_model(train_conf['model_params'])
     callbacks = create_callbacks(train_conf['callbacks'], output_folder)
     model.fit(x=train_data[0], y=train_data[1], validation_data=test_data, callbacks=callbacks,
-              **train_conf['train_kwargs'])
+            **train_conf['train_kwargs'])
 
 
 def create_callbacks(callbacks_conf, output_folder):
@@ -69,7 +71,10 @@ def create_model(model_params: dict):
     cunet_config.CONTROL_TYPE = model_params['control_type']
     cunet_config.FILM_TYPE = model_params['film_type']
     cunet_config.N_NEURONS = model_params['n_neurons']
-    cunet_config.N_CONDITIONS = cunet_config.N_LAYERS # 6 this should be the same as the number of layers
+    if cunet_config.FILM_TYPE == 'simple':
+        cunet_config.N_CONDITIONS = cunet_config.N_LAYERS # 6 this should be the same as the number of layers
+    else:
+        cunet_config.N_CONDITIONS = sum(cunet_config.FILTERS_LAYER_1*2**layer_idx for layer_idx in range(cunet_config.N_LAYERS))
     # Other
     cunet_config.LR = model_params['lr']
     cunet_config.loss_name = model_params['loss']
