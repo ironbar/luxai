@@ -277,8 +277,8 @@ people on the leaderboard.
 
 - [x] Download matches from the leaderboard
 - [x] Create features from game state
-- [ ] Implement a conditioned Unet architecture
-- [ ] Training script
+- [x] Implement a conditioned Unet architecture
+- [x] Training script
 - [ ] Agent that uses a model for playing, it will need some post-processing of the predictions
 - [ ] Optimize the model architecture (optimize validation loss, but also measure agent score to see if they are correlated)
 - [ ] Optimize input features
@@ -372,7 +372,17 @@ It is not founding `ptxas` even if I have installed `cudatoolkit-dev`.
 #### 4.2.6 Agent that uses a model for playing, it will need some post-processing of the predictions
 
 I have implemented functions that allow to recover actions from predictions and verified that they
-work when given the ground truth.
+work when given the ground truth. Now I have to prepare an script that given a model path and
+and output folder path it will create everything necessary to make a submission. I have to do this
+as good as possible so I can reuse it later with new models.
+
+I can take as a reference the work I did for hungry geese challenge.
+
+```bash
+lux-ai-2021 "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/scripts/create_cunet_agent/debug_agent/main.py" "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/main.py"  
+lux-ai-2021 --rankSystem="trueskill" --tournament  --maxConcurrentMatches 10 "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/scripts/create_cunet_agent/debug_agent/main.py" "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/main.py"
+lux-ai-2021 --rankSystem="wins" --tournament  --maxConcurrentMatches 20 "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/scripts/create_cunet_agent/debug_agent/main.py" "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/main.py"
+```
 
 ### 4.3 Results
 
