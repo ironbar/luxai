@@ -381,8 +381,27 @@ I can take as a reference the work I did for hungry geese challenge.
 ```bash
 lux-ai-2021 "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/scripts/create_cunet_agent/debug_agent/main.py" "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/main.py"  
 lux-ai-2021 --rankSystem="trueskill" --tournament  --maxConcurrentMatches 10 "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/scripts/create_cunet_agent/debug_agent/main.py" "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/main.py"
-lux-ai-2021 --rankSystem="wins" --tournament  --maxConcurrentMatches 20 "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/scripts/create_cunet_agent/debug_agent/main.py" "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/main.py"
+lux-ai-2021 --rankSystem="wins" --tournament  --maxConcurrentMatches 20 "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/clown/main.py" "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/main.py"
+tar -czvf clown.tar.gz *
+
+cd "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/scripts/create_cunet_agent"
+lux-ai-2021 --rankSystem="wins" --tournament  --maxConcurrentMatches 20 "clown/main.py" "working_title/main.py"
+
+
+python create_cunet_agent.py /mnt/hdd0/Kaggle/luxai/models/09_even_more_architecture_variations_around_condition/02_filters32_depth4_condition_8_complex/best_val_loss_model.h5 ../../agents/clown
 ```
+
+```
+Total Matches: 51 | Matches Queued: 33
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+clown/main.py                  | 82ELMnNwHPzu   | 45    | 0     | 6     | 135      | 51      
+working_title/main.py          | RvByRNcMDjWt   | 6     | 0     | 45    | 18       | 51      
+```
+
+I'm having trouble when uploading the model, it seems that the problem is that my luxai environment
+has 3.9 python and kaggle uses 3.7. I was expecting this kind of problems and that's why I have
+prepared this submission so soon. Thus I need to create a new conda environment and train the model again.
+
 
 ### 4.3 Results
 
