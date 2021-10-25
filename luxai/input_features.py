@@ -52,7 +52,7 @@ def make_input(obs):
 
     Returns
     -------
-    board, features, active_units_to_position, active_cities_to_position, units_to_position
+    board, features, active_unit_to_position, active_city_to_position, unit_to_position
     """
     width, height = obs['width'], obs['height']
     city_id_to_survive_nights = {}

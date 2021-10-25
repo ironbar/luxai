@@ -24,8 +24,8 @@ def agent(observation, configuration):
         expand_board_size_adding_zeros(np.expand_dims(board, axis=0)),
         np.expand_dims(features, axis=0)])
     preds = [crop_board_to_original_size(pred, observation) for pred in preds]
-    active_units_to_position, active_cities_to_position, unit_to_position, city_to_position = ret[2:]
+    active_unit_to_position, active_city_to_position, unit_to_position, city_to_position = ret[2:]
     actions = create_actions_for_units_from_model_predictions(
-        preds[0][0], active_units_to_position, unit_to_position, observation)
-    actions += create_actions_for_cities_from_model_predictions(preds[1][0], active_cities_to_position)
+        preds[0][0], active_unit_to_position, unit_to_position, observation)
+    actions += create_actions_for_cities_from_model_predictions(preds[1][0], active_city_to_position)
     return actions

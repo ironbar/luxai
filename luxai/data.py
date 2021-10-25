@@ -92,13 +92,13 @@ def load_match_from_json(filepath, player):
             continue
 
         ret = make_input(observation)
-        active_units_to_position, active_cities_to_position, units_to_position = ret[2:-1]
-        if active_units_to_position or active_cities_to_position:
+        active_unit_to_position, active_city_to_position, unit_to_position = ret[2:-1]
+        if active_unit_to_position or active_city_to_position:
             board.append(ret[0])
             features.append(ret[1])
-            unit_actions_mask = create_actions_mask(active_units_to_position, observation)
-            city_actions_mask = create_actions_mask(active_cities_to_position, observation)
-            unit_actions, city_actions = create_output_features(actions, units_to_position, observation)
+            unit_actions_mask = create_actions_mask(active_unit_to_position, observation)
+            city_actions_mask = create_actions_mask(active_city_to_position, observation)
+            unit_actions, city_actions = create_output_features(actions, unit_to_position, observation)
             unit_output.append(np.concatenate([unit_actions, unit_actions_mask], axis=-1))
             city_output.append(np.concatenate([city_actions, city_actions_mask], axis=-1))
 

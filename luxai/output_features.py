@@ -5,10 +5,10 @@ import warnings
 import numpy as np
 
 
-def create_actions_mask(active_units_to_position, observation):
+def create_actions_mask(active_unit_to_position, observation):
     width, height = observation['width'], observation['height']
     mask = np.zeros((width, height, 1), dtype=np.float32)
-    for position in active_units_to_position.values():
+    for position in active_unit_to_position.values():
         x, y = position
         mask[x, y] = 1
     return mask
@@ -35,7 +35,7 @@ CITY_ACTIONS_MAP = {
 }
 
 
-def create_output_features(actions, units_to_position, observation):
+def create_output_features(actions, unit_to_position, observation):
     width, height = observation['width'], observation['height']
 
     unit_actions = np.zeros((len(UNIT_ACTIONS_MAP), width, height), dtype=np.float32)
@@ -48,15 +48,15 @@ def create_output_features(actions, units_to_position, observation):
             city_actions[CITY_ACTIONS_MAP[action_id], x, y] = 1
         elif action_id == 'm': # move
             unit_id, direction = splits[1], splits[2]
-            x, y = units_to_position[unit_id]
+            x, y = unit_to_position[unit_id]
             if direction == 'c':
                 continue
             unit_actions[UNIT_ACTIONS_MAP['%s %s' % (action_id, direction)], x, y] = 1
         elif action_id == 't': # transfer
             unit_id, dst_id = splits[1], splits[2]
             try:
-                x, y = units_to_position[unit_id]
-                x_dst, y_dst = units_to_position[dst_id]
+                x, y = unit_to_position[unit_id]
+                x_dst, y_dst = unit_to_position[dst_id]
                 direction = get_transfer_direction(x, y, x_dst, y_dst)
                 unit_actions[UNIT_ACTIONS_MAP['%s %s' % (action_id, direction)], x, y] = 1
             except KeyError:
@@ -64,7 +64,7 @@ def create_output_features(actions, units_to_position, observation):
                 warnings.warn('Could not create transfer action because there were missing units')
         elif action_id in {'bcity', 'p'}:
             unit_id = splits[1]
-            x, y = units_to_position[unit_id]
+            x, y = unit_to_position[unit_id]
             unit_actions[UNIT_ACTIONS_MAP[action_id], x, y] = 1
     # to channels last convention
     unit_actions = np.transpose(unit_actions, axes=(1, 2, 0))

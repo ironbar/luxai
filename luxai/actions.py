@@ -7,7 +7,7 @@ from luxai.input_features import parse_unit_info
 from luxai.output_features import CITY_ACTIONS_MAP, UNIT_ACTIONS_MAP
 
 
-def create_actions_for_cities_from_model_predictions(preds, active_cities_to_position, action_threshold=0.5):
+def create_actions_for_cities_from_model_predictions(preds, active_city_to_position, action_threshold=0.5):
     """
     Creates actions in the luxai format from the predictions of the model
 
@@ -15,14 +15,14 @@ def create_actions_for_cities_from_model_predictions(preds, active_cities_to_pos
     ----------
     preds : 3d array
         3d array with the predictions being the dimensions (x, y, action)
-    active_cities_to_position : dict
+    active_city_to_position : dict
         A dictionary that maps city tile identifier to x, y position
     action_threshold : float
         A threshold that filters predictions with a smaller value than that
     """
     actions = []
     idx_to_action = {idx: name for name, idx in CITY_ACTIONS_MAP.items()}
-    for position in active_cities_to_position.values():
+    for position in active_city_to_position.values():
         x, y = position
         city_preds = preds[x, y]
         action_idx = np.argmax(city_preds)
@@ -33,7 +33,7 @@ def create_actions_for_cities_from_model_predictions(preds, active_cities_to_pos
 
 
 def create_actions_for_units_from_model_predictions(
-        preds, active_units_to_position, units_to_position, observation, action_threshold=0.5):
+        preds, active_unit_to_position, unit_to_position, observation, action_threshold=0.5):
     """
     Creates actions in the luxai format from the predictions of the model
 
@@ -41,9 +41,9 @@ def create_actions_for_units_from_model_predictions(
     ----------
     preds : 3d array
         3d array with the predictions being the dimensions (x, y, action)
-    active_units_to_position : dict
+    active_unit_to_position : dict
         A dictionary that maps active unit identifier to x,y position
-    units_to_position : dict
+    unit_to_position : dict
         A dictionary that maps all unit identifier to x,y position
     action_threshold : float
         A threshold that filters predictions with a smaller value than that
@@ -51,21 +51,21 @@ def create_actions_for_units_from_model_predictions(
     preds = preds.copy()
     idx_to_action = {idx: name for name, idx in UNIT_ACTIONS_MAP.items()}
     unit_to_action, unit_to_priority = {}, {}
-    for unit_id, position in active_units_to_position.items():
+    for unit_id, position in active_unit_to_position.items():
         x, y = position
         unit_preds = preds[x, y]
         action_idx = np.argmax(unit_preds)
         if unit_preds[action_idx] > action_threshold:
             action_key = idx_to_action[action_idx]
-            unit_to_action[unit_id] = create_unit_action(action_key, unit_id, units_to_position, observation)
+            unit_to_action[unit_id] = create_unit_action(action_key, unit_id, unit_to_position, observation)
             unit_to_priority[unit_id] = unit_preds[action_idx]
             # This ensures that units with overlap do not repeat actions
             preds[x, y, action_idx] = 0
-    # TODO: deal with collisions
+    # remove_collision_actions(unit_to_action, unit_to_position, unit_to_priority, city_positions)
     return list(unit_to_action.values())
 
 
-def create_unit_action(action_key, unit_id, units_to_position, observation):
+def create_unit_action(action_key, unit_id, unit_to_position, observation):
     action_id = action_key.split(' ')[0]
     if action_id == 'm':
         action = 'm %s %s' % (unit_id, action_key.split(' ')[-1])
@@ -75,9 +75,9 @@ def create_unit_action(action_key, unit_id, units_to_position, observation):
         return action
     elif action_id == 't':
         direction = action_key.split(' ')[1]
-        position = units_to_position[unit_id]
+        position = unit_to_position[unit_id]
         dst_position = _get_dst_position(position, direction)
-        dst_unit_id = _find_unit_in_position(dst_position, units_to_position)
+        dst_unit_id = _find_unit_in_position(dst_position, unit_to_position)
         resource, amount = _get_most_abundant_resource_from_unit(unit_id, observation)
         return 't %s %s %s %i' % (unit_id, dst_unit_id, resource, amount)
     else:
@@ -96,8 +96,8 @@ def _get_dst_position(position, direction):
     return dst_position
 
 
-def _find_unit_in_position(position, units_to_position):
-    for other_unit_id, other_position in units_to_position.items():
+def _find_unit_in_position(position, unit_to_position):
+    for other_unit_id, other_position in unit_to_position.items():
         if other_position == position:
             return other_unit_id
 
@@ -114,10 +114,18 @@ def _get_most_abundant_resource_from_unit(unit_id, observation):
 
 
 def remove_collision_actions(unit_to_action, unit_to_position, unit_to_priority, city_positions):
-    blocked_positions = get_blocked_positions_using_units_that_do_not_move(unit_to_position, unit_to_action, city_positions)
+    blocked_positions = get_blocked_positions_using_units_that_do_not_move(
+        unit_to_position, unit_to_action, city_positions)
     for unit_id in rank_units_based_on_priority(unit_to_priority):
         action = unit_to_action[unit_id]
-        pass
+        if action.startswith('m '):
+            direction = action.split(' ')[1]
+            position = unit_to_position[unit_id]
+            next_position = _get_dst_position(position, direction)
+            if next_position in blocked_positions:
+                unit_to_action.pop(unit_id)
+            elif next_position not in city_positions:
+                blocked_positions.add(next_position)
 
 
 def get_blocked_positions_using_units_that_do_not_move(unit_to_position, unit_to_action, city_positions):
