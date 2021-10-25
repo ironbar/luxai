@@ -10,3 +10,4 @@ notebooks/model.png
 notebooks/model.h5
 htmlcov/*
 .coverage
+agents/clown/*

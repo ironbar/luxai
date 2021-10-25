@@ -5,7 +5,7 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
 import tensorflow as tf
 import numpy as np
-
+import cunet.train.models.FiLM_utils
 
 try:
     SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))

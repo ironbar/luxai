@@ -396,11 +396,38 @@ Total Matches: 51 | Matches Queued: 33
 Name                           | ID             | W     | T     | L     |   Points | Matches 
 clown/main.py                  | 82ELMnNwHPzu   | 45    | 0     | 6     | 135      | 51      
 working_title/main.py          | RvByRNcMDjWt   | 6     | 0     | 45    | 18       | 51      
+
+
+after training with python 37
+Total Matches: 123 | Matches Queued: 39
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+clown/main.py                  | RjsyUDGFuo9f   | 112   | 0     | 11    | 336      | 123     
+working_title/main.py          | Amxi6tZ65x2Z   | 11    | 0     | 112   | 33       | 123     
+
 ```
 
 I'm having trouble when uploading the model, it seems that the problem is that my luxai environment
 has 3.9 python and kaggle uses 3.7. I was expecting this kind of problems and that's why I have
 prepared this submission so soon. Thus I need to create a new conda environment and train the model again.
+
+```bash
+conda create -n luxai_37 pytest rope pylint tqdm numpy pandas scikit-learn ipython ipykernel coverage matplotlib python=3.7
+source activate luxai
+python -m ipykernel install --user --name $CONDA_DEFAULT_ENV --display-name "Python ($CONDA_DEFAULT_ENV)"
+conda env export > environment.yml
+
+conda create -n luxai_37 pytest rope pylint tqdm numpy pandas scikit-learn ipython ipykernel coverage matplotlib python=3.7
+conda activate luxai_37
+pip install tensorflow==2.6.0
+pip install effortless_config
+pip install pydot graphviz
+conda install -c conda-forge cudatoolkit==11.2.2 cudnn=8.1 -y
+pip install pyyaml
+pip install kaggle-environments
+pip install psutil
+pip install nvidia-ml-py3
+conda install -c conda-forge cudatoolkit-dev==11.2.2 -y
+```
 
 
 ### 4.3 Results
