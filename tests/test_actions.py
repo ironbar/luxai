@@ -20,7 +20,7 @@ def test_city_actions_can_be_recovered_from_ground_truth(filepath, player):
     with open(filepath, 'r') as f:
         match = json.load(f)['steps']
     for observation, actions in step_generator(match, player):
-        active_cities_to_position, units_to_position = make_input(observation)[3:]
+        active_cities_to_position, units_to_position = make_input(observation)[3:-1]
         _, city_actions = create_output_features(actions, units_to_position, observation)
         true_city_actions = [action for action in actions if action.split(' ')[0] in CITY_ACTIONS_MAP]
 
@@ -42,7 +42,7 @@ def test_unit_actions_can_be_recovered_from_ground_truth_if_no_unit_overlaps_and
     with open(filepath, 'r') as f:
         match = json.load(f)['steps']
     for observation, actions in step_generator(match, player):
-        active_units_to_position, _, units_to_position = make_input(observation)[2:]
+        active_units_to_position, _, units_to_position = make_input(observation)[2:-1]
         unit_actions_ground_truth, _ = create_output_features(actions, units_to_position, observation)
 
         recovered_actions = create_actions_for_units_from_model_predictions(
@@ -102,7 +102,7 @@ def test_recovered_actions_from_units_with_overlap_has_same_length_as_ground_tru
     with open(filepath, 'r') as f:
         match = json.load(f)['steps']
     for observation, actions in step_generator(match, player):
-        active_units_to_position, _, units_to_position = make_input(observation)[2:]
+        active_units_to_position, _, units_to_position = make_input(observation)[2:-1]
         unit_actions_ground_truth, _ = create_output_features(actions, units_to_position, observation)
 
         recovered_actions = create_actions_for_units_from_model_predictions(
@@ -134,7 +134,7 @@ def test_transfer_actions_can_be_recovered_from_ground_truth_if_no_unit_overlaps
     with open(filepath, 'r') as f:
         match = json.load(f)['steps']
     for observation, actions in step_generator(match, player):
-        active_units_to_position, _, units_to_position = make_input(observation)[2:]
+        active_units_to_position, _, units_to_position = make_input(observation)[2:-1]
         unit_actions_ground_truth, _ = create_output_features(actions, units_to_position, observation)
 
         recovered_actions = create_actions_for_units_from_model_predictions(

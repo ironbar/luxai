@@ -23,7 +23,7 @@ def test_that_there_are_no_actions_outside_the_masks(filepath):
         actions = match['steps'][step+1][0]['action'] # notice the step + 150
 
         ret = make_input(observation)
-        active_units_to_position, active_cities_to_position, units_to_position = ret[2:]
+        active_units_to_position, active_cities_to_position, units_to_position = ret[2:-1]
         unit_actions_mask = create_actions_mask(active_units_to_position, observation)
         city_actions_mask = create_actions_mask(active_cities_to_position, observation)
         unit_actions, city_actions = create_output_features(actions, units_to_position, observation)

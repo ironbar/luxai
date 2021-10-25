@@ -59,9 +59,8 @@ def make_input(obs):
 
     board = np.zeros((len(CHANNELS_MAP), width, height), dtype=np.float32)
     features = np.zeros(len(FEATURES_MAP), dtype=np.float32)
-    active_units_to_position = {}
-    active_cities_to_position = {}
-    units_to_position = {}
+    active_unit_to_position, active_city_to_position = dict(), dict()
+    unit_to_position, city_to_position = dict(), dict()
 
     for update in obs['updates']:
         splits = update.split(' ')
@@ -79,9 +78,9 @@ def make_input(obs):
             board[CHANNELS_MAP['%s_unit_fuel' % prefix], x, y] = get_normalized_unit_fuel(unit_type, wood, coal, uranium)
             board[CHANNELS_MAP['cooldown'], x, y] = normalize_cooldown(cooldown)
             if prefix == 'player':
-                units_to_position[unit_id] = (x, y)
+                unit_to_position[unit_id] = (x, y)
                 if cooldown < 1:
-                    active_units_to_position[unit_id] = (x, y)
+                    active_unit_to_position[unit_id] = (x, y)
         elif object_type == 'city_tile':
             team, city_id, x, y, cooldown = parse_city_tile_info(splits)
             prefix = get_prefix_for_channels_map(team, obs)
@@ -92,8 +91,10 @@ def make_input(obs):
             board[CHANNELS_MAP['%s_city_can_survive_until_end' % prefix], x, y] = \
                 city_id_to_survive_nights[city_id] > (360 - obs['step'] ) // 40 + (10 - max(obs['step'] % 40 - 30, 0))/10
             board[CHANNELS_MAP['cooldown'], x, y] = normalize_cooldown(cooldown)
-            if prefix == 'player' and cooldown < 1:
-                active_cities_to_position['%s_%i' % (city_id, len(active_cities_to_position))] = (x, y)
+            if prefix == 'player':
+                city_to_position['%s_%i' % (city_id, len(active_city_to_position))] = (x, y)
+                if cooldown < 1:
+                    active_city_to_position['%s_%i' % (city_id, len(active_city_to_position))] = (x, y)
         elif object_type == 'resource':
             resource_type, x, y, amount = parse_resource_info(splits)
             board[CHANNELS_MAP[resource_type], x, y] = amount / 800
@@ -127,9 +128,8 @@ def make_input(obs):
 
     board = np.transpose(board, axes=(1, 2, 0))
     features = np.expand_dims(features, axis=0)
-    # TODO: add border to the board if necessary
 
-    return board, features, active_units_to_position, active_cities_to_position, units_to_position
+    return board, features, active_unit_to_position, active_city_to_position, unit_to_position, city_to_position
 
 
 def parse_unit_info(splits):
