@@ -110,3 +110,23 @@ def _get_most_abundant_resource_from_unit(unit_id, observation):
             idx = np.argmax(resources)
             return resource_names[idx], resources[idx]
     raise KeyError(unit_id)
+
+
+def remove_collision_actions(actions, unit_to_position, unit_to_action, city_positions):
+    blocked_positions = get_blocked_positions_using_units_that_do_not_move(unit_to_position, unit_to_action, city_positions)
+
+
+def get_blocked_positions_using_units_that_do_not_move(unit_to_position, unit_to_action, city_positions):
+    """
+    Returns a set of positions of units that do not move and are outside a city
+    """
+    blocked_positions = set()
+    for unit_id, position in unit_to_position.items():
+        if unit_id in unit_to_action:
+            action = unit_to_action[unit_id]
+            if not action.startswith('m ') and position not in city_positions:
+                blocked_positions.add(position)
+        else:
+            if position not in city_positions:
+                blocked_positions.add(position)
+    return blocked_positions

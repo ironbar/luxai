@@ -4,7 +4,8 @@ import json
 
 from luxai.actions import (
     create_actions_for_cities_from_model_predictions, CITY_ACTIONS_MAP,
-    create_actions_for_units_from_model_predictions, UNIT_ACTIONS_MAP)
+    create_actions_for_units_from_model_predictions, UNIT_ACTIONS_MAP,
+    get_blocked_positions_using_units_that_do_not_move)
 from luxai.input_features import make_input
 from luxai.output_features import create_output_features
 
@@ -157,3 +158,12 @@ def _remove_actions_with_overlap_or_without_transfer(actions, units_with_overlap
     true_unit_actions = [action for action in actions if action.split(' ')[0]== 't']
     true_unit_actions = [action for action in true_unit_actions if not any(_is_action_from_unit(action, unit_id) for unit_id in units_with_overlap)]
     return true_unit_actions
+
+@pytest.mark.parametrize('unit_to_position, unit_to_action, city_positions, blocked_positions', [
+    ({0: (0, 0)}, {0: 'bcity'}, set(), set([(0, 0)])), # unit that is going to build a city is added to blocked positions
+    ({0: (0, 0)}, {0: 't '}, set([(0, 0)]), set()), # unit on a building that does not move is not added to blocked positions
+    ({0: (0, 0)}, {0: 'm n'}, set(), set()), # unit that moves is not added to blocked positions
+    ({0: (0, 0)}, {}, set(), set([(0, 0)])), # unit that that not has action is added to blocked positions
+])
+def test_get_blocked_positions_using_units_that_do_not_move(unit_to_position, unit_to_action, city_positions, blocked_positions):
+    assert blocked_positions == get_blocked_positions_using_units_that_do_not_move(unit_to_position, unit_to_action, city_positions)
