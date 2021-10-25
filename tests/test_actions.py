@@ -5,7 +5,8 @@ import json
 from luxai.actions import (
     create_actions_for_cities_from_model_predictions, CITY_ACTIONS_MAP,
     create_actions_for_units_from_model_predictions, UNIT_ACTIONS_MAP,
-    get_blocked_positions_using_units_that_do_not_move)
+    get_blocked_positions_using_units_that_do_not_move,
+    rank_units_based_on_priority)
 from luxai.input_features import make_input
 from luxai.output_features import create_output_features
 
@@ -167,3 +168,11 @@ def _remove_actions_with_overlap_or_without_transfer(actions, units_with_overlap
 ])
 def test_get_blocked_positions_using_units_that_do_not_move(unit_to_position, unit_to_action, city_positions, blocked_positions):
     assert blocked_positions == get_blocked_positions_using_units_that_do_not_move(unit_to_position, unit_to_action, city_positions)
+
+@pytest.mark.parametrize('unit_to_priority, ranked_units', [
+    ({0: 0, 1: 1}, [1, 0]),
+    ({0: 1, 1: 0}, [0, 1]),
+    ({}, []),
+])
+def test_rank_units_based_on_priority(unit_to_priority, ranked_units):
+    assert ranked_units == rank_units_based_on_priority(unit_to_priority)

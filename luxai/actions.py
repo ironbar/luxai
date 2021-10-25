@@ -49,19 +49,20 @@ def create_actions_for_units_from_model_predictions(
         A threshold that filters predictions with a smaller value than that
     """
     preds = preds.copy()
-    actions = []
     idx_to_action = {idx: name for name, idx in UNIT_ACTIONS_MAP.items()}
+    unit_to_action, unit_to_priority = {}, {}
     for unit_id, position in active_units_to_position.items():
         x, y = position
         unit_preds = preds[x, y]
         action_idx = np.argmax(unit_preds)
         if unit_preds[action_idx] > action_threshold:
             action_key = idx_to_action[action_idx]
-            actions.append(create_unit_action(action_key, unit_id, units_to_position, observation))
+            unit_to_action[unit_id] = create_unit_action(action_key, unit_id, units_to_position, observation)
+            unit_to_priority[unit_id] = unit_preds[action_idx]
             # This ensures that units with overlap do not repeat actions
             preds[x, y, action_idx] = 0
     # TODO: deal with collisions
-    return actions
+    return list(unit_to_action.values())
 
 
 def create_unit_action(action_key, unit_id, units_to_position, observation):
@@ -112,8 +113,11 @@ def _get_most_abundant_resource_from_unit(unit_id, observation):
     raise KeyError(unit_id)
 
 
-def remove_collision_actions(actions, unit_to_position, unit_to_action, city_positions):
+def remove_collision_actions(unit_to_action, unit_to_position, unit_to_priority, city_positions):
     blocked_positions = get_blocked_positions_using_units_that_do_not_move(unit_to_position, unit_to_action, city_positions)
+    for unit_id in rank_units_based_on_priority(unit_to_priority):
+        action = unit_to_action[unit_id]
+        pass
 
 
 def get_blocked_positions_using_units_that_do_not_move(unit_to_position, unit_to_action, city_positions):
@@ -130,3 +134,9 @@ def get_blocked_positions_using_units_that_do_not_move(unit_to_position, unit_to
             if position not in city_positions:
                 blocked_positions.add(position)
     return blocked_positions
+
+
+def rank_units_based_on_priority(unit_to_priority):
+    units = np.array(list(unit_to_priority.keys()))
+    priority = [unit_to_priority[unit_id] for unit_id in units]
+    return units[np.argsort(priority)[::-1]].tolist()
