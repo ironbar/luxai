@@ -44,11 +44,12 @@ def test_unit_actions_can_be_recovered_from_ground_truth_if_no_unit_overlaps_and
     with open(filepath, 'r') as f:
         match = json.load(f)['steps']
     for observation, actions in step_generator(match, player):
-        active_unit_to_position, _, unit_to_position = make_input(observation)[2:-1]
+        active_unit_to_position, _, unit_to_position, city_to_position = make_input(observation)[2:]
         unit_actions_ground_truth, _ = create_output_features(actions, unit_to_position, observation)
 
         recovered_actions = create_actions_for_units_from_model_predictions(
-            unit_actions_ground_truth, active_unit_to_position, unit_to_position, observation)
+            unit_actions_ground_truth, active_unit_to_position, unit_to_position, observation,
+            set(city_to_position.keys()), is_remove_collision_actions_enabled=False)
 
         units_with_overlap = _get_units_with_overlap(unit_to_position)
         true_unit_actions = _remove_actions_with_overlap_or_transfer(actions, units_with_overlap)
@@ -104,11 +105,12 @@ def test_recovered_actions_from_units_with_overlap_has_same_length_as_ground_tru
     with open(filepath, 'r') as f:
         match = json.load(f)['steps']
     for observation, actions in step_generator(match, player):
-        active_unit_to_position, _, unit_to_position = make_input(observation)[2:-1]
+        active_unit_to_position, _, unit_to_position, city_to_position = make_input(observation)[2:]
         unit_actions_ground_truth, _ = create_output_features(actions, unit_to_position, observation)
 
         recovered_actions = create_actions_for_units_from_model_predictions(
-            unit_actions_ground_truth, active_unit_to_position, unit_to_position, observation)
+            unit_actions_ground_truth, active_unit_to_position, unit_to_position, observation,
+            set(city_to_position.keys()), is_remove_collision_actions_enabled=False)
 
         units_with_overlap = _get_units_with_overlap(unit_to_position)
         true_unit_actions = _remove_actions_without_overlap_or_with_transfer(actions, units_with_overlap)
@@ -136,11 +138,11 @@ def test_transfer_actions_can_be_recovered_from_ground_truth_if_no_unit_overlaps
     with open(filepath, 'r') as f:
         match = json.load(f)['steps']
     for observation, actions in step_generator(match, player):
-        active_unit_to_position, _, unit_to_position = make_input(observation)[2:-1]
+        active_unit_to_position, _, unit_to_position, city_to_position = make_input(observation)[2:]
         unit_actions_ground_truth, _ = create_output_features(actions, unit_to_position, observation)
 
         recovered_actions = create_actions_for_units_from_model_predictions(
-            unit_actions_ground_truth, active_unit_to_position, unit_to_position, observation)
+            unit_actions_ground_truth, active_unit_to_position, unit_to_position, observation, set(city_to_position.keys()))
 
         units_with_overlap = _get_units_with_overlap(unit_to_position)
         true_unit_actions = _remove_actions_with_overlap_or_without_transfer(actions, units_with_overlap)

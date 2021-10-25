@@ -33,7 +33,8 @@ def create_actions_for_cities_from_model_predictions(preds, active_city_to_posit
 
 
 def create_actions_for_units_from_model_predictions(
-        preds, active_unit_to_position, unit_to_position, observation, action_threshold=0.5):
+        preds, active_unit_to_position, unit_to_position, observation, city_positions,
+        action_threshold=0.5, is_remove_collision_actions_enabled=True):
     """
     Creates actions in the luxai format from the predictions of the model
 
@@ -45,6 +46,10 @@ def create_actions_for_units_from_model_predictions(
         A dictionary that maps active unit identifier to x,y position
     unit_to_position : dict
         A dictionary that maps all unit identifier to x,y position
+    observation : dict
+        Dictionary with the observation of the game
+    city_positions : set or list
+        A set with all the positions of the cities
     action_threshold : float
         A threshold that filters predictions with a smaller value than that
     """
@@ -61,7 +66,8 @@ def create_actions_for_units_from_model_predictions(
             unit_to_priority[unit_id] = unit_preds[action_idx]
             # This ensures that units with overlap do not repeat actions
             preds[x, y, action_idx] = 0
-    # remove_collision_actions(unit_to_action, unit_to_position, unit_to_priority, city_positions)
+    if is_remove_collision_actions_enabled:
+        remove_collision_actions(unit_to_action, unit_to_position, unit_to_priority, city_positions)
     return list(unit_to_action.values())
 
 
@@ -93,6 +99,10 @@ def _get_dst_position(position, direction):
         dst_position = (position[0], position[1] + 1)
     elif direction == 'w':
         dst_position = (position[0] - 1, position[1])
+    elif direction == 'c':
+        dst_position = position
+    else:
+        raise KeyError(direction)
     return dst_position
 
 
@@ -119,7 +129,7 @@ def remove_collision_actions(unit_to_action, unit_to_position, unit_to_priority,
     for unit_id in rank_units_based_on_priority(unit_to_priority):
         action = unit_to_action[unit_id]
         if action.startswith('m '):
-            direction = action.split(' ')[1]
+            direction = action.split(' ')[-1]
             position = unit_to_position[unit_id]
             next_position = _get_dst_position(position, direction)
             if next_position in blocked_positions:
