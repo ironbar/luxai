@@ -1,6 +1,7 @@
 import pytest
 import json
 import os
+import numpy as np
 
 from luxai.input_features import make_input
 from luxai.output_features import create_actions_mask, create_output_features
@@ -33,4 +34,4 @@ def test_that_there_are_no_actions_outside_the_masks(filepath):
 
 
 def _assert_that_there_are_no_actions_outside_the_mask(actions, mask):
-    pass
+    assert (np.max(actions, axis=-1) <= np.max(mask, axis=-1)).all()
