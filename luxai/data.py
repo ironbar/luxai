@@ -92,7 +92,7 @@ def load_match_from_json(filepath, player):
             continue
 
         ret = make_input(observation)
-        active_units_to_position, active_cities_to_position, units_to_position = ret[2:]
+        active_units_to_position, active_cities_to_position, units_to_position = ret[2:-1]
         if active_units_to_position or active_cities_to_position:
             board.append(ret[0])
             features.append(ret[1])
