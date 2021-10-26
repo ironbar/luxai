@@ -6,7 +6,7 @@ from luxai.actions import (
     create_actions_for_cities_from_model_predictions, CITY_ACTIONS_MAP,
     create_actions_for_units_from_model_predictions, UNIT_ACTIONS_MAP,
     get_blocked_positions_using_units_that_do_not_move,
-    rank_units_based_on_priority)
+    rank_units_based_on_priority, remove_collision_actions)
 from luxai.input_features import make_input
 from luxai.output_features import create_output_features
 
@@ -178,3 +178,14 @@ def test_get_blocked_positions_using_units_that_do_not_move(unit_to_position, un
 ])
 def test_rank_units_based_on_priority(unit_to_priority, ranked_units):
     assert ranked_units == rank_units_based_on_priority(unit_to_priority)
+
+
+@pytest.mark.parametrize('unit_to_action, unit_to_position, unit_to_priority, city_positions, remaining_actions', [
+    ({0: 'm 0 n'}, {0: (1, 1)}, {0: 1}, set(), {0: 'm 0 n'}), # no obstacle
+    ({0: 'm 0 n'}, {0: (1, 1), 1: (1, 0)}, {0: 1}, set(), {}), # a unit does not allow to move
+    ({0: 'm 0 n'}, {0: (1, 1), 1: (1, 0)}, {0: 1}, set([(1, 0)]), {0: 'm 0 n'}), # the unit is on a city so move is allowed
+    ({0: 'm 0 s'}, {0: (1, 1), 1: (1, 0)}, {0: 1}, set(), {0: 'm 0 s'}), # moving in the other direction is allowed
+])
+def test_remove_collision_actions(unit_to_action, unit_to_position, unit_to_priority, city_positions, remaining_actions):
+    remove_collision_actions(unit_to_action, unit_to_position, unit_to_priority, city_positions)
+    assert remaining_actions == unit_to_action

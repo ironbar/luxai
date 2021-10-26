@@ -404,6 +404,12 @@ Name                           | ID             | W     | T     | L     |   Poin
 clown/main.py                  | RjsyUDGFuo9f   | 112   | 0     | 11    | 336      | 123     
 working_title/main.py          | Amxi6tZ65x2Z   | 11    | 0     | 112   | 33       | 123     
 
+after fixing collisions
+Total Matches: 521 | Matches Queued: 39
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+working_title/main.py          | zjyVDttY1iGm   | 520   | 0     | 1     | 1560     | 521     
+clown2/main.py                 | 7BhIkpq4HuJj   | 1     | 0     | 520   | 3        | 521     
+
 ```
 
 I'm having trouble when uploading the model, it seems that the problem is that my luxai environment
