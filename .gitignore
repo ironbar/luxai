@@ -11,3 +11,6 @@ notebooks/model.h5
 htmlcov/*
 .coverage
 agents/clown/*
+agents/clown2/*
+agents/errorlogs/*
+agents/replays/*
