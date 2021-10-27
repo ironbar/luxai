@@ -279,8 +279,8 @@ people on the leaderboard.
 - [x] Create features from game state
 - [x] Implement a conditioned Unet architecture
 - [x] Training script
-- [ ] Agent that uses a model for playing, it will need some post-processing of the predictions
-- [ ] Optimize the model architecture (optimize validation loss, but also measure agent score to see if they are correlated)
+- [x] Agent that uses a model for playing, it will need some post-processing of the predictions
+- [x] Optimize the model architecture (optimize validation loss, but also measure agent score to see if they are correlated)
 - [ ] Optimize input features
 - [ ] Optimize training strategy (single train, pretrain and fine-tuning)
 
@@ -369,6 +369,11 @@ pip install pydot graphviz
 
 It is not founding `ptxas` even if I have installed `cudatoolkit-dev`.
 
+#### 4.2.5 Training script
+
+I have implemented a very simple training script. It loads 400 matches to memory because I cannot fit
+more. On following iterations I will start using generators to overcome RAM limitations.
+
 #### 4.2.6 Agent that uses a model for playing, it will need some post-processing of the predictions
 
 I have implemented functions that allow to recover actions from predictions and verified that they
@@ -379,32 +384,19 @@ as good as possible so I can reuse it later with new models.
 I can take as a reference the work I did for hungry geese challenge.
 
 ```bash
-lux-ai-2021 "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/scripts/create_cunet_agent/debug_agent/main.py" "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/main.py"  
-lux-ai-2021 --rankSystem="trueskill" --tournament  --maxConcurrentMatches 10 "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/scripts/create_cunet_agent/debug_agent/main.py" "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/main.py"
-lux-ai-2021 --rankSystem="wins" --tournament  --maxConcurrentMatches 20 "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/clown/main.py" "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/agents/working_title/main.py"
-tar -czvf clown.tar.gz *
-
 cd "/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/scripts/create_cunet_agent"
 lux-ai-2021 --rankSystem="wins" --tournament  --maxConcurrentMatches 20 "clown/main.py" "working_title/main.py"
-
-
-python create_cunet_agent.py /mnt/hdd0/Kaggle/luxai/models/09_even_more_architecture_variations_around_condition/02_filters32_depth4_condition_8_complex/best_val_loss_model.h5 ../../agents/clown
-```
+lux-ai-2021 "clown/main.py" "working_title/main.py"
 
 ```
-Total Matches: 51 | Matches Queued: 33
-Name                           | ID             | W     | T     | L     |   Points | Matches 
-clown/main.py                  | 82ELMnNwHPzu   | 45    | 0     | 6     | 135      | 51      
-working_title/main.py          | RvByRNcMDjWt   | 6     | 0     | 45    | 18       | 51      
 
-
-after training with python 37
+```
 Total Matches: 123 | Matches Queued: 39
 Name                           | ID             | W     | T     | L     |   Points | Matches 
 clown/main.py                  | RjsyUDGFuo9f   | 112   | 0     | 11    | 336      | 123     
 working_title/main.py          | Amxi6tZ65x2Z   | 11    | 0     | 112   | 33       | 123     
 
-after fixing collisions
+#after fixing collisions
 Total Matches: 521 | Matches Queued: 39
 Name                           | ID             | W     | T     | L     |   Points | Matches 
 working_title/main.py          | zjyVDttY1iGm   | 520   | 0     | 1     | 1560     | 521     
@@ -435,14 +427,48 @@ pip install nvidia-ml-py3
 conda install -c conda-forge cudatoolkit-dev==11.2.2 -y
 ```
 
+#### 4.2.7 Optimize the model architecture
+
+I have run several experiments with the following conclusions:
+
+- Data labels are very unbalanced so I have to give a weight of 32 to positive labels. Focal loss seems to help slighlty
+- It seems that learning rate is not very relevant since I have tried with 2,4,8e-3 and results are almost the same.
+- In the other hand increasing the batch size allows to reach training loss faster but maybe at the cost of poor generalization (not clear since val metrics are noisy)
+- Unet filters: This has the greatest influence on train loss, the greater the number of filters the lower the loss.This suggest that the direction for improving is increasing the number of filters and increasing the training data
+- Depth: 4 seems to be the optimum, 3 or 5 do not improve
+- Condition: using a complex Film layer with a single hidden layer seems to be optimum
 
 ### 4.3 Results
 
-
+I have been able to train agent `clown2` that achieves a LB score of 1358 and position 94/870. It is
+far from the best agents (~1900) but it is a good start point for imitation learning.
 
 ### 4.4 Next steps
 
+On the following iterations I want to scale up data. I will start by using data augmentation and I will
+continue by using all the available data instead of using just the data that fits into memory.
 
+## Iteration 5. Imitation learning with data augmentation
+
+### 5.1 Goal
+
+This is intended to be a short iteration where I implement data augmentation for training and measure
+the improvement on the agent.
+
+### 5.2 Development
+
+Since the board is squared I can apply 90º rotations and also flips to multiply by 8 the amount of
+training data.
+
+I have to be careful with the actions of moving and transfer because the index of the layers should
+be changed when applying the data augmentation. I will write tests to verify that data augmentation
+is reversible.
+
+I will also need to modify the training script to use a generator instead of an array of data.
+
+### 5.3 Results
+
+### 5.4 Next steps
 
 ## Iteration n. Iteration_title
 
