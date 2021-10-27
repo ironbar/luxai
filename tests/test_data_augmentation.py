@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from luxai.data_augmentation import horizontal_flip
+from luxai.data_augmentation import horizontal_flip, rotation_90
 
 @pytest.fixture
 def batch():
@@ -34,3 +34,24 @@ def _assert_batchs_are_different_except_from_context(batch1, batch2):
                 assert (batch1[i][j] == batch2[i][j]).all()
             else:
                 assert not (batch1[i][j] == batch2[i][j]).all(), (i, j)
+
+
+@pytest.mark.parametrize('n_rotations', list(range(1, 4)))
+def test_rotation_90_is_invertible(batch, n_rotations):
+     _assert_batchs_are_equal(
+         batch,
+         rotation_90(*rotation_90(*batch, n_rotations), 4 - n_rotations))
+
+
+@pytest.mark.parametrize('n_rotations', [2, 4])
+def test_rotation_90_is_composable(batch, n_rotations):
+    _assert_batchs_are_equal(
+        rotation_90(*batch, n_rotations),
+        rotation_90(*rotation_90(*batch, n_rotations//2), n_rotations//2))
+
+
+@pytest.mark.parametrize('n_rotations', list(range(1, 4)))
+def test_rotation_90_modifies_everything_except_context(batch, n_rotations):
+    _assert_batchs_are_different_except_from_context(
+        batch,
+        rotation_90(*batch, n_rotations))

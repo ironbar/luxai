@@ -3,6 +3,7 @@ Data augmentation
 """
 import random
 from functools import lru_cache
+import numpy as np
 
 from luxai.output_features import UNIT_ACTIONS_MAP
 
@@ -13,6 +14,9 @@ def random_data_augmentation(x, y):
     """
     if random.randint(0, 1):
         x, y = horizontal_flip(x, y)
+    n_rotations = random.randint(0, 3)
+    if n_rotations:
+        x, y = rotation_90(x, y, n_rotations)
     return x, y
 
 
@@ -44,4 +48,18 @@ def _get_horizontal_flip_unit_actions_indices():
     indices = [UNIT_ACTIONS_MAP[apply_horizontal_flip_to_action(idx_to_action[idx])] \
         for idx in range(len(UNIT_ACTIONS_MAP))]
     indices.append(len(UNIT_ACTIONS_MAP))
+    return indices
+
+
+def rotation_90(x, y, n_times):
+    x = (np.rot90(x[0], axes=(1, 2), k=n_times), x[1])
+    unit_actions_indices = _get_rotation_unit_actions_indices(n_times)
+    y = (np.rot90(y[0], axes=(1, 2), k=n_times)[:, :, :, unit_actions_indices],
+         np.rot90(y[1], axes=(1, 2), k=n_times))
+    return x, y
+
+@lru_cache(maxsize=4)
+def _get_rotation_unit_actions_indices(n_times):
+    indices = (np.arange(4) + n_times) % 4
+    indices = indices.tolist() + (indices + 4).tolist() + list(range(8, 11))
     return indices
