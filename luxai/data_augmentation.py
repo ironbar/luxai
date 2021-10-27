@@ -60,6 +60,6 @@ def rotation_90(x, y, n_times):
 
 @lru_cache(maxsize=4)
 def _get_rotation_unit_actions_indices(n_times):
-    indices = (np.arange(4) + n_times) % 4
+    indices = (np.arange(4) - n_times) % 4
     indices = indices.tolist() + (indices + 4).tolist() + list(range(8, 11))
     return indices
