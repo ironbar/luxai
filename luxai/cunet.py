@@ -100,7 +100,7 @@ def masked_binary_crossentropy(y_true, y_pred, true_weight=1):
 
 
 def apply_mask_to_loss(loss, mask):
-    return K.sum(loss*mask)/(K.sum(mask)*loss.shape[-1])
+    return K.sum(loss*mask)/(K.sum(mask)*K.cast_to_floatx(K.shape(loss)[-1]))
 
 
 def custom_binary_crossentropy(y_true, y_pred, true_weight=1):
