@@ -466,9 +466,93 @@ is reversible.
 
 I will also need to modify the training script to use a generator instead of an array of data.
 
+#### 5.2.1 Pagliacci models
+
+I have created a set of `pagliacci` models that have 32, 64 and 128 filters on the first layer of
+the unet model. I have run two local tournaments:
+
+```
+Total Matches: 976 | Matches Queued: 39
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+pagliacci_128/main.py          | RyKUtFiirJMv   | 305   | 7     | 107   | 922      | 419     
+pagliacci_32/main.py           | bfgCCSIj0cc0   | 289   | 9     | 145   | 876      | 443     
+pagliacci_64/main.py           | DbPktMtaVtIp   | 264   | 14    | 118   | 806      | 396     
+clown2/main.py                 | oW1ycTIWUwaq   | 84    | 8     | 256   | 260      | 348     
+working_title/main.py          | nygpdaZexM3E   | 15    | 0     | 331   | 45       | 346     
+
+
+Total Matches: 898 | Matches Queued: 42
+Name                           | ID             | Score=(μ - 3σ)  | Mu: μ, Sigma: σ    | Matches 
+pagliacci_128/main.py          | uIEncBqBWeCr   | 26.0596907      | μ=28.554, σ=0.831  | 388     
+pagliacci_64/main.py           | lwjqjgfaiHJ6   | 25.8941708      | μ=28.425, σ=0.844  | 397     
+pagliacci_32/main.py           | Ev0DdTqxvQnq   | 23.9877369      | μ=26.396, σ=0.803  | 354     
+clown2/main.py                 | TVRBKu8BvvLa   | 19.9573681      | μ=22.478, σ=0.840  | 347     
+working_title/main.py          | 8FpBlwkv4lLC   | 13.2467371      | μ=16.224, σ=0.992  | 310     
+```
+
+I have realized that when using wins as the metric the number of matches is not asigned correctly. For
+example notice that pagliacci_128 has played 20 matches less than plagiacci_32.
+
+In the other hand using trueskill does not give interpretable results.
+
+#### 5.2.2 Pretrain proof of concept
+
+I would like to run a test to see if pretraining could improve generalization of the models. My idea
+is to enable to load weights from a pretrained model and see if that improves the validation loss.
+I will modify the csv file that is used for match selection to be able to do the experiment correctly.
+
+We have pretrained with 800 matches and fine-tuned on 400 different matches.
+
+| unet filters | pretrained best validation loss | from zero best validation loss |
+|--------------|---------------------------------|--------------------------------|
+| 32           | 0.2702                          | 0.2745                         |
+| 64           | 0.2663                          | 0.269                          |
+| 128          | 0.2599                          | 0.2621                         |
+
+The validation loss with the pretrained model is consistently better but difference is not big.
+
+#### 5.2.3 Training on a different number of matches
+
+I have trained on 200, 400, 600, 800 and 1000 matches.
+
+On this experiment I wanted to see the effect of using more matches for training. It is not obvious if that is good thing, because we are mixing
+data from different agents, that play different. Probably is a good thing for pretraining but not sure about fine-tuning.
+
+The validation set was different on each experiment, so that makes direct comparison impossible.
+
+However we can see that the train losses relations are not trivial. They are not well organized and sorted from
+less number of matches to biggest number of matches. This suggests that we have to do a deeper study in the
+future.
+
+Also I have to increase the limit of 50 epochs.
+
 ### 5.3 Results
 
+I have created a set of `pagliacci` models that are currently scoring around 1450-1500 on leaderboard.
+I'm currently on position 22/882 at day 28/10/2021.
+
 ### 5.4 Next steps
+
+The next step is to implement a training script that is able to use all the data for training and
+does not have RAM limitations. I will have to also experiment with the amount of data used for training
+or fine-tuning the models.
+
+## Iteration 6. Training on all the data
+
+### 6.1 Goal
+
+The goal of this iteration is to see if training with all the data yields improvements.
+
+### 6.2 Development
+
+#### 6.2.1 Training script
+
+The idea is to load the matches in groups, for example of 50 and create batches from those matches
+until there is no data left. Then load new matches and start again.
+
+### 6.3 Results
+
+### 6.4 Next steps
 
 ## Iteration n. Iteration_title
 
