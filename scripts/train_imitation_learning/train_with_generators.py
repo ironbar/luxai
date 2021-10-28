@@ -24,12 +24,23 @@ def train(config_path):
         train_conf = yaml.safe_load(f)
     output_folder = os.path.dirname(os.path.realpath(config_path))
 
-    train_generator = data_generator(**train_conf['data']['train'])
-    val_generator = data_generator(**train_conf['data']['val'])
+    train_enqueuer, val_enqueuer = get_enqueuers(train_conf['data'])
     model = create_model(train_conf['model_params'])
     callbacks = create_callbacks(train_conf['callbacks'], output_folder)
-    model.fit(x=train_generator, validation_data=val_generator,
+    model.fit(x=train_enqueuer.get(), validation_data=val_enqueuer.get(),
               callbacks=callbacks, **train_conf['train_kwargs'])
+    train_enqueuer.stop()
+    val_enqueuer.stop()
+
+
+def get_enqueuers(data_conf, max_queue_size=100):
+    enqueuers = []
+    for generator_conf in [data_conf['train'], data_conf['val']]:
+        generator = data_generator(**generator_conf)
+        enqueuer = tf.keras.utils.GeneratorEnqueuer(generator)
+        enqueuer.start(max_queue_size=max_queue_size)
+        enqueuers.append(enqueuer)
+    return enqueuers
 
 
 def parse_args(args):
