@@ -550,6 +550,35 @@ The goal of this iteration is to see if training with all the data yields improv
 The idea is to load the matches in groups, for example of 50 and create batches from those matches
 until there is no data left. Then load new matches and start again.
 
+#### 6.2.2 Training on all the data
+
+```
+Total Matches: 177 | Matches Queued: 39
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+pagliacci_32/main.py           | O1eks2TRoiMU   | 147   | 1     | 29    | 442      | 177     
+napoleon_32/main.py            | 1jep9HhiTAJ2   | 29    | 1     | 147   | 88       | 177     
+win/loss rate: 16/83%
+
+Total Matches: 432 | Matches Queued: 40
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+pagliacci_64/main.py           | ABc7rP1YXf9k   | 322   | 2     | 108   | 968      | 432     
+napoleon_64/main.py            | sFcXldiaulXf   | 108   | 2     | 322   | 326      | 432     
+win/loss rate: 25/74%
+
+Total Matches: 136 | Matches Queued: 40
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+pagliacci_128/main.py          | rKFXXW0q3g7q   | 62    | 29    | 45    | 215      | 136     
+napoleon_128/main.py           | k71CkioerK2j   | 45    | 29    | 62    | 164      | 136     
+win/loss rate: 33/45%
+
+```
+
+It seems that training in all the data creates weaker models. It also seems that the bigger the
+model the difference it is able to learn better from all the data.
+
+We need to see if this also holds in the public leaderboard. I have created a set of agents called `napoleon`
+to test this.
+
 ### 6.3 Results
 
 ### 6.4 Next steps
