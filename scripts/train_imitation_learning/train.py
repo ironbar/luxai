@@ -81,6 +81,9 @@ def create_model(model_params: dict):
     cunet_config.loss_kwargs = model_params['loss_kwargs']
 
     model = cunet_luxai_model(cunet_config)
+    if 'pretrained_weights' in model_params:
+        print('Loading model weights from: %s' % model_params['pretrained_weights'])
+        model.load_weights(model_params['pretrained_weights'])
     return model
 
 
