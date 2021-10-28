@@ -33,12 +33,12 @@ def train(config_path):
     val_enqueuer.stop()
 
 
-def get_enqueuers(data_conf, max_queue_size=100):
+def get_enqueuers(data_conf):
     enqueuers = []
     for generator_conf in [data_conf['train'], data_conf['val']]:
         generator = data_generator(**generator_conf)
         enqueuer = tf.keras.utils.GeneratorEnqueuer(generator)
-        enqueuer.start(max_queue_size=max_queue_size)
+        enqueuer.start(max_queue_size=data_conf['max_queue_size'])
         enqueuers.append(enqueuer)
     return enqueuers
 
