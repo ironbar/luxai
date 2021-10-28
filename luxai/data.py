@@ -53,6 +53,7 @@ def data_generator(n_matches, batch_size, matches_json_dir, matches_cache_npz_di
         matches = [load_match(*episode_id_and_player_pairs[idx], matches_json_dir, matches_cache_npz_dir) \
                    for idx in episode_indices]
         data = combine_data_for_training(matches, verbose=False)
+        del matches
 
         indices = np.arange(len(data[0][0]))
         np.random.shuffle(indices)
