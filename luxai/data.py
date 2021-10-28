@@ -36,17 +36,9 @@ def load_best_n_matches(n_matches, matches_json_dir, matches_cache_npz_dir, agen
     df.reset_index(drop=True, inplace=True)
 
     matches = []
-    for episode_id, player in tqdm(zip(df.EpisodeId[:n_matches], df.Index[:n_matches]), total=n_matches, desc='Loading matches'):
-        npz_filepath = os.path.join(matches_cache_npz_dir, '%i_%i.npz' % (episode_id, player))
-
-        if os.path.exists(npz_filepath):
-            match = load_match_from_npz(npz_filepath)
-        else:
-            json_filepath = os.path.join(matches_json_dir, '%i.json' % episode_id)
-            match = load_match_from_json(json_filepath, player)
-            save_match_to_npz(npz_filepath, match)
-
-        matches.append(match)
+    for episode_id, player in tqdm(zip(df.EpisodeId[:n_matches], df.Index[:n_matches]),
+                                   total=n_matches, desc='Loading matches'):
+        matches.append(load_match(episode_id, player, matches_json_dir, matches_cache_npz_dir))
     return matches
 
 
@@ -69,6 +61,17 @@ def shuffle_data(data):
     np.random.shuffle(new_order)
     return [x[new_order] for x in data[0]], [x[new_order] for x in data[1]]
 
+
+def load_match(episode_id, player, matches_json_dir, matches_cache_npz_dir):
+    npz_filepath = os.path.join(matches_cache_npz_dir, '%i_%i.npz' % (episode_id, player))
+
+    if os.path.exists(npz_filepath):
+        match = load_match_from_npz(npz_filepath)
+    else:
+        json_filepath = os.path.join(matches_json_dir, '%i.json' % episode_id)
+        match = load_match_from_json(json_filepath, player)
+        save_match_to_npz(npz_filepath, match)
+    return match
 
 
 def load_match_from_json(filepath, player):
