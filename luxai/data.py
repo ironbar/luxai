@@ -9,6 +9,7 @@ import pandas as pd
 
 from luxai.input_features import make_input, expand_board_size_adding_zeros
 from luxai.output_features import create_actions_mask, create_output_features
+from luxai.data_augmentation import random_data_augmentation
 
 
 def load_train_and_test_data(n_matches, test_fraction, matches_json_dir,
@@ -42,17 +43,53 @@ def load_best_n_matches(n_matches, matches_json_dir, matches_cache_npz_dir, agen
     return matches
 
 
-def combine_data_for_training(matches):
+def data_generator(n_matches, batch_size, matches_json_dir, matches_cache_npz_dir, agent_selection_path):
+    """
+    A generator that loads the episodes in a random order
+    """
+    df = pd.read_csv(agent_selection_path)
+    episode_id_and_player_pairs = list(zip(df.EpisodeId, df.Index))
+    for episode_indices in episode_indices_generator(len(df), n_matches):
+        matches = [load_match(*episode_id_and_player_pairs[idx], matches_json_dir, matches_cache_npz_dir) \
+                   for idx in episode_indices]
+        data = combine_data_for_training(matches, verbose=False)
+
+        indices = np.arange(len(data[0][0]))
+        np.random.shuffle(indices)
+        n_batches = len(indices)//batch_size
+        for batch_idx in range(n_batches):
+            batch_indices = indices[batch_idx*batch_size: (batch_idx+1)*batch_size]
+            x = data[0][0][batch_indices], data[0][1][batch_indices]
+            y = data[1][0][batch_indices], data[1][1][batch_indices]
+            yield random_data_augmentation(x, y)
+
+
+def episode_indices_generator(total_size, group_size):
+    def fill_queue(queue, total_size):
+        indices = np.arange(total_size)
+        for _ in range(5):
+            np.random.shuffle(indices)
+            queue.extend(indices.tolist())
+
+    queue = []
+    while 1:
+        if len(queue) < group_size:
+            fill_queue(queue, total_size)
+        yield queue[:group_size]
+        queue = queue[group_size:]
+
+
+def combine_data_for_training(matches, verbose=True):
     inputs = [
         np.concatenate([expand_board_size_adding_zeros(match['board']) for match in matches]),
         np.concatenate([match['features'] for match in matches]),
     ]
-    print('Inputs shapes', [x.shape for x in inputs])
+    if verbose: print('Inputs shapes', [x.shape for x in inputs])
     outputs = [
         np.concatenate([expand_board_size_adding_zeros(match['unit_output']) for match in matches]),
         np.concatenate([expand_board_size_adding_zeros(match['city_output']) for match in matches]),
     ]
-    print('Outputs shapes', [x.shape for x in outputs])
+    if verbose: print('Outputs shapes', [x.shape for x in outputs])
     return inputs, outputs
 
 
