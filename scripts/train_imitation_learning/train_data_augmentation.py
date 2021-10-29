@@ -27,6 +27,8 @@ def train(config_path):
     train_data, test_data = load_train_and_test_data(**train_conf['data'])
     model = create_model(train_conf['model_params'])
     callbacks = create_callbacks(train_conf['callbacks'], output_folder)
+    train_conf['train_kwargs']['validation_batch_size'] = find_optimum_batch_size(
+        len(test_data[0][0]), train_conf['train_kwargs']['validation_batch_size'] )
     model.fit(x=train_generator(train_data, train_conf['batch_size']), validation_data=test_data,
               callbacks=callbacks, **train_conf['train_kwargs'])
 
@@ -41,6 +43,11 @@ def train_generator(train_data, batch_size):
             x = train_data[0][0][batch_indices], train_data[0][1][batch_indices]
             y = train_data[1][0][batch_indices], train_data[1][1][batch_indices]
             yield random_data_augmentation(x, y)
+
+
+def find_optimum_batch_size(n_samples, ref_batch_size):
+    candidate_batch_sizes = np.arange(ref_batch_size - 2, ref_batch_size + 3, dtype=int)
+    return candidate_batch_sizes[np.argmax(n_samples % candidate_batch_sizes)]
 
 
 def parse_args(args):
