@@ -552,7 +552,7 @@ until there is no data left. Then load new matches and start again.
 
 #### 6.2.2 Training on all the data
 
-```
+```bash
 Total Matches: 177 | Matches Queued: 39
 Name                           | ID             | W     | T     | L     |   Points | Matches 
 pagliacci_32/main.py           | O1eks2TRoiMU   | 147   | 1     | 29    | 442      | 177     
@@ -581,7 +581,45 @@ to test this.
 
 ### 6.3 Results
 
+I have submitted a set of agents called `napoleon` and at the time of writing (29/10/2021) they score
+1515, 1450 and 1344 for 128, 64, 32 filters respectively. Thus we can see the same pattern as the local
+scores. Thus it seems that training in all the data yields worse results unless we use a very big model.
+
+My hypothesis is that this happens because there are agents of very different skill, there is a big
+difference between an agent scoring 1500 and another scoring 1800. Also the agents may have contradictory
+policies that are harder to learn than simply learning from a single or a few agents.
+
 ### 6.4 Next steps
+
+On the next iteration we are going to do the opposite. Instead of using data from all the agents we are going
+to focus on training on a single or a few agents. Hopefully pretraining on all the data will be useful
+on that little data trainings.
+
+## Iteration 7. Focus on data from a singler or a few agents
+
+### 7.1 Goal
+
+Previous iteration has shown that training on all the data yields worse results if the model is small.
+So now we are going to do the opposite, to train just on the best agent or on the best n agents.
+
+### 7.2 Development
+
+#### 7.2.1 Data exploration
+
+Let's see how many matches do the best agents have.
+
+#### 7.2.n Download more data from the cluster
+
+I would also like to see if I can have information regarding the name of the team making the submission.
+
+### 7.3 Results
+
+The set of `focus` models
+
+### 7.4 Next steps
+
+Ensembling models, data augmentation at test
+
 
 ## Iteration n. Iteration_title
 
