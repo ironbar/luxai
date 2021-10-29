@@ -13,13 +13,13 @@ from luxai.data_augmentation import random_data_augmentation
 
 
 def load_train_and_test_data(n_matches, test_fraction, matches_json_dir,
-                             matches_cache_npz_dir, agent_selection_path):
+                             matches_cache_npz_dir, agent_selection_path, test_split_offset=0):
     matches = load_best_n_matches(
         n_matches=n_matches, matches_json_dir=matches_json_dir,
         matches_cache_npz_dir=matches_cache_npz_dir, agent_selection_path=agent_selection_path)
 
-    test_matches = [match for idx, match in enumerate(matches) if not idx%test_fraction]
-    train_matches = [match for idx, match in enumerate(matches) if idx%test_fraction]
+    test_matches = [match for idx, match in enumerate(matches) if not (idx + test_split_offset)%test_fraction]
+    train_matches = [match for idx, match in enumerate(matches) if (idx + test_split_offset)%test_fraction]
 
     print('Train matches: %i' % len(train_matches))
     train_data = combine_data_for_training(train_matches)
