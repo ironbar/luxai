@@ -81,6 +81,7 @@ def cunet_luxai_model(config):
         optimizer=Adam(lr=config.LR, beta_1=0.5),
         loss=get_loss_function(config.loss_name, config.loss_kwargs),
         metrics=[masked_error, true_positive_error, true_negative_error],
+        loss_weights=config.loss_weights,
     )
     return model
 
