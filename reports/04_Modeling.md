@@ -608,6 +608,35 @@ So now we are going to do the opposite, to train just on the best agent or on th
 
 Let's see how many matches do the best agents have.
 
+| SubmissionId | n matches | FinalScore  |
+|--------------|-----------|-------------|
+| 23032370     | 176.0     | 1818.288755 |
+| 22777661     | 394.0     | 1711.493722 |
+| 23034455     | 244.0     | 1710.606181 |
+| 22934122     | 241.0     | 1651.606058 |
+| 22902113     | 345.0     | 1650.975344 |
+| 23159502     | 65.0      | 1650.841907 |
+| 23038485     | 137.0     | 1643.818123 |
+| 23010508     | 195.0     | 1643.516025 |
+| 23008895     | 191.0     | 1636.605564 |
+| 22931784     | 233.0     | 1636.232316 |
+
+This shows that `pagliacci` agents that were trained with 400 matches were a mixture of the best and the second best agent.
+
+#### 7.2.2 Train on single agents
+
+Let's see if training on matches from a single agent yields better results than previous models. I will
+have to try both with and without pretraining.
+
+| name                              | win rate | matches |
+|-----------------------------------|----------|---------|
+| focus_rank0_32_filters_pretrained | 63.8%    | 252     |
+| pagliacci_32                      | 44%      | 270     |
+| focus_rank0_32_filters            | 41.1%    | 260     |
+
+Clearly the use of pretrained weights is beneficial. So I will always be using pretrained from now on. Let's now run a tournament between rank0, rank1 and rank2 agents.
+
+
 #### 7.2.n Download more data from the cluster
 
 I would also like to see if I can have information regarding the name of the team making the submission.
@@ -618,8 +647,8 @@ The set of `focus` models
 
 ### 7.4 Next steps
 
-Ensembling models, data augmentation at test
-
+Ensembling models, data augmentation at test, give different weight to the losses, it seems that
+city action overfits first
 
 ## Iteration n. Iteration_title
 

@@ -16,3 +16,4 @@ agents/errorlogs/*
 agents/replays/*
 agents/pagliacci*/*
 agents/napoleon_*/*
+agents/focus_*/*
