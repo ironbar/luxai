@@ -38,7 +38,7 @@ def load_best_n_matches(n_matches, matches_json_dir, matches_cache_npz_dir, agen
 
     matches = []
     for episode_id, player in tqdm(zip(df.EpisodeId[:n_matches], df.Index[:n_matches]),
-                                   total=n_matches, desc='Loading matches'):
+                                   total=min(len(df), n_matches), desc='Loading matches'):
         matches.append(load_match(episode_id, player, matches_json_dir, matches_cache_npz_dir))
     return matches
 
