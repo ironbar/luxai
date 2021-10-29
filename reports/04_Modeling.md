@@ -636,19 +636,75 @@ have to try both with and without pretraining.
 
 Clearly the use of pretrained weights is beneficial. So I will always be using pretrained from now on. Let's now run a tournament between rank0, rank1 and rank2 agents.
 
+```bash
+Total Matches: 154 | Matches Queued: 20
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+pagliacci_32/main.py           | LEYo49y7BNud   | 52    | 0     | 31    | 156      | 83      
+focus_rank0_32_filters_pretrained/main.py | uK26aXRH6AEF   | 51    | 1     | 37    | 154      | 89      
+focus_rank1_32_filters_pretrained/main.py | kSfwkJ5hVqGE   | 36    | 0     | 40    | 108      | 76      
+focus_rank2_32_filters_pretrained/main.py | 07wuE9koYaIs   | 14    | 1     | 45    | 43       | 60   
+```
+
+Since rank2 is clearly weaker I'm removing it from the tournament and starting again.
+
+| name                              | win rate | matches |
+|-----------------------------------|----------|---------|
+| focus_rank0_32_filters_pretrained | 79.3%    | 63      |
+| pagliacci_32                      | 40.2%    | 67      |
+| focus_rank1_32_filters_pretrained | 32%      | 70      |
+
+Clearly training just on the best agent is better than training just on other agents.
+
+| name                               | win rate | matches |
+|------------------------------------|----------|---------|
+| focus_rank0_128_filters_pretrained | 70%      | 111     |
+| focus_rank0_64_filters_pretrained  | 59.2%    | 108     |
+| focus_rank0_32_filters_pretrained  | 33%      | 100     |
+| pagliacci_32                       | 28%      | 89      |
+
+It seems that using more filters is beneficial, I have made submissions for all three models.
+
+#### 7.2.3 Train on a few agents
+
+Let's start from the best agent and train on the best n agents and compare to just training on the
+best single agent.
+
+| name                               | win rate | matches |
+|------------------------------------|----------|---------|
+| focus_rank0_128_filters_pretrained | 61.5%    | 138     |
+| pagliacci_32                       | 50%      | 150     |
+| focus_best2_32_filters_pretrained  | 47.1%    | 138     |
+| focus_best3_32_filters_pretrained  | 47.7%    | 1134    |
+| focus_best4_32_filters_pretrained  | 46.4%    | 114     |
+| focus_best5_32_filters_pretrained  | 43.1%    | 95      |
+
+The table clearly shows that the best option is still to use the best agent. Using other agents
+is not beneficial.
 
 #### 7.2.n Download more data from the cluster
 
-I would also like to see if I can have information regarding the name of the team making the submission.
+I have seent that I have 176 matches from the best agent from the leaderboard but there are 329 matches
+available as of today. Thus it seems likely that if I download that data I could get an improvement, since
+it is almost twice the data.
 
 ### 7.3 Results
+
+Training just on the single best leaderboard agent was found to be the best strategy. I believe there
+are two reasons for this:
+
+1. The best agent is much better than the other agents
+2. There could be contradictory policies when using multiple agents
 
 The set of `focus` models
 
 ### 7.4 Next steps
 
-Ensembling models, data augmentation at test, give different weight to the losses, it seems that
-city action overfits first
+- Ensembling models
+- data augmentation at test
+- give different weight to the losses, it seems that city action overfits first
+- Lower learning rate when retraining
+- LR policy when training on all the data
+- Arquitecture search
 
 ## Iteration n. Iteration_title
 
