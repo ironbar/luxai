@@ -681,11 +681,50 @@ best single agent.
 The table clearly shows that the best option is still to use the best agent. Using other agents
 is not beneficial.
 
-#### 7.2.n Download more data from the cluster
+#### 7.2.4 Download more data from the cluster
 
 I have seent that I have 176 matches from the best agent from the leaderboard but there are 329 matches
 available as of today. Thus it seems likely that if I download that data I could get an improvement, since
 it is almost twice the data.
+
+I have also modified the weight loss when training because validation city action rises earlier than
+unit action loss, so by reducing the city action loss weight I'm able to reduce this effect.
+
+In this conditions I have created agents `superfocus` with the hope that we can reach even higher
+in the leaderboard.
+
+```bash
+Total Matches: 303 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+superfocus_64/main.py          | ByUqHHxX2deM   | 263   | 0     | 40    | 789      | 303     
+pagliacci_32/main.py           | rQoHanVqb4on   | 40    | 0     | 263   | 120      | 303     
+
+Total Matches: 117 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+superfocus_128/main.py         | uyKFAGXqPNfL   | 67    | 19    | 31    | 220      | 117     
+pagliacci_32/main.py           | SlhkSZZneShb   | 31    | 19    | 67    | 112      | 117     
+
+Total Matches: 487 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+focus_rank0_64_filters_pretrained/main.py | s5iECdePSOGd   | 370   | 2     | 115   | 1112     | 487     
+pagliacci_32/main.py           | xoxRGhv1IoQq   | 115   | 2     | 370   | 347      | 487     
+```
+
+| name                              | win rate | matches |
+|-----------------------------------|----------|---------|
+| superfocus_64                     | 86.7%    | 303     |
+| focus_rank0_64_filters_pretrained | 75.9%    | 487     |
+| supefocus_128                     | 57.2%    | 117     |
+
+Seems that the `superfocus_64` is stronger, but the `supefocus_128` is weaker.
+
+#### 7.2.5 Ensembling
+
+As a last attempt of this iteration I'm going to train an ensemble combining `superfocus_64` models.
+I will change the seed for choosing the train/val split and see how many models I can upload to kaggle.
+On hungry_geese challenge the limit size for the submission was 100 MB, but on this challenge I don't
+see if that limit exists.
+
 
 ### 7.3 Results
 
