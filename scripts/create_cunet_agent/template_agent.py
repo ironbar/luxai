@@ -19,7 +19,7 @@ def agent(observation, configuration):
     board, features = ret[:2]
     model_input = [expand_board_size_adding_zeros(np.expand_dims(board, axis=0)),
                    np.expand_dims(features, axis=0)]
-    preds = [model.predict(model_input) for model in models]
+    preds = [model.predict_step(model_input) for model in models]
     preds = [np.mean([pred[idx] for pred in preds], axis=0) for idx in range(2)]
     preds = [crop_board_to_original_size(pred, observation) for pred in preds]
     active_unit_to_position, active_city_to_position, unit_to_position, city_to_position = ret[2:]

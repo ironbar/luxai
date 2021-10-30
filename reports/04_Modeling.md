@@ -744,6 +744,7 @@ The set of `focus` models
 - Lower learning rate when retraining
 - LR policy when training on all the data
 - Arquitecture search
+- check warnings from agent and add more post-processing to model output
 
 ## Iteration n. Iteration_title
 
