@@ -725,6 +725,16 @@ I will change the seed for choosing the train/val split and see how many models 
 On hungry_geese challenge the limit size for the submission was 100 MB, but on this challenge I don't
 see if that limit exists.
 
+```bash
+Total Matches: 487 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+superfocus_64_ensemble/main.py | fPLm1P59wddY   | 480   | 0     | 7     | 1440     | 487     
+pagliacci_32/main.py           | nevonCiIpeL5   | 7     | 0     | 480   | 21       | 487     
+```
+
+Teh win rate is 98.5% which is absolutely amazing. As of 30/10/2021 I have submitted 5 copies
+of this agent with the hope that by the end of tomorrow they will have reached the 4 position
+in the leaderboard.
 
 ### 7.3 Results
 
@@ -735,6 +745,9 @@ are two reasons for this:
 2. There could be contradictory policies when using multiple agents
 
 The set of `focus` models
+
+I have seen that the model behaves weirdly when playing against very bad agents, a sign that imitation
+learning does not work well when the data comes from a different distribution.
 
 ### 7.4 Next steps
 
