@@ -892,12 +892,28 @@ pagliacci_32_da_full/main.py   | 8ya9Nj2RkoKj   | 171   | 2     | 207   | 515   
 This experiment show that all data augmentation improve over the baseline, but we can see that we
 get a very similar improvement when using just horizontal flip compared to using full data augmentation.
 
-
+```bash
 Total Matches: 43 | Matches Queued: 19
 Name                           | ID             | W     | T     | L     |   Points | Matches 
 superfocus_64_ensemble_hf/main.py | uFrftN728atx   | 28    | 1     | 14    | 85       | 43      
 superfocus_64_ensemble/main.py | 6AP3RWJ7UhMA   | 14    | 1     | 28    | 43       | 43      
 
+
+Total Matches: 165 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+superfocus_128/main.py         | gyigFZZ0x3pq   | 89    | 1     | 75    | 268      | 165     
+superfocus_64_ensemble/main.py | o8D2FokR9UK0   | 75    | 1     | 89    | 226      | 165     
+
+Total Matches: 110 | Matches Queued: 20
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+superfocus_64_ensemble_hf/main.py | o25MVDpkh17e   | 59    | 0     | 51    | 177      | 110     
+superfocus_128/main.py         | wbStTSexuKLM   | 51    | 0     | 59    | 153      | 110     
+```
+
+| name                      | win rate | matches |
+|---------------------------|----------|---------|
+| superfocus_64_ensemble    | 47.8%    | 165     |
+| superfocus_64_ensemble_hf | 53.6%    | 110     |
 
 
 
