@@ -17,15 +17,21 @@ models = [tf.keras.models.load_model(model_path, compile=False) for model_path i
 def predict_with_data_augmentation(model, model_input):
     preds = []
     for apply_horizontal_flip in range(2):
-        for n_rotations in range(1):
+        for n_rotations in range(4):
+            augmented_model_input = [x.copy() for x in model_input]
             if apply_horizontal_flip:
-                augmented_model_input = list(horizontal_flip_input(model_input))
-            else:
-                augmented_model_input = model_input
+                augmented_model_input = list(horizontal_flip_input(augmented_model_input))
+            if n_rotations:
+                augmented_model_input = list(rotation_90_input(augmented_model_input, n_rotations))
+
             pred = model.predict_step(augmented_model_input)
             pred = [tensor.numpy() for tensor in pred]
+
+            if n_rotations:
+                pred = rotation_90_output(pred, 4 - n_rotations)
             if apply_horizontal_flip:
                 pred = horizontal_flip_output(pred)
+
             preds.append(pred)
 
     return average_predictions(preds)
