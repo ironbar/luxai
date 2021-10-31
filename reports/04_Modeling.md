@@ -595,7 +595,7 @@ On the next iteration we are going to do the opposite. Instead of using data fro
 to focus on training on a single or a few agents. Hopefully pretraining on all the data will be useful
 on that little data trainings.
 
-## Iteration 7. Focus on data from a singler or a few agents
+## Iteration 7. Focus on data from a single or a few agents
 
 ### 7.1 Goal
 
@@ -734,7 +734,7 @@ pagliacci_32/main.py           | nevonCiIpeL5   | 7     | 0     | 480   | 21    
 
 Teh win rate is 98.5% which is absolutely amazing. As of 30/10/2021 I have submitted 5 copies
 of this agent with the hope that by the end of tomorrow they will have reached the 4 position
-in the leaderboard.
+in the leaderboard. I need to reach to around 1690 leaderboard score.
 
 ### 7.3 Results
 
@@ -744,20 +744,31 @@ are two reasons for this:
 1. The best agent is much better than the other agents
 2. There could be contradictory policies when using multiple agents
 
-The set of `focus` models
-
 I have seen that the model behaves weirdly when playing against very bad agents, a sign that imitation
 learning does not work well when the data comes from a different distribution.
 
+On this iteration I have also implemented ensembles and weigth loss, because city action overfits
+first.
+
+At the time of writing there are less than 24 hours to finish the sprint 3. That means that my best
+agent should play around 10 more matches. That may be enough to reach position 4.
+
+![leaderboard_at_0610_31_10_2021](res/leaderboard_at_0610_31_10_2021.png)
+
+At the time of writing the best model from previous iteration is `pagliacci_64` which has a score of 1527.
+That means that we have improved more than 100 points on LB and it is likely that even more because
+win rate of the `superfocus_64_ensemble` agent is very high and its score will go up.
+
 ### 7.4 Next steps
 
-- Ensembling models
-- data augmentation at test
-- give different weight to the losses, it seems that city action overfits first
+This are my ideas for improving:
+
+- Data augmentation at test
+- Check warnings from agent and add more post-processing to model output
+- Download more data
 - Lower learning rate when retraining
 - LR policy when training on all the data
 - Arquitecture search
-- check warnings from agent and add more post-processing to model output
 
 ## Iteration n. Iteration_title
 
