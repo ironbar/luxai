@@ -43,6 +43,7 @@ def create_cunet_agent_script(model_paths, output_path):
         '../../luxai/input_features.py',
         '../../luxai/output_features.py',
         '../../luxai/actions.py',
+        '../../luxai/data_augmentation.py',
         'template_agent.py'
     ]
     text = ''

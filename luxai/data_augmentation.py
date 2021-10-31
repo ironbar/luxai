@@ -38,7 +38,7 @@ def horizontal_flip_input(x):
 
 
 def horizontal_flip_output(y):
-    unit_actions_indices = _get_horizontal_flip_unit_actions_indices()
+    unit_actions_indices = _get_horizontal_flip_unit_actions_indices()[:y[0].shape[-1]]
     y = (y[0][:, ::-1, :, unit_actions_indices], y[1][:, ::-1])
     return y
 
