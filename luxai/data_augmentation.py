@@ -60,11 +60,20 @@ def _get_horizontal_flip_unit_actions_indices():
 
 
 def rotation_90(x, y, n_times):
+    return rotation_90_input(x, n_times), rotation_90_output(y, n_times)
+
+
+def rotation_90_input(x, n_times):
     x = (np.rot90(x[0], axes=(1, 2), k=n_times), x[1])
+    return x
+
+
+def rotation_90_output(y, n_times):
     unit_actions_indices = _get_rotation_unit_actions_indices(n_times)
     y = (np.rot90(y[0], axes=(1, 2), k=n_times)[:, :, :, unit_actions_indices],
          np.rot90(y[1], axes=(1, 2), k=n_times))
-    return x, y
+    return y
+
 
 @lru_cache(maxsize=4)
 def _get_rotation_unit_actions_indices(n_times):
