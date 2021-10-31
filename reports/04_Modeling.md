@@ -844,6 +844,11 @@ Total Matches: 110 | Matches Queued: 20
 Name                           | ID             | W     | T     | L     |   Points | Matches 
 superfocus_64_ensemble_hf/main.py | o25MVDpkh17e   | 59    | 0     | 51    | 177      | 110     
 superfocus_128/main.py         | wbStTSexuKLM   | 51    | 0     | 59    | 153      | 110     
+
+Total Matches: 28 | Matches Queued: 20
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+superfocus_64_ensemble_da/main.py | Ues8VNRi1LM1   | 15    | 0     | 13    | 45       | 28      
+superfocus_128/main.py         | ebAUfnQ3DZgy   | 13    | 0     | 15    | 39       | 28   
 ```
 
 | name                      | win rate | matches |
@@ -851,15 +856,32 @@ superfocus_128/main.py         | wbStTSexuKLM   | 51    | 0     | 59    | 153   
 | superfocus_64_ensemble    | 47.8%    | 165     |
 | superfocus_64_ensemble_hf | 53.6%    | 110     |
 
-We can see a considerable improvement in win rate when using data augmentation. Playing with
-all data augmentation is extremely slow, tomorrow I will try making a submission to see if it is
-able to withstand the time limits.
+We can see a considerable improvement in win rate when using data augmentation.
+
+Playing with all data augmentation is extremely slow, tomorrow I will try making a submission to see if it is
+able to withstand the time limits. In around 30 minutes it only has been able to play 28 matches.
 
 ### 8.3 Results
 
 On this iteration we have implemented data augmentation at test.
 
 ### 8.4 Next steps
+
+## Iteration 9. More postprocessing of model predictions
+
+### 9.1 Goal
+
+The goal of the iteration is to add postprocessing to model predictions because some warnings have
+been seen:
+
+- a unit trying to build a city without the resources needed (does it spend the action, maybe is better to mask that options out and take the second higher action in that case)
+- cities trying to make units when there is no more gaps available (probably is better to prioritize)
+
+### 9.2 Development
+
+### 9.3 Results
+
+### 9.4 Next steps
 
 
 ## Iteration n. Iteration_title
