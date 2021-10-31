@@ -16,8 +16,8 @@ models = [tf.keras.models.load_model(model_path, compile=False) for model_path i
 
 def predict_with_data_augmentation(model, model_input):
     preds = []
-    for apply_horizontal_flip in range(2):
-        for n_rotations in range(4):
+    for apply_horizontal_flip in range(__replace_horizontal_flip_augmentation__):
+        for n_rotations in range(__replace_rotation_augmentation__):
             augmented_model_input = [x.copy() for x in model_input]
             if apply_horizontal_flip:
                 augmented_model_input = list(horizontal_flip_input(augmented_model_input))
