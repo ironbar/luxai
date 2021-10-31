@@ -69,7 +69,7 @@ def rotation_90_input(x, n_times):
 
 
 def rotation_90_output(y, n_times):
-    unit_actions_indices = _get_rotation_unit_actions_indices(n_times)
+    unit_actions_indices = _get_rotation_unit_actions_indices(n_times)[:y[0].shape[-1]]
     y = (np.rot90(y[0], axes=(1, 2), k=n_times)[:, :, :, unit_actions_indices],
          np.rot90(y[1], axes=(1, 2), k=n_times))
     return y
