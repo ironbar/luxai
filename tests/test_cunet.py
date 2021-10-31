@@ -72,6 +72,7 @@ def test_cunet_model_changes_when_modifying_both_inputs(film_type):
         config.N_CONDITIONS = sum(config.FILTERS_LAYER_1*2**layer_idx for layer_idx in range(config.N_LAYERS))
     config.loss_name = 'masked_binary_crossentropy'
     config.loss_kwargs = dict()
+    config.loss_weights = None
 
 
     model = cunet_luxai_model(config)
