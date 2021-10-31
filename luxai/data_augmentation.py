@@ -29,10 +29,18 @@ def horizontal_flip(x, y):
     I will simply flip the first axis and rearrange the unit action channels. First axis is x, so
     actions involved are east and west
     """
+    return horizontal_flip_input(x), horizontal_flip_output(y)
+
+
+def horizontal_flip_input(x):
     x = (x[0][:, ::-1], x[1])
+    return x
+
+
+def horizontal_flip_output(y):
     unit_actions_indices = _get_horizontal_flip_unit_actions_indices()
     y = (y[0][:, ::-1, :, unit_actions_indices], y[1][:, ::-1])
-    return x, y
+    return y
 
 
 @lru_cache(maxsize=1)
