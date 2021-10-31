@@ -790,69 +790,8 @@ The idea is simple: to augment the data by doing flips and rotations to create a
 Also I don't really know if I will have enough time on Kaggle to combine ensembles and data augmentation but at least I have to try.
 
 To verify locally that it works I will be using a single model agent. I will be using `pagliacci_32` as my baseline
-since it has been used extensively for comparisons previously.
-
-```bash
-# without any modification
-Total Matches: 63 | Matches Queued: 19
-Name                           | ID             | W     | T     | L     |   Points | Matches 
-pagliacci_32_da/main.py        | awREJSfCC06Q   | 32    | 0     | 31    | 96       | 63      
-pagliacci_32/main.py           | qFLaUk1k5rir   | 31    | 0     | 32    | 93       | 63     
-
-# after applying horizontal flip
-Total Matches: 64 | Matches Queued: 20
-Name                           | ID             | W     | T     | L     |   Points | Matches 
-pagliacci_32_da/main.py        | JESVPtXdCBGC   | 42    | 0     | 22    | 126      | 64      
-pagliacci_32/main.py           | 8MFGVWmQHUCb   | 22    | 0     | 42    | 66       | 64      
-
-
-# after applying 2 rotations
-Total Matches: 94 | Matches Queued: 20
-Name                           | ID             | W     | T     | L     |   Points | Matches 
-pagliacci_32_da/main.py        | yhST8PqBxyCh   | 51    | 3     | 40    | 156      | 94      
-pagliacci_32/main.py           | WKzy1DJLXIPV   | 40    | 3     | 51    | 123      | 94      
-
-
-# after applying 4 rotations
-Total Matches: 131 | Matches Queued: 19
-Name                           | ID             | W     | T     | L     |   Points | Matches 
-pagliacci_32_da/main.py        | L7Cf5Dt8zmpI   | 72    | 0     | 59    | 216      | 131     
-pagliacci_32/main.py           | MF9HOaUVmUID   | 59    | 0     | 72    | 177      | 131     
-
-
-# combining flip + rotations
-Total Matches: 65 | Matches Queued: 19
-Name                           | ID             | W     | T     | L     |   Points | Matches 
-pagliacci_32_da/main.py        | jQINOVjvjr0A   | 41    | 0     | 24    | 123      | 65      
-pagliacci_32/main.py           | ymPheyHwWo1z   | 24    | 0     | 41    | 72       | 65      
-```
-
-It is strange but for this model applying rotations does not seem to help too much. Let's try with another model.
-
-```bash
-# horizontal flip
-Total Matches: 73 | Matches Queued: 19
-Name                           | ID             | W     | T     | L     |   Points | Matches 
-superfocus_64_da/main.py       | LwTTPVGw4Amv   | 45    | 0     | 28    | 135      | 73      
-superfocus_64_na/main.py       | QlaO75iaX4zB   | 28    | 0     | 45    | 84       | 73      
-
-Total Matches: 60 | Matches Queued: 20
-Name                           | ID             | W     | T     | L     |   Points | Matches 
-superfocus_64_da_2rot/main.py  | AUtSt87iyssa   | 30    | 1     | 29    | 91       | 60      
-superfocus_64_na/main.py       | 3yc1R7L3dfIF   | 29    | 1     | 30    | 88       | 60   
-
-Total Matches: 65 | Matches Queued: 19
-Name                           | ID             | W     | T     | L     |   Points | Matches 
-superfocus_64_na/main.py       | C7LeokYYhWnI   | 33    | 0     | 32    | 99       | 65      
-superfocus_64_da_full/main.py  | am31NUro4UHG   | 32    | 0     | 33    | 96       | 65      
-
-
-```
-
-Maybe I need to measure goodness against a different agent. Things can get complicated when playing
-against the same agent.
-
-
+since it has been used extensively for comparisons previously. I will be playing against `pagliacci_64`
+because I initially started playing against the baseline agent and results were weird.
 
 ```bash
 Total Matches: 385 | Matches Queued: 19
@@ -892,12 +831,9 @@ pagliacci_32_da_full/main.py   | 8ya9Nj2RkoKj   | 171   | 2     | 207   | 515   
 This experiment show that all data augmentation improve over the baseline, but we can see that we
 get a very similar improvement when using just horizontal flip compared to using full data augmentation.
 
-```bash
-Total Matches: 43 | Matches Queued: 19
-Name                           | ID             | W     | T     | L     |   Points | Matches 
-superfocus_64_ensemble_hf/main.py | uFrftN728atx   | 28    | 1     | 14    | 85       | 43      
-superfocus_64_ensemble/main.py | 6AP3RWJ7UhMA   | 14    | 1     | 28    | 43       | 43      
+Finally I want to measure improvement with the ensemble.
 
+```bash
 
 Total Matches: 165 | Matches Queued: 19
 Name                           | ID             | W     | T     | L     |   Points | Matches 
@@ -915,9 +851,13 @@ superfocus_128/main.py         | wbStTSexuKLM   | 51    | 0     | 59    | 153   
 | superfocus_64_ensemble    | 47.8%    | 165     |
 | superfocus_64_ensemble_hf | 53.6%    | 110     |
 
-
+We can see a considerable improvement in win rate when using data augmentation. Playing with
+all data augmentation is extremely slow, tomorrow I will try making a submission to see if it is
+able to withstand the time limits.
 
 ### 8.3 Results
+
+On this iteration we have implemented data augmentation at test.
 
 ### 8.4 Next steps
 
