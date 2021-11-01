@@ -1,6 +1,7 @@
 import pytest
 import os
 import json
+import numpy as np
 
 from luxai.actions import (
     create_actions_for_cities_from_model_predictions, CITY_ACTIONS_MAP,
@@ -192,3 +193,28 @@ def test_rank_units_based_on_priority(unit_to_priority, ranked_units):
 def test_remove_collision_actions(unit_to_action, unit_to_position, unit_to_priority, city_positions, remaining_actions):
     remove_collision_actions(unit_to_action, unit_to_position, unit_to_priority, city_positions)
     assert remaining_actions == unit_to_action
+
+@pytest.mark.parametrize('build_action', ['bw', 'bc'])
+@pytest.mark.parametrize('empty_unit_slots', list(range(5)))
+def test_build_unit_actions_are_removed_if_no_empty_slots_are_avaible(empty_unit_slots, build_action):
+    preds = np.zeros((2, 2, len(CITY_ACTIONS_MAP)))
+    preds[:, :, CITY_ACTIONS_MAP[build_action]] = 1
+    active_city_to_position = {}
+    for x in range(2):
+        for y in range(2):
+            active_city_to_position['%i_%i' % (x, y)] = (x, y)
+    actions = create_actions_for_cities_from_model_predictions(
+        preds, active_city_to_position, empty_unit_slots)
+    assert empty_unit_slots == len(actions)
+
+
+@pytest.mark.parametrize('empty_unit_slots', list(range(5)))
+def test_bw_actions_are_replaced_by_research_if_no_empty_slots_are_avaible(empty_unit_slots):
+    preds = np.ones((2, 2, len(CITY_ACTIONS_MAP)))
+    active_city_to_position = {}
+    for x in range(2):
+        for y in range(2):
+            active_city_to_position['%i_%i' % (x, y)] = (x, y)
+    actions = create_actions_for_cities_from_model_predictions(
+        preds, active_city_to_position, empty_unit_slots)
+    assert len(active_city_to_position) == len(actions)

@@ -42,7 +42,7 @@ def create_actions_for_cities_from_model_predictions(preds, active_city_to_posit
         if city_preds[action_idx] > action_threshold:
             action_key = idx_to_action[action_idx]
             actions.append('%s %i %i' % (action_key, x, y))
-            if action_key in ['bw' or 'bc']:
+            if action_key in ['bw', 'bc']:
                 empty_unit_slots -= 1
     return actions
 
