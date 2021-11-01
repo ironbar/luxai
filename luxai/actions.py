@@ -3,6 +3,8 @@ Functions for generating actions from model predictions
 """
 import numpy as np
 
+from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_constants import GAME_CONSTANTS
+
 from luxai.input_features import parse_unit_info
 from luxai.output_features import CITY_ACTIONS_MAP, UNIT_ACTIONS_MAP
 
@@ -34,7 +36,7 @@ def create_actions_for_cities_from_model_predictions(preds, active_city_to_posit
 
 def create_actions_for_units_from_model_predictions(
         preds, active_unit_to_position, unit_to_position, observation, city_positions,
-        action_threshold=0.5, is_remove_collision_actions_enabled=True):
+        action_threshold=0.5, is_post_processing_enabled=True):
     """
     Creates actions in the luxai format from the predictions of the model
 
@@ -52,8 +54,13 @@ def create_actions_for_units_from_model_predictions(
         A set with all the positions of the cities
     action_threshold : float
         A threshold that filters predictions with a smaller value than that
+    is_post_processing_enabled: bool
+        If true actions with collisions will be removed and cities won't be built if not enough
+        resources are available
     """
     preds = preds.copy()
+    if is_post_processing_enabled:
+        preds = apply_can_city_be_built_mask_to_preds(preds, active_unit_to_position, observation)
     idx_to_action = {idx: name for name, idx in UNIT_ACTIONS_MAP.items()}
     unit_to_action, unit_to_priority = {}, {}
     for unit_id, position in active_unit_to_position.items():
@@ -66,7 +73,7 @@ def create_actions_for_units_from_model_predictions(
             unit_to_priority[unit_id] = unit_preds[action_idx]
             # This ensures that units with overlap do not repeat actions
             preds[x, y, action_idx] = 0
-    if is_remove_collision_actions_enabled:
+    if is_post_processing_enabled:
         remove_collision_actions(unit_to_action, unit_to_position, unit_to_priority, city_positions)
     return list(unit_to_action.values())
 
@@ -113,13 +120,18 @@ def _find_unit_in_position(position, unit_to_position):
 
 
 def _get_most_abundant_resource_from_unit(unit_id, observation):
+    resources = _get_unit_resources(unit_id, observation)
+    resource_names = ['wood', 'coal', 'uranium']
+    idx = np.argmax(resources)
+    return resource_names[idx], resources[idx]
+
+
+def _get_unit_resources(unit_id, observation):
     key = ' %s ' % unit_id
     for update in observation['updates']:
         if key in update:
             resources = parse_unit_info(update.split(' '))[-3:]
-            resource_names = ['wood', 'coal', 'uranium']
-            idx = np.argmax(resources)
-            return resource_names[idx], resources[idx]
+            return resources
     raise KeyError(unit_id)
 
 
@@ -158,3 +170,14 @@ def rank_units_based_on_priority(unit_to_priority):
     units = np.array(list(unit_to_priority.keys()))
     priority = [unit_to_priority[unit_id] for unit_id in units]
     return units[np.argsort(priority)[::-1]].tolist()
+
+
+def apply_can_city_be_built_mask_to_preds(preds, active_unit_to_position, observation):
+    mask = np.zeros(preds.shape[:-1])
+    for unit_id, position in active_unit_to_position.items():
+        x, y = position
+        resources = _get_unit_resources(unit_id, observation)
+        if sum(resources) >= GAME_CONSTANTS['PARAMETERS']['CITY_BUILD_COST']:
+            mask[x, y] = 1
+    preds[:, :, UNIT_ACTIONS_MAP['bcity']] *= mask
+    return preds

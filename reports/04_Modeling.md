@@ -861,6 +861,8 @@ We can see a considerable improvement in win rate when using data augmentation.
 Playing with all data augmentation is extremely slow, tomorrow I will try making a submission to see if it is
 able to withstand the time limits. In around 30 minutes it only has been able to play 28 matches.
 
+I have submitted the ensemble with full data augmentation and just by 8 seconds it was able to finish a 32x32 game, however it only lasted 200 seconds, so in a more balanced game is likely to timeout.
+
 ### 8.3 Results
 
 On this iteration we have implemented data augmentation at test.
@@ -879,9 +881,66 @@ been seen:
 
 ### 9.2 Development
 
+#### 9.2.1 Study warnings shown
+
+```bash
+[WARN] (match_DVPnqsyFN2tR) - Agent 0 tried to build unit on tile (1, 1) but unit cap reached. Build more CityTiles!; turn 5; cmd: bw 1 1
+```
+
+In this case the city simply does nothing. In the next turn it researchs, so we have lost a turn. Thus
+by postprocessing this we could gain time and prioritize where the new units are created.
+
+```bash
+[WARN] (match_DVPnqsyFN2tR) - Agent 0 tried to build CityTile with insufficient materials wood + coal + uranium: 96; turn 40; cmd: bcity u_5
+```
+
+This could be solved with a mask applied to units that have 100 resources.
+
+```bash
+[WARN] (match_DVPnqsyFN2tR) - Agent 0 tried to build CityTile on non-empty resource tile; turn 44; cmd: bcity u_8
+```
+
+This could also be solved with a mask, I have to check the order of action resolution because it may
+be the case of a tree disapearing and a house being built at the same time. Resource collection is done after
+unit actions, so we can safely mask that.
+
+#### 9.2.2 Implementation and testing
+
+- [ ] Do not build more units that allowed
+- [x] Do not build cities when resources are not available
+- [ ] Do not build cities on non-empty resource tiles
+
+I have to first verify that warnings do not happen anymore and also that the agent is equal or better than
+the previous one. I will be using `superfocus_64` as my workhorse.
+
+```bash
+python create_cunet_agent.py ../../agents/superfocus_64_pp /mnt/hdd0/Kaggle/luxai/models/18_train_on_single_agent_more_data/06_64_filters_rank0_pretrained_loss_weights_1_01/best_val_loss_model.h5
+
+Total Matches: 303 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+superfocus_64/main.py          | ByUqHHxX2deM   | 263   | 0     | 40    | 789      | 303     
+pagliacci_32/main.py           | rQoHanVqb4on   | 40    | 0     | 263   | 120      | 303     
+
+```
+
+| name                              | win rate | matches |
+|-----------------------------------|----------|---------|
+| superfocus_64                     | 86.7%    | 303     |
+| focus_rank0_64_filters_pretrained | 75.9%    | 487     |
+| supefocus_128                     | 57.2%    | 117     |
+
 ### 9.3 Results
 
 ### 9.4 Next steps
+
+Hints for new features, make it very easy for the model:
+
+- can unit build?
+- is cell empty?
+- number of new units that can be build
+- obstacles
+
+Maybe studying the predictions over validation set I could come with new feature ideas.
 
 
 ## Iteration n. Iteration_title
