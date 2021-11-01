@@ -862,6 +862,7 @@ Playing with all data augmentation is extremely slow, tomorrow I will try making
 able to withstand the time limits. In around 30 minutes it only has been able to play 28 matches.
 
 I have submitted the ensemble with full data augmentation and just by 8 seconds it was able to finish a 32x32 game, however it only lasted 200 seconds, so in a more balanced game is likely to timeout.
+It has happen, timeout when playing against a stronger agent. This could be handled by reducing the number of augmentations
 
 ### 8.3 Results
 
@@ -916,11 +917,16 @@ the previous one. I will be using `superfocus_64` as my workhorse.
 ```bash
 python create_cunet_agent.py ../../agents/superfocus_64_pp /mnt/hdd0/Kaggle/luxai/models/18_train_on_single_agent_more_data/06_64_filters_rank0_pretrained_loss_weights_1_01/best_val_loss_model.h5
 
+# baseline results from other day
 Total Matches: 303 | Matches Queued: 19
 Name                           | ID             | W     | T     | L     |   Points | Matches 
 superfocus_64/main.py          | ByUqHHxX2deM   | 263   | 0     | 40    | 789      | 303     
 pagliacci_32/main.py           | rQoHanVqb4on   | 40    | 0     | 263   | 120      | 303     
 
+# after solving the problem of trying to build cities without resources
+
+
+# after solving the problem of trying to build units without enough cities
 ```
 
 | name                              | win rate | matches |

@@ -9,7 +9,9 @@ from luxai.input_features import parse_unit_info
 from luxai.output_features import CITY_ACTIONS_MAP, UNIT_ACTIONS_MAP
 
 
-def create_actions_for_cities_from_model_predictions(preds, active_city_to_position, action_threshold=0.5):
+def create_actions_for_cities_from_model_predictions(preds, active_city_to_position,
+                                                     empty_unit_slots, action_threshold=0.5,
+                                                     is_post_processing_enabled=True):
     """
     Creates actions in the luxai format from the predictions of the model
 
@@ -21,16 +23,27 @@ def create_actions_for_cities_from_model_predictions(preds, active_city_to_posit
         A dictionary that maps city tile identifier to x, y position
     action_threshold : float
         A threshold that filters predictions with a smaller value than that
+    empty_unit_slots : int
+        Number of units that can be build
+    is_post_processing_enabled: bool
+        If true it won't build units if there are not empty_unit_slots
     """
+    preds = preds.copy()
     actions = []
     idx_to_action = {idx: name for name, idx in CITY_ACTIONS_MAP.items()}
-    for position in active_city_to_position.values():
-        x, y = position
+    city_to_priority = {city_id: np.max(preds[x, y]) for city_id, (x, y) in active_city_to_position.items()}
+    for city_id in rank_units_based_on_priority(city_to_priority):
+        x, y = active_city_to_position[city_id]
         city_preds = preds[x, y]
+        if empty_unit_slots <= 0 and is_post_processing_enabled:
+            city_preds[CITY_ACTIONS_MAP['bw']] = 0
+            city_preds[CITY_ACTIONS_MAP['bc']] = 0
         action_idx = np.argmax(city_preds)
         if city_preds[action_idx] > action_threshold:
             action_key = idx_to_action[action_idx]
             actions.append('%s %i %i' % (action_key, x, y))
+            if action_key in ['bw' or 'bc']:
+                empty_unit_slots -= 1
     return actions
 
 

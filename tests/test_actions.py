@@ -22,11 +22,14 @@ def test_city_actions_can_be_recovered_from_ground_truth(filepath, player):
     with open(filepath, 'r') as f:
         match = json.load(f)['steps']
     for observation, actions in step_generator(match, player):
-        active_city_to_position, unit_to_position = make_input(observation)[3:-1]
+        ret = make_input(observation)
+        active_city_to_position, unit_to_position, city_to_position = ret[3:]
         _, city_actions = create_output_features(actions, unit_to_position, observation)
         true_city_actions = [action for action in actions if action.split(' ')[0] in CITY_ACTIONS_MAP]
 
-        recovered_actions = create_actions_for_cities_from_model_predictions(city_actions, active_city_to_position)
+        recovered_actions = create_actions_for_cities_from_model_predictions(
+            city_actions, active_city_to_position, len(city_to_position) - len(unit_to_position),
+            is_post_processing_enabled=False)
 
         msg = 'actions: %s\ncity actions: %s\nrecovered city actions: %s' % (actions, true_city_actions, recovered_actions)
         if recovered_actions:

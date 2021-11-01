@@ -52,5 +52,6 @@ def agent(observation, configuration):
     active_unit_to_position, active_city_to_position, unit_to_position, city_to_position = ret[2:]
     actions = create_actions_for_units_from_model_predictions(
         preds[0][0], active_unit_to_position, unit_to_position, observation, set(city_to_position.keys()))
-    actions += create_actions_for_cities_from_model_predictions(preds[1][0], active_city_to_position)
+    actions += create_actions_for_cities_from_model_predictions(
+        preds[1][0], active_city_to_position, len(city_to_position) - len(unit_to_position))
     return actions
