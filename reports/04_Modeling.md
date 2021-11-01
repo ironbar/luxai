@@ -907,33 +907,24 @@ unit actions, so we can safely mask that.
 
 #### 9.2.2 Implementation and testing
 
-- [ ] Do not build more units that allowed
+- [x] Do not build more units that allowed
 - [x] Do not build cities when resources are not available
 - [ ] Do not build cities on non-empty resource tiles
 
 I have to first verify that warnings do not happen anymore and also that the agent is equal or better than
 the previous one. I will be using `superfocus_64` as my workhorse.
 
-```bash
-python create_cunet_agent.py ../../agents/superfocus_64_pp /mnt/hdd0/Kaggle/luxai/models/18_train_on_single_agent_more_data/06_64_filters_rank0_pretrained_loss_weights_1_01/best_val_loss_model.h5
-
-# baseline results from other day
-Total Matches: 303 | Matches Queued: 19
-Name                           | ID             | W     | T     | L     |   Points | Matches 
-superfocus_64/main.py          | ByUqHHxX2deM   | 263   | 0     | 40    | 789      | 303     
-pagliacci_32/main.py           | rQoHanVqb4on   | 40    | 0     | 263   | 120      | 303     
-
-# after solving the problem of trying to build cities without resources
-
-
-# after solving the problem of trying to build units without enough cities
-```
-
 | name                              | win rate | matches |
 |-----------------------------------|----------|---------|
 | superfocus_64                     | 86.7%    | 303     |
-| focus_rank0_64_filters_pretrained | 75.9%    | 487     |
-| supefocus_128                     | 57.2%    | 117     |
+| do not build cities if not posible| 84.8%    | 840     |
+| do not build units if not possible| 85.5%    | 353     |
+
+After implement the two first post-processing algorithms I don't see a significative improvement on
+win rate. However I have also fixed a bug that was also affecting to the collision of the units
+because identifiers for city tiles were incorrect.
+
+Thus I don't think it has sense to implement the third one since it happens much less frequently.
 
 ### 9.3 Results
 
