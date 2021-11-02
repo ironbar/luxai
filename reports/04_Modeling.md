@@ -928,6 +928,10 @@ Thus I don't think it has sense to implement the third one since it happens much
 
 ### 9.3 Results
 
+I have implemented post-processing on the actions that succesfully removed the game warnings. However
+it did not have a significative change on local score. It is soon to see if it has an effect
+on leaderboard.
+
 ### 9.4 Next steps
 
 Hints for new features, make it very easy for the model:
@@ -939,6 +943,25 @@ Hints for new features, make it very easy for the model:
 
 Maybe studying the predictions over validation set I could come with new feature ideas.
 
+## Iteration 10. Download more data for pretraining
+
+### 10.1 Goal
+
+On this iteration I will download more data for pretraining and study if setting some threshold
+on the score for choosing the train data has an effect on validation score when fine-tuning.
+
+### 10.2 Development
+
+#### 10.2.1 Tasks
+
+- [ ] See if I can add the name of the team to the dataframe with the matches
+- [ ] Download more submissions
+- [ ] Create a script to generate npz files from json in parallel
+- [ ] Experiment with different thresholds on pretrain data
+
+### 10.3 Results
+
+### 10.4 Next steps
 
 ## Iteration n. Iteration_title
 
