@@ -1011,6 +1011,8 @@ create an agent for submission I will be including them.
 - 1650 threshold is clearly worse than the others
 - The optimum threshold seems to be 1550 with current data.
 
+I need to create a different train and val partition for pretraining.
+
 #### 10.2.4 Train an ensemble
 
 Now let's train an ensemble with these conditions:
@@ -1021,6 +1023,33 @@ Now let's train an ensemble with these conditions:
 This ensemble might be better than previous ensembles because it uses more and better data for
 pretraining and because each fine-tuned model will have different pretrained weights so the ensemble
 will be more diverse.
+
+```python
+import pandas as pd
+import os
+
+df = pd.read_csv('/home/gbarbadillo/luxai_ssd/agent_selection_20211102_teams.csv')
+df = df[df.FinalScore >= 1550]
+df.reset_index(drop=True, inplace=True)
+
+def save_train_and_val_data(folder, seed):
+    os.makedirs(folder, exist_ok=True)
+    train = df.loc[[idx for idx in range(len(df)) if (idx + seed) % 20]]
+    val = df.loc[[idx for idx in range(len(df)) if not (idx + seed) % 20]]
+    train.to_csv(os.path.join(folder, 'train.csv'), index=False)
+    val.to_csv(os.path.join(folder, 'val.csv'), index=False)
+
+for idx in range(7):
+    save_train_and_val_data(folder='/mnt/hdd0/Kaggle/luxai/models/24_diverse_ensemble/pretrain/seed%i' % idx, seed=idx)
+```
+
+```bash
+for i in {1..6}; do cp -r seed0/ seed${i}; done
+for i in {1..6}; do sed -i "s/seed0/seed${i}/g" seed${i}/train_conf.yml; done 
+for i in {1..6}; do sed -i "s/test_split_offset: 0/test_split_offset: ${i}/g" seed${i}/train_conf.yml; done 
+cat */*.yml | grep seed
+cat */*.yml | grep split_offset
+```
 
 ### 10.3 Results
 
