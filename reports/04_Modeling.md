@@ -1011,7 +1011,16 @@ create an agent for submission I will be including them.
 - 1650 threshold is clearly worse than the others
 - The optimum threshold seems to be 1550 with current data.
 
-I'm going to train an ensemble again in these conditions.
+#### 10.2.4 Train an ensemble
+
+Now let's train an ensemble with these conditions:
+
+- Pretrain 7 models on agents with a score higher than 1550 and different seeds for the data
+- Fine-tune each model on three best `Toad Brigade` agents with different seeds for the data
+
+This ensemble might be better than previous ensembles because it uses more and better data for
+pretraining and because each fine-tuned model will have different pretrained weights so the ensemble
+will be more diverse.
 
 ### 10.3 Results
 
