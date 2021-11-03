@@ -954,10 +954,50 @@ on the score for choosing the train data has an effect on validation score when 
 
 #### 10.2.1 Tasks
 
-- [ ] See if I can add the name of the team to the dataframe with the matches
-- [ ] Download more submissions
-- [ ] Create a script to generate npz files from json in parallel
+- [x] See if I can add the name of the team to the dataframe with the matches
+- [x] Download more submissions
+- [x] Create a script to generate npz files from json in parallel
 - [ ] Experiment with different thresholds on pretrain data
+
+I have seen that since the first time I downloaded data the team `Toad Brigade` has submitted two more
+agents of a similar level to the one I used to train on. I believe it is likely that training on those
+three models will yield better results. They currently have scores of 1911, 1903 and 1896, the fourth 
+one has 1720.
+
+#### 10.2.2 Fine-tuning on three best `Toad Brigade` agents
+
+I'm going to create a new version of `superfocus_64` models that are trained on the three best
+`Toad Brigade` agents. If this set of models is better then I will do following experiments with
+this setup on mind. This more than doubles the amount of data used on `superfocus_64` models.
+
+```bash
+Total Matches: 808 | Matches Queued: 20
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+three_toad/main.py             | pkEDFufn49DY   | 499   | 8     | 301   | 1505     | 808     
+superfocus_64/main.py          | iohzNqleLvik   | 301   | 8     | 499   | 911      | 808     
+61.7% win rate
+
+Total Matches: 121 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+three_toad_ensemble/main.py    | AfrENe5exehz   | 81    | 0     | 40    | 243      | 121     
+superfocus_64_ensemble/main.py | iGUWy18s1a81   | 40    | 0     | 81    | 120      | 121     
+66.9% win rate
+
+Total Matches: 168 | Matches Queued: 20
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+three_toad_ensemble_longer/main.py | 7PB981IZzXEG   | 101   | 0     | 67    | 303      | 168     
+superfocus_64_ensemble/main.py | Zlj0Q7YWVAQy   | 67    | 0     | 101   | 201      | 168     
+60.1% win rate
+```
+
+It seems that training on the best three models is giving a better result. I have submitted `three_toad_ensemble`
+agent to kaggle to see if it is also better on the leaderboard.
+
+#### 10.2.3 Find optimum pretraining strategy
+
+For this experiments I will exclude fine-tuning data from pretraining, althought when going to
+create an agent for submission I will be including them.
+
 
 ### 10.3 Results
 
