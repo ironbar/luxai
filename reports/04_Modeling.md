@@ -995,13 +995,30 @@ agent to kaggle to see if it is also better on the leaderboard.
 
 #### 10.2.3 Find optimum pretraining strategy
 
+Since it seems that fine-tuning on three best `Toad Brigade` agents is the best current strategy I'm
+going to exclude those agents from pretraining for a fair comparison. However once the best pretraining
+configuration it is found and a model for submission is going to be created I will recover those agents
+for pretraining.
+
+The idea is to use a threshold over leaderboard score to exclude some of the agents and see if
+it is better to use all the data or for example agents with a score above 1600. The baseline will
+be a model without pretraining.
+
 For this experiments I will exclude fine-tuning data from pretraining, althought when going to
 create an agent for submission I will be including them.
 
+- All pretrained models beat the model without pretraining.
+- 1650 threshold is clearly worse than the others
+- The optimum threshold seems to be 1550 with current data.
+
+I'm going to train an ensemble again in these conditions.
 
 ### 10.3 Results
 
 ### 10.4 Next steps
+
+When going to submission it's probably better to also train different pretrain models to induce
+more variability on the models.
 
 ## Iteration n. Iteration_title
 

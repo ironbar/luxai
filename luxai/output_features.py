@@ -62,6 +62,8 @@ def create_output_features(actions, unit_to_position, observation):
             except KeyError:
                 # I have found that for 26458198.json player 0 there is an incorrect transfer action
                 warnings.warn('Could not create transfer action because there were missing units')
+            except SamePositionException:
+                warnings.warn('Could not create transfer action because source and dst unit are at the same place')
         elif action_id in {'bcity', 'p'}:
             unit_id = splits[1]
             x, y = unit_to_position[unit_id]
@@ -71,6 +73,8 @@ def create_output_features(actions, unit_to_position, observation):
     city_actions = np.transpose(city_actions, axes=(1, 2, 0))
     return unit_actions, city_actions
 
+class SamePositionException(Exception):
+    pass
 
 def get_transfer_direction(x_source, y_source, x_dst, y_dst):
     if x_dst < x_source:
@@ -82,4 +86,4 @@ def get_transfer_direction(x_source, y_source, x_dst, y_dst):
     elif y_dst > y_source:
         return 's'
     else:
-        raise Exception('Could not compute transfer direction for: %s' % str((x_source, y_source, x_dst, y_dst)))
+        raise SamePositionException('Could not compute transfer direction for: %s' % str((x_source, y_source, x_dst, y_dst)))

@@ -50,8 +50,12 @@ def data_generator(n_matches, batch_size, matches_json_dir, matches_cache_npz_di
     df = pd.read_csv(agent_selection_path)
     episode_id_and_player_pairs = list(zip(df.EpisodeId, df.Index))
     for episode_indices in episode_indices_generator(len(df), n_matches):
-        matches = [load_match(*episode_id_and_player_pairs[idx], matches_json_dir, matches_cache_npz_dir) \
-                   for idx in episode_indices]
+        matches = []
+        for idx in episode_indices:
+            try:
+                matches.append(load_match(*episode_id_and_player_pairs[idx], matches_json_dir, matches_cache_npz_dir))
+            except Exception as e:
+                print('Could not load match: %s, exception: %s' % (str(episode_id_and_player_pairs[idx]), str(e)))
         data = combine_data_for_training(matches, verbose=False)
         del matches
 
