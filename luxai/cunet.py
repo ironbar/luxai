@@ -27,9 +27,11 @@ def cunet_luxai_model(config):
     if hasattr(config, 'layer_filters'):
         layer_filters = config.layer_filters
         n_layers = len(layer_filters)
+        final_layer_filters = config.final_layer_filters # with this option this is configurable
     else:
         n_layers = config.N_LAYERS
         layer_filters = [config.FILTERS_LAYER_1 * (2 ** i) for i in range(n_layers)]
+        final_layer_filters = layer_filters[0]//2 # this was hardcoded
 
     if config.FILM_TYPE == 'simple':
         config.N_CONDITIONS = len(layer_filters)
@@ -62,6 +64,7 @@ def cunet_luxai_model(config):
             activation=config.ACTIVATION_ENCODER, film_type=config.FILM_TYPE
         )
         encoder_layers.append(x)
+    layer_filters.insert(0, final_layer_filters)
     # Decoder
     for i in range(n_layers):
         is_final_block = i == n_layers - 1  # the las layer is different
@@ -69,9 +72,8 @@ def cunet_luxai_model(config):
         dropout = not (i == 0 or i == n_layers - 1 or i == n_layers - 2)
         # for getting the number of filters
         encoder_layer = encoder_layers[n_layers - i - 1]
+        n_filters = layer_filters[n_layers - i - 1]
         skip = i > 0    # not skip in the first encoder block
-
-        n_filters = encoder_layer.get_shape().as_list()[-1] // 2
         activation = config.ACTIVATION_DECODER
         if is_final_block: # do not reduce dimensionality on the first encoding layer
             strides = (1, 1)

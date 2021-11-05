@@ -108,6 +108,7 @@ def test_cunet_creation_with_custom_layer_filters(film_type, layer_filters):
     # Unet parameters
     config.INPUT_SHAPE = [32, 32, 22] #[512, 128, 1]
     config.layer_filters = layer_filters
+    config.final_layer_filters = layer_filters[0]
     config.ACT_LAST = 'sigmoid' # sigmoid
     # Condition parameters
     config.Z_DIM = 12 # 4
