@@ -66,10 +66,6 @@ def test_cunet_model_changes_when_modifying_both_inputs(film_type):
     config.CONTROL_TYPE = 'dense' # dense
     config.FILM_TYPE = film_type # simple
     config.N_NEURONS = [16] # [16, 64, 256]
-    if film_type == 'simple':
-        config.N_CONDITIONS = config.N_LAYERS # 6 this should be the same as the number of layers
-    else:
-        config.N_CONDITIONS = sum(config.FILTERS_LAYER_1*2**layer_idx for layer_idx in range(config.N_LAYERS))
     config.loss_name = 'masked_binary_crossentropy'
     config.loss_kwargs = dict()
     config.loss_weights = None
@@ -101,3 +97,25 @@ def test_cunet_model_changes_when_modifying_both_inputs(film_type):
 ])
 def test_focal_loss(y_pred, y_true, zeta, loss):
     assert pytest.approx(loss, abs=1e-6) == focal_loss(y_true, y_pred, zeta)
+
+
+@pytest.mark.parametrize('layer_filters', [
+    [32, 32, 64],
+    [4, 4, 4, 4],
+])
+@pytest.mark.parametrize('film_type', ['simple', 'complex'])
+def test_cunet_creation_with_custom_layer_filters(film_type, layer_filters):
+    # Unet parameters
+    config.INPUT_SHAPE = [32, 32, 22] #[512, 128, 1]
+    config.layer_filters = layer_filters
+    config.ACT_LAST = 'sigmoid' # sigmoid
+    # Condition parameters
+    config.Z_DIM = 12 # 4
+    config.CONTROL_TYPE = 'dense' # dense
+    config.FILM_TYPE = film_type # simple
+    config.N_NEURONS = [16] # [16, 64, 256]
+    config.loss_name = 'masked_binary_crossentropy'
+    config.loss_kwargs = dict()
+    config.loss_weights = None
+
+    model = cunet_luxai_model(config)

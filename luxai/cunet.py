@@ -20,10 +20,21 @@ from cunet.train.models.cunet_model import (
 
 def cunet_luxai_model(config):
     board_input = Input(shape=config.INPUT_SHAPE, name='board_input')
-    n_layers = config.N_LAYERS
     x = board_input
     encoder_layers = []
     initializer = tf.random_normal_initializer(stddev=0.02)
+
+    if hasattr(config, 'layer_filters'):
+        layer_filters = config.layer_filters
+        n_layers = len(layer_filters)
+    else:
+        n_layers = config.N_LAYERS
+        layer_filters = [config.FILTERS_LAYER_1 * (2 ** i) for i in range(n_layers)]
+
+    if config.FILM_TYPE == 'simple':
+        config.N_CONDITIONS = len(layer_filters)
+    else:
+        config.N_CONDITIONS = sum(layer_filters)
 
     if config.CONTROL_TYPE == 'dense':
         input_conditions, gammas, betas = dense_control(
@@ -33,8 +44,7 @@ def cunet_luxai_model(config):
             n_conditions=config.N_CONDITIONS, n_filters=config.N_FILTERS)
     # Encoder
     complex_index = 0
-    for i in range(n_layers):
-        n_filters = config.FILTERS_LAYER_1 * (2 ** i)
+    for i, n_filters in enumerate(layer_filters):
         if config.FILM_TYPE == 'simple':
             gamma, beta = slice_tensor(i)(gammas), slice_tensor(i)(betas)
         if config.FILM_TYPE == 'complex':
