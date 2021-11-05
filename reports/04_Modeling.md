@@ -1051,12 +1051,59 @@ cat */*.yml | grep seed
 cat */*.yml | grep split_offset
 ```
 
+I have called this new ensemble `three_toad_deluxe`.
+
+```bash
+Total Matches: 215 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+three_toad_deluxe/main.py      | 5fAbR3bfguo5   | 152   | 2     | 61    | 458      | 215     
+superfocus_64_ensemble/main.py | RAG7GhEBIpRg   | 61    | 2     | 152   | 185      | 215     
+win rate: 70.6%
+```
+
 ### 10.3 Results
+
+On this iteration we have create the set of agents `three_toad` that are pretrained on a lot of data
+and fine-tuned with just the three best Toad Brigade agents. Local scores show an improvement over previous models,
+more time is needed to see if this reflects on the leaderboard. Visualization of the matches on kaggle
+suggests that new models are much more stronger and have more intelligence than previous ones.
 
 ### 10.4 Next steps
 
-When going to submission it's probably better to also train different pretrain models to induce
-more variability on the models.
+## Iteration 11. Architecture search
+
+### 11.1 Goal
+
+On this iteration I want to do variations over the architecture to see if I can reduce the validation
+loss (thus doing a better imitation). 
+
+Initially I just want to do:
+
+- Increase the depth to see if beneficial to have a more global view
+- Increase the capacity of the conditional input
+- Increase the overall capacity of the model
+
+### 11.2 Development
+
+The goal is to reduce the validation loss when training on three best Toad Brigade agents. In order
+to do that I have to first pretrain on the agents with a leaderboard score higher than 1550.
+Thus for each architecture variation I have to both pretrain and fine-tune.
+
+Maybe I have to modify the interface to create the cunet model to enable setting the number of filters
+on each layer. This will allow to increase depth without increasing the number of parameters too much.
+
+### 11.3 Results
+
+### 11.4 Next steps
+
+What if I train only on victories?
+
+Try on non-greedy policies
+
+Policy gradient.
+I believe that if I play 200 matches and train on wins and also on loses with negative target I should
+be able to improve the policy and achieve a higher win rate against that agent. There might be more
+efficient ways to do it but that should work.
 
 ## Iteration n. Iteration_title
 
