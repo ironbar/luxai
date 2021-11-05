@@ -63,18 +63,18 @@ def create_callbacks(callbacks_conf, output_folder):
 def create_model(model_params: dict):
     # Unet parameters
     cunet_config.INPUT_SHAPE = model_params['board_shape']
-    cunet_config.FILTERS_LAYER_1 = model_params['filters_layer_1']
-    cunet_config.N_LAYERS = model_params['n_layers']
+    if 'layer_filters' in model_params:
+        cunet_config.layer_filters = model_params['layer_filters']
+        cunet_config.final_layer_filters = model_params['final_layer_filters']
+    else:
+        cunet_config.FILTERS_LAYER_1 = model_params['filters_layer_1']
+        cunet_config.N_LAYERS = model_params['n_layers']
     cunet_config.ACT_LAST = model_params['act_last']
     # Condition parameters
     cunet_config.Z_DIM = model_params['z_dim']
     cunet_config.CONTROL_TYPE = model_params['control_type']
     cunet_config.FILM_TYPE = model_params['film_type']
     cunet_config.N_NEURONS = model_params['n_neurons']
-    if cunet_config.FILM_TYPE == 'simple':
-        cunet_config.N_CONDITIONS = cunet_config.N_LAYERS # 6 this should be the same as the number of layers
-    else:
-        cunet_config.N_CONDITIONS = sum(cunet_config.FILTERS_LAYER_1*2**layer_idx for layer_idx in range(cunet_config.N_LAYERS))
     # Other
     cunet_config.LR = model_params['lr']
     cunet_config.loss_name = model_params['loss']
@@ -85,6 +85,7 @@ def create_model(model_params: dict):
     if 'pretrained_weights' in model_params:
         print('Loading model weights from: %s' % model_params['pretrained_weights'])
         model.load_weights(model_params['pretrained_weights'])
+    model.summary()
     return model
 
 
