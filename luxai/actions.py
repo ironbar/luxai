@@ -11,7 +11,8 @@ from luxai.output_features import CITY_ACTIONS_MAP, UNIT_ACTIONS_MAP
 
 def create_actions_for_cities_from_model_predictions(preds, active_city_to_position,
                                                      empty_unit_slots, action_threshold=0.5,
-                                                     is_post_processing_enabled=True):
+                                                     is_post_processing_enabled=True,
+                                                     policy='greedy'):
     """
     Creates actions in the luxai format from the predictions of the model
 
@@ -27,6 +28,8 @@ def create_actions_for_cities_from_model_predictions(preds, active_city_to_posit
         Number of units that can be build
     is_post_processing_enabled: bool
         If true it won't build units if there are not empty_unit_slots
+    policy : str
+        Name of the policy we want to use to choose action, f.e. greedy
     """
     preds = preds.copy()
     actions = []
@@ -38,13 +41,22 @@ def create_actions_for_cities_from_model_predictions(preds, active_city_to_posit
         if empty_unit_slots <= 0 and is_post_processing_enabled:
             city_preds[CITY_ACTIONS_MAP['bw']] = 0
             city_preds[CITY_ACTIONS_MAP['bc']] = 0
-        action_idx = np.argmax(city_preds)
-        if city_preds[action_idx] > action_threshold:
+        action_idx = choose_action_idx_from_predictions(city_preds, policy, action_threshold)
+        if action_idx is not None:
             action_key = idx_to_action[action_idx]
             actions.append('%s %i %i' % (action_key, x, y))
             if action_key in ['bw', 'bc']:
                 empty_unit_slots -= 1
     return actions
+
+
+def choose_action_idx_from_predictions(preds, policy, action_threshold):
+    if policy == 'greedy':
+        action_idx = np.argmax(preds)
+    if preds[action_idx] > action_threshold:
+        return action_idx
+    else:
+        return None
 
 
 def create_actions_for_units_from_model_predictions(
