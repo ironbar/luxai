@@ -2,6 +2,7 @@
 Functions for generating actions from model predictions
 """
 import numpy as np
+import random
 
 from kaggle_environments.envs.lux_ai_2021.test_agents.python.lux.game_constants import GAME_CONSTANTS
 
@@ -53,10 +54,16 @@ def create_actions_for_cities_from_model_predictions(preds, active_city_to_posit
 def choose_action_idx_from_predictions(preds, policy, action_threshold):
     if policy == 'greedy':
         action_idx = np.argmax(preds)
-    if preds[action_idx] > action_threshold:
-        return action_idx
-    else:
-        return None
+        if preds[action_idx] <= action_threshold:
+            action_idx = None
+    elif policy == 'random':
+        candidate_indices = [idx for idx, pred in enumerate(preds) if pred > action_threshold]
+        if candidate_indices:
+            action_idx = random.choices(candidate_indices,
+                                        weights=[preds[idx] for idx in candidate_indices])[0]
+        else:
+            action_idx = None
+    return action_idx
 
 
 def create_actions_for_units_from_model_predictions(
