@@ -1255,6 +1255,27 @@ with a more general goal.
 
 ### 13.2 Development
 
+The idea is to use the luxai cli to play tournaments, save the matches to file and then use those matches
+for training. I will train just like on imitation learning with the exception that on loses I will invert
+the target actions so it learns to do the opposite.
+
+However I have found that the luxai cli saves the json files on a different format to kaggle.
+Thus I need another way of playing matches, or to translate from one format to the other. The first
+option seems better since it will allow to control how many matches are played more easy than with
+the command line interface.
+
+### 13.2.1 Play and save games in parallel
+
+I'm going to have a look at how I managed on hungry geese challenge to play matches in parallel. I
+will likely have to modify the agent template again since when using python interface I need to provide
+the absolute path to the model.
+
+### 13.2.2 Policy gradients
+
+The idea is to play n matches, train on those matches, save the model and play again in a loop. I want
+to have metrics of how the win rate is changing over time. I will be using a greedy policy for this
+probe of concept.
+
 ### 13.3 Results
 
 ### 13.4 Next steps
