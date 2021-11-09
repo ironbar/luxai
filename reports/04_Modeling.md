@@ -1184,13 +1184,64 @@ randomness might improve the agent.
 I should first refactor action choosing to allow adding randomness. Current strategy is to choose the
 action with the highest probability and if it exceeds a threshold then the action is taken.
 
-I believe we should keep using a threshold to decide betwen taking or not taking an action. That seems
+I believe we should keep using a threshold to decide between taking or not taking an action. That seems
 the right way to do it because we don't have another way to not taking an action with the current
 implementation.
 
+On a first step I have done a sweep over different thresholds for taking or not taking an action.
+I have been using the agents `three_toad_deluxe_single` and `optimus_prime_single`, the later one
+was the one changing the threshold. On a second step I have tried a random policy that randomly
+chooses between the actions that exceed the threshold.
+
+The table below suggests that a threshold of 0.6 may be better than the default 0.5. It also
+seems that the random policy is worse than the greedy for playing.
+
+| policy | threshold | wins | matches | win rate | uncertainty 95% |
+|--------|-----------|------|---------|----------|-----------------|
+| greedy | 0.2       | 86   | 209     | 41.1%    | 6.7%            |
+| greedy | 0.3       | 200  | 356     | 56.2%    | 5.2%            |
+| greedy | 0.4       | 215  | 376     | 57.2%    | 5.0%            |
+| greedy | 0.5       | 201  | 348     | 57.8%    | 5.2%            |
+| greedy | 0.6       | 397  | 608     | 65.3%    | 3.8%            |
+| greedy | 0.7       | 250  | 379     | 66.0%    | 4.8%            |
+| greedy | 0.8       | 111  | 210     | 52.9%    | 6.8%            |
+| random | 0.5       | 11   | 55      | 20.0%    | 10.6%           |
+| random | 0.6       | 415  | 645     | 64.3%    | 3.7%            |
+| random | 0.7       | 367  | 650     | 56.5%    | 3.8%            |
+
+When playing with the ensemble I do not see significative difference when using the threshold of 0.6.
+
+```bash
+Total Matches: 79 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+optimus_prime/main.py          | u6oRbfj4e2FK   | 55    | 0     | 24    | 165      | 79      
+three_toad_deluxe/main.py      | cI98Ah6LgDSQ   | 24    | 0     | 55    | 72       | 79  
+win rate: 69.6 % +- 10.1
+
+
+Total Matches: 385 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+optimus_prime_th06/main.py     | utD4xGqPYpPC   | 272   | 1     | 112   | 817      | 385     
+three_toad_deluxe/main.py      | 2UxnYrjOJ6oG   | 112   | 1     | 272   | 337      | 385     
+win rate: 70.8 % +- 4.6
+```
+
 ### 12.3 Results
 
+I have tried using different thresholds over the actions and following a random policy instead
+of a greedy one. On individual models setting a higher threshold such as 0.6 show improvements but
+there was no evidence of improvement when using the ensemble.
+
 ### 12.4 Next steps
+
+I believe there might be room for improvement using imitation learning:
+
+- Add more features
+- Study errors on val set
+- Why the agent does not gather coal and uranium as good as wood
+
+However I'm going to try with Policy gradients because it seems more promising and I will learn more.
+
 
 ## Iteration n. Iteration_title
 
