@@ -57,6 +57,8 @@ def create_callbacks(callbacks_conf, output_folder):
         if 'ModelCheckpoint' in name:
             callback_kwargs['filepath'] = callback_kwargs['filepath'] % output_folder
             callbacks.append(tf.keras.callbacks.ModelCheckpoint(**callback_kwargs))
+    if 'ReduceLROnPlateau' in callbacks_conf:
+        callbacks.append(tf.keras.callbacks.ReduceLROnPlateau(**callbacks_conf['ReduceLROnPlateau']))
     return callbacks
 
 
