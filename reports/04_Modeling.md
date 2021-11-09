@@ -1092,18 +1092,83 @@ Thus for each architecture variation I have to both pretrain and fine-tune.
 Maybe I have to modify the interface to create the cunet model to enable setting the number of filters
 on each layer. This will allow to increase depth without increasing the number of parameters too much.
 
+Results when pretraining and smoothing 0.8 over the loss.
+
+| name                                          | model size (MB) | best train epoch loss | best val epoch loss |
+|-----------------------------------------------|-----------------|-----------------------|---------------------|
+| 01_baseline_filters_64_128_256_512_final_32   | 14.4            | 0.2774                | 0.303               |
+| 02_baseline_filters_128_256_512_1024_final_64 | 56.6            | 0.2625                | 0.2945              |
+| 03_filters_64_128_256_512_final_64            | 14.5            | 0.2736                | 0.2977              |
+| 04_filters_128_128_256_512_final_64           | 15.7            | 0.2692                | 0.3004              |
+| 05_filters_128_256_256_512_final_64           | 21.1            | 0.2648                | 0.2967              |
+| 06_filters_128_256_512_512_final_64           | 37.6            | 0.2635                | 0.2954              |
+| 07_filters_128_128_256_512_final_128          | 16.3            | 0.2546                | 0.2959              |
+| 08_filters_256_256_256_512_final_256          | 28.9            | 0.2559                | 0.2944              |
+| 09_filters_256_256_256_256_final_256          | 24.1            | 0.2554                | 0.2962              |
+| 10_filters_512_x4_final_512                   | 95.3            | 0.2501                | 0.2892              |
+| 11_filters_384_x4_final_384                   | 53.8            | 0.2512                | 0.2906              |
+
+Now the results when fine-tuning, which are the deciding ones.
+
+| name                                          | model size (MB) | best val epoch loss |
+|-----------------------------------------------|-----------------|---------------------|
+| 01_baseline_filters_64_128_256_512_final_32   | 14.4            | 0.192               |
+| 02_baseline_filters_128_256_512_1024_final_64 | 56.6            | 0.1841              |
+| 03_filters_64_128_256_512_final_64            | 14.5            | 0.1899              |
+| 04_filters_128_128_256_512_final_64           | 15.7            | 0.1862              |
+| 05_filters_128_256_256_512_final_64           | 21.1            | 0.1832              |
+| 06_filters_128_256_512_512_final_64           | 37.6            | 0.1828              |
+| 07_filters_128_128_256_512_final_128          | 16.3            | 0.1814              |
+| 08_filters_256_256_256_512_final_256          | 28.9            | 0.1765              |
+| 09_filters_256_256_256_256_final_256          | 24.1            | 0.1766              |
+| 10_filters_512_x4_final_512                   | 95.3            | 0.1735              |
+
+Considering the number of parameters my choosing is `09_filters_256_256_256_256_final_256` for
+generating the next ensemble.
+
+```bash
+Total Matches: 215 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+three_toad_deluxe/main.py      | 5fAbR3bfguo5   | 152   | 2     | 61    | 458      | 215     
+superfocus_64_ensemble/main.py | RAG7GhEBIpRg   | 61    | 2     | 152   | 185      | 215     
+win rate: 70.6%
+
+Total Matches: 102 | Matches Queued: 20
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+optimus_prime/main.py          | 37gRryyCVUPL   | 78    | 0     | 24    | 234      | 102     
+superfocus_64_ensemble/main.py | OizifUz24VEj   | 24    | 0     | 78    | 72       | 102   
+win rate: 76.4%
+
+Total Matches: 79 | Matches Queued: 19
+Name                           | ID             | W     | T     | L     |   Points | Matches 
+optimus_prime/main.py          | u6oRbfj4e2FK   | 55    | 0     | 24    | 165      | 79      
+three_toad_deluxe/main.py      | cI98Ah6LgDSQ   | 24    | 0     | 55    | 72       | 79  
+win rate: 69.6 %
+```
+
+New `optimus_prime` is clearly better than previous ensembles.
+
 ### 11.3 Results
+
+On this iteration I have improved the model architecture and also the training learning rate policy.
+As a result I have create the set of `optimus_prime` agents that beat consistently my previous agents.
+I have just submitted them to the leaderboard so I have to wait until they get to their real score.
 
 ### 11.4 Next steps
 
-What if I train only on victories?
+What if I train only on victories? That does not make sense in the context of imitation learning
+because we want to copy the behaviour, so the result of the match is irrelevant.
 
-Try on non-greedy policies
+Try on non-greedy policies. I have seen some oscilating behaviours of the units that could be caused
+by choosing the action with the maximum probability.
 
 Policy gradient.
 I believe that if I play 200 matches and train on wins and also on loses with negative target I should
 be able to improve the policy and achieve a higher win rate against that agent. There might be more
 efficient ways to do it but that should work.
+
+I'm going to first try with non-greedy policies and later move to policy gradients to try to improve
+the agents.
 
 ## Iteration n. Iteration_title
 
