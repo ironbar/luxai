@@ -50,8 +50,11 @@ def agent(observation, configuration):
     preds = average_predictions(preds)
     preds = [crop_board_to_original_size(pred, observation) for pred in preds]
     active_unit_to_position, active_city_to_position, unit_to_position, city_to_position = ret[2:]
+    action_kwargs = dict(action_threshold=0.5, policy='greedy')
     actions = create_actions_for_units_from_model_predictions(
-        preds[0][0], active_unit_to_position, unit_to_position, observation, set(city_to_position.keys()))
+        preds[0][0], active_unit_to_position, unit_to_position, observation,
+        set(city_to_position.keys()), **action_kwargs)
     actions += create_actions_for_cities_from_model_predictions(
-        preds[1][0], active_city_to_position, len(city_to_position) - len(unit_to_position))
+        preds[1][0], active_city_to_position, len(city_to_position) - len(unit_to_position),
+        **action_kwargs)
     return actions
