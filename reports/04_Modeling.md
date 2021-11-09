@@ -1242,6 +1242,23 @@ I believe there might be room for improvement using imitation learning:
 
 However I'm going to try with Policy gradients because it seems more promising and I will learn more.
 
+## Iteration 13. Proof of concept with Policy gradients
+
+### 13.1 Goal
+
+The goal of the iteration is to see if by using policy gradients I can increase the win rate of an
+agent playing against another agent.
+
+I won't care about generalization against other agents: I'm going to take an agent and play against
+a frozen version of itself until it beats consistently. If it works then I will do more iterations
+with a more general goal.
+
+### 13.2 Development
+
+### 13.3 Results
+
+### 13.4 Next steps
+
 
 ## Iteration n. Iteration_title
 
