@@ -61,7 +61,7 @@ def choose_action_idx_from_predictions(preds, policy, action_threshold):
 
 def create_actions_for_units_from_model_predictions(
         preds, active_unit_to_position, unit_to_position, observation, city_positions,
-        action_threshold=0.5, is_post_processing_enabled=True):
+        action_threshold=0.5, is_post_processing_enabled=True, policy='greedy'):
     """
     Creates actions in the luxai format from the predictions of the model
 
@@ -91,8 +91,8 @@ def create_actions_for_units_from_model_predictions(
     for unit_id, position in active_unit_to_position.items():
         x, y = position
         unit_preds = preds[x, y]
-        action_idx = np.argmax(unit_preds)
-        if unit_preds[action_idx] > action_threshold:
+        action_idx = choose_action_idx_from_predictions(unit_preds, policy, action_threshold)
+        if action_idx is not None:
             action_key = idx_to_action[action_idx]
             unit_to_action[unit_id] = create_unit_action(action_key, unit_id, unit_to_position, observation)
             unit_to_priority[unit_id] = unit_preds[action_idx]
