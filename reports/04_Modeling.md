@@ -1170,6 +1170,28 @@ efficient ways to do it but that should work.
 I'm going to first try with non-greedy policies and later move to policy gradients to try to improve
 the agents.
 
+## Iteration 12. Non greedy policy
+
+### 12.1 Goal
+
+The goal of this iteration is to experiment using non-greedy policies to see if there is an improvement.
+The motivation comes from units oscilating between two positions: moving north, south, north, south...
+This might be cause by simply choosing the action with maximum probability. Adding a little bit
+randomness might improve the agent.
+
+### 12.2 Development
+
+I should first refactor action choosing to allow adding randomness. Current strategy is to choose the
+action with the highest probability and if it exceeds a threshold then the action is taken.
+
+I believe we should keep using a threshold to decide betwen taking or not taking an action. That seems
+the right way to do it because we don't have another way to not taking an action with the current
+implementation.
+
+### 12.3 Results
+
+### 12.4 Next steps
+
 ## Iteration n. Iteration_title
 
 <!---
