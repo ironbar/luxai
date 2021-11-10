@@ -32,6 +32,7 @@ def train(config_path):
         train_conf = yaml.safe_load(f)
     output_folder = os.path.dirname(os.path.realpath(config_path))
     tensorboard_writer = tf.summary.create_file_writer(os.path.join(output_folder, 'logs'))
+    update_train_conf_paths_with_output_folder(train_conf, output_folder)
 
     model = create_model(train_conf['model_params'])
     for epoch in range(train_conf['max_epochs']):
@@ -110,6 +111,22 @@ def log_matches_results(results, epoch, tensorboard_writer):
 def log_to_tensorboard(key, value, epoch, tensorboard_writer):
     with tensorboard_writer.as_default():
         tf.summary.scalar(key, value, step=epoch)
+
+
+def update_train_conf_paths_with_output_folder(train_conf, output_folder):
+    key_pairs = [
+        ('model_params', 'pretrained_weights'),
+        ('play_matches', 'output_folder'),
+        ('play_matches', 'learning_agent'),
+    ]
+    for key1, key2 in key_pairs:
+        if not train_conf[key1][key2].startswith('/'):
+            train_conf[key1][key2] = os.path.join(
+                output_folder, train_conf[key1][key2]
+            )
+    for key in ['model_path']:
+        if not train_conf[key].startswith('/'):
+            train_conf[key] = os.path.join(output_folder, train_conf[key])
 
 
 def parse_args(args):
