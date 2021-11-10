@@ -6,6 +6,7 @@ import random
 import time
 import tempfile
 import numpy as np
+from tqdm import tqdm
 
 
 def get_timestamp():
@@ -49,3 +50,19 @@ def update_game_state(game_state, observation):
     else:
         game_state._update(observation["updates"])
     game_state.turn = observation['step']
+
+
+def monitor_submits_progress(submits):
+    """ Shows a progress bar representing the jobs done """
+    progress_bar = tqdm(total=len(submits))
+    progress = 0
+    while 1:
+        time.sleep(1)
+        current_progress = np.sum([submit.done() for submit in submits])
+        if current_progress > progress:
+            progress_bar.update(current_progress - progress)
+            progress = current_progress
+        if progress == len(submits):
+            break
+    time.sleep(0.1)
+    progress_bar.close()

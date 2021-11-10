@@ -8,6 +8,7 @@ import numpy as np
 from concurrent.futures import ProcessPoolExecutor
 
 from luxai.data import load_match_from_json, save_match_to_npz
+from luxai.utils import monitor_submits_progress
 
 
 def main(args=None):
@@ -22,7 +23,7 @@ def main(args=None):
         for episode_id, player in tqdm(episode_id_and_player_pairs, desc='creating jobs'):
             submits.append(pool.submit(preprocess_match, episode_id, player, args.matches_json_dir,
                                        args.matches_cache_npz_dir))
-        monitor_progress(submits)
+        monitor_submits_progress(submits)
 
 
 def preprocess_match(episode_id, player, matches_json_dir, matches_cache_npz_dir):
@@ -33,21 +34,6 @@ def preprocess_match(episode_id, player, matches_json_dir, matches_cache_npz_dir
     json_filepath = os.path.join(matches_json_dir, '%i.json' % episode_id)
     match = load_match_from_json(json_filepath, player)
     save_match_to_npz(npz_filepath, match)
-
-
-def monitor_progress(submits):
-    progress_bar = tqdm(total=len(submits))
-    progress = 0
-    while 1:
-        time.sleep(1)
-        current_progress = np.sum([submit.done() for submit in submits])
-        if current_progress > progress:
-            progress_bar.update(current_progress - progress)
-            progress = current_progress
-        if progress == len(submits):
-            break
-    time.sleep(0.1)
-    progress_bar.close()
 
 
 def parse_args(args):
