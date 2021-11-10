@@ -5,6 +5,7 @@ import os
 import random
 import time
 import tempfile
+import logging
 import numpy as np
 from tqdm import tqdm
 
@@ -66,3 +67,6 @@ def monitor_submits_progress(submits):
             break
     time.sleep(0.1)
     progress_bar.close()
+
+def configure_logging(level=logging.DEBUG):
+    logging.basicConfig(level=level, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
