@@ -1279,6 +1279,8 @@ to have metrics of how the win rate is changing over time. I will be using a gre
 probe of concept.
 
 When playing 100 matches per round uncertainty on the win rate will be around 10% on the worst case.
+Thus to be able to probe that it works we have to reach a win rate of 70%, that is the goal of the
+experiment. Hopefully we will start at 50% win rate and steadily grow up to 70% and even more.
 
 ### 13.3 Results
 
