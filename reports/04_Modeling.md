@@ -1270,11 +1270,15 @@ I'm going to have a look at how I managed on hungry geese challenge to play matc
 will likely have to modify the agent template again since when using python interface I need to provide
 the absolute path to the model.
 
+It takes around 5.5 minutes to play 100 matches with `superfocus_64` agent against itself.
+
 ### 13.2.2 Policy gradients
 
 The idea is to play n matches, train on those matches, save the model and play again in a loop. I want
 to have metrics of how the win rate is changing over time. I will be using a greedy policy for this
 probe of concept.
+
+When playing 100 matches per round uncertainty on the win rate will be around 10% on the worst case.
 
 ### 13.3 Results
 
