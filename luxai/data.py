@@ -126,6 +126,8 @@ def load_match_from_json(filepath, player):
     """
     with open(filepath, 'r') as f:
         match = json.load(f)
+    if 'steps' in match:
+        match = match['steps']
 
     board, features, unit_output, city_output = [], [], [], []
     for step in range(len(match) - 1):
