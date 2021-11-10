@@ -21,7 +21,7 @@ def main(args=None):
         for match_idx in tqdm(range(args.n_matches), desc='creating jobs'):
             submits.append(pool.submit(play_and_save_match, args.agent1, args.agent2,
                                        match_idx, args.output_folder))
-        monitor_submits_progress(submits)
+        monitor_submits_progress(submits, desc='playing matches')
 
 
 def play_and_save_match(agent1, agent2, match_idx, output_folder):

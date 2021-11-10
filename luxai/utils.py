@@ -53,9 +53,9 @@ def update_game_state(game_state, observation):
     game_state.turn = observation['step']
 
 
-def monitor_submits_progress(submits):
+def monitor_submits_progress(submits, desc=None):
     """ Shows a progress bar representing the jobs done """
-    progress_bar = tqdm(total=len(submits))
+    progress_bar = tqdm(total=len(submits), desc=desc)
     progress = 0
     while 1:
         time.sleep(1)
