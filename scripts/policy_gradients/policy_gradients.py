@@ -13,7 +13,7 @@ from luxai.data import load_match_from_json, combine_data_for_training
 from luxai.utils import configure_logging
 
 sys.path.append('../train_imitation_learning')
-from train import create_model
+from train import create_model, create_callbacks
 from train_data_augmentation import train_generator
 
 logger = logging.getLogger(__name__)
@@ -35,6 +35,7 @@ def train(config_path):
     update_train_conf_paths_with_output_folder(train_conf, output_folder)
 
     model = create_model(train_conf['model_params'])
+    callbacks = create_callbacks(dict(), output_folder)
     for epoch in range(train_conf['max_epochs']):
         print()
         logger.info('Start epoch %i' % epoch)
@@ -44,7 +45,8 @@ def train(config_path):
             train_conf['play_matches']['output_folder'], train_conf['data_collection_method'])
         log_matches_results(results, epoch, tensorboard_writer)
         logger.info('Fitting the model')
-        model.fit(x=train_generator(train_data, train_conf['batch_size']), **train_conf['train_kwargs'])
+        model.fit(x=train_generator(train_data, train_conf['batch_size']), epochs=(epoch+1),
+                  callbacks=callbacks, initial_epoch=epoch, **train_conf['train_kwargs'])
         del train_data
         logger.info('Saving the model')
         model.save(os.path.join(output_folder, '%04d.h5' % epoch), include_optimizer=False)
@@ -71,7 +73,8 @@ def load_train_data(folder, method):
             return None, results
     elif method == 'whoever_wins':
         matches = []
-        for json_filepath, result in zip(filepaths, results):
+        iterator = tqdm(zip(filepaths, results), total=len(filepaths), desc='loading matches')
+        for json_filepath, result in iterator:
             if result == 0:
                 continue
             if result == 1:
