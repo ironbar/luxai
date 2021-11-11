@@ -40,10 +40,12 @@ def train(config_path):
         logger.info('Start epoch %i' % epoch)
         play_matches(train_conf['play_matches'])
         logger.info('Loading train data')
-        train_data, results = load_train_data(train_conf['play_matches']['output_folder'])
+        train_data, results = load_train_data(
+            train_conf['play_matches']['output_folder'], train_conf['data_collection_method'])
         log_matches_results(results, epoch, tensorboard_writer)
         logger.info('Fitting the model')
         model.fit(x=train_generator(train_data, train_conf['batch_size']), **train_conf['train_kwargs'])
+        del train_data
         logger.info('Saving the model')
         model.save(os.path.join(output_folder, '%04d.h5' % epoch), include_optimizer=False)
         model.save(train_conf['model_path'], include_optimizer=False)
@@ -56,16 +58,28 @@ def play_matches(conf):
     os.system(command)
 
 
-def load_train_data(folder):
+def load_train_data(folder, method):
     filepaths = sorted(glob.glob(os.path.join(folder, '*.json')))
-    matches = [load_match_from_json(json_filepath, player=0) for json_filepath in tqdm(filepaths, desc='loading matches')]
     results = get_matches_results(filepaths)
-    # invert_target_if_loss_match(matches, results) # this destroys the policy
-    matches = leave_only_matches_with_wins(matches, results)
-    if matches:
+    if method == 'only_wins':
+        matches = [load_match_from_json(json_filepath, player=0) for json_filepath in tqdm(filepaths, desc='loading matches')]
+        # invert_target_if_loss_match(matches, results) # this destroys the policy
+        matches = leave_only_matches_with_wins(matches, results)
+        if matches:
+            return combine_data_for_training(matches, verbose=False), results
+        else:
+            return None, results
+    elif method == 'whoever_wins':
+        matches = []
+        for json_filepath, result in zip(filepaths, results):
+            if result == 0:
+                continue
+            if result == 1:
+                player = 0
+            else:
+                player = 1
+            matches.append(load_match_from_json(json_filepath, player=player))
         return combine_data_for_training(matches, verbose=False), results
-    else:
-        return None, results
 
 
 def get_matches_results(filepaths):
