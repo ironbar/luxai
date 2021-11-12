@@ -51,6 +51,7 @@ def train(config_path):
         logger.info('Saving the model')
         model.save(os.path.join(output_folder, '%04d.h5' % epoch), include_optimizer=False)
         model.save(train_conf['model_path'], include_optimizer=False)
+        tf.keras.backend.clear_session()
 
 
 def play_matches(conf):
