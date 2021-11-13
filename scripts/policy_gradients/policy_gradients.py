@@ -66,7 +66,6 @@ def load_train_data(folder, method):
     results = get_matches_results(filepaths)
     if method == 'only_wins':
         matches = [load_match_from_json(json_filepath, player=0) for json_filepath in tqdm(filepaths, desc='loading matches')]
-        # invert_target_if_loss_match(matches, results) # this destroys the policy
         matches = leave_only_matches_with_wins(matches, results)
         if matches:
             return combine_data_for_training(matches, verbose=False), results
@@ -83,6 +82,11 @@ def load_train_data(folder, method):
             else:
                 player = 1
             matches.append(load_match_from_json(json_filepath, player=player))
+        return combine_data_for_training(matches, verbose=False), results
+    elif method.startswith('wins_and_loses'):
+        matches = [load_match_from_json(json_filepath, player=0) for json_filepath in tqdm(filepaths, desc='loading matches')]
+        loses_weight = float(method.split('_')[-1])
+        invert_target_if_loss_match(matches, results, loses_weight) # this destroys the policy
         return combine_data_for_training(matches, verbose=False), results
 
 
@@ -101,13 +105,14 @@ def get_matches_results(filepaths):
     return np.array(results)
 
 
-def invert_target_if_loss_match(matches, results):
+def invert_target_if_loss_match(matches, results, loses_weight):
     for match, result in zip (matches, results):
         if result < 0:
             for key in ['unit_output', 'city_output']:
                 # invert everything except the last layer which is the mask
-                match[key][:, :, :, :-1] = 1 - match[key][:, :, :, :-1]
-                # I might change the mask to modify the loss
+                match[key][..., :-1] = 1 - match[key][..., :-1]
+                # Change the weight of the loses because loss value is much higher
+                match[key][..., -1] *= loses_weight
 
 
 def leave_only_matches_with_wins(matches, results):
