@@ -1264,7 +1264,7 @@ Thus I need another way of playing matches, or to translate from one format to t
 option seems better since it will allow to control how many matches are played more easy than with
 the command line interface.
 
-### 13.2.1 Play and save games in parallel
+#### 13.2.1 Play and save games in parallel
 
 I'm going to have a look at how I managed on hungry geese challenge to play matches in parallel. I
 will likely have to modify the agent template again since when using python interface I need to provide
@@ -1272,7 +1272,7 @@ the absolute path to the model.
 
 It takes around 5.5 minutes to play 100 matches with `superfocus_64` agent against itself.
 
-### 13.2.2 Policy gradients
+#### 13.2.2 Policy gradients
 
 The idea is to play n matches, train on those matches, save the model and play again in a loop. I want
 to have metrics of how the win rate is changing over time. I will be using a greedy policy for this
@@ -1281,6 +1281,20 @@ probe of concept.
 When playing 100 matches per round uncertainty on the win rate will be around 10% on the worst case.
 Thus to be able to probe that it works we have to reach a win rate of 70%, that is the goal of the
 experiment. Hopefully we will start at 50% win rate and steadily grow up to 70% and even more.
+
+#### 13.2.3 Batch normalization
+
+I have tried using different ways of using the data for training and all of them were worsening the model,
+even when using very low learning rates. Then I have run a training with learning rate zero and to my
+surprise the worsening was almost the same. When analizing the weights of the model I have found that
+the only change was the parameters of the batch normalization layers.
+
+It seems that the data distribution of the matches used for policy gradients is different to the distribution
+from the matches of the leaderboard and that was causing the agent to fall from a win rate of 50% to
+around 30%.
+
+Thus I have implemented the option to freeeze the batch normalization layers and thus only change the
+weights of the other layers.
 
 ### 13.3 Results
 

@@ -88,6 +88,7 @@ def load_train_data(folder, method):
         loses_weight = float(method.split('_')[-1])
         invert_target_if_loss_match(matches, results, loses_weight) # this destroys the policy
         return combine_data_for_training(matches, verbose=False), results
+    # TODO: use all data, wins and loses from both players
 
 
 def get_matches_results(filepaths):
