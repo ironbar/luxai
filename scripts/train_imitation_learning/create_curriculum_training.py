@@ -20,7 +20,7 @@ def main(args=None):
         upper_threshold = args.score_thresholds[stage_idx + 1]
         sub_df = filter_dataframe_with_score(df, lower_threshold, upper_threshold)
         print('Stage %i matches: %i\tagents: %i' % (stage_idx, len(sub_df), len(sub_df.SubmissionId.unique())))
-        train, val = get_train_and_val(sub_df, args.seed, divisions=max(10, int(len(df)//100)))
+        train, val = get_train_and_val(sub_df, args.seed, divisions=max(10, int(len(sub_df)//100)))
         save_train_and_val_dataframes(train, val, output_folder)
         save_train_configuration(args.template, output_folder, stage_idx, len(train), len(val))
     print_commands_to_run_them_all(os.path.join(args.output_folder, 'seed%i' % args.seed))
