@@ -89,6 +89,13 @@ def cunet_luxai_model(config):
     ]
     model = Model(inputs=[board_input, input_conditions], outputs=outputs)
     model.save = partial(model.save, include_optimizer=False) # this allows to use ModelCheckpoint callback, otherwise fails to serialize the loss function
+
+    if config.freeze_bn_layers:
+        for layer in model.layers:
+            if isinstance(layer, tf.keras.layers.BatchNormalization):
+                print('Freezing layer: %s' % str(layer))
+                layer.trainable = False
+
     model.compile(
         optimizer=Adam(lr=config.LR, beta_1=0.5),
         loss=get_loss_function(config.loss_name, config.loss_kwargs),
