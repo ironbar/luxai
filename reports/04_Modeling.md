@@ -1319,6 +1319,10 @@ and also a bash script that will do all the steps.
 Thus I will have an automated way of training models that I could reuse when downloading more matches
 from the leaderboard.
 
+```bash
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/35_curriculum_learning/template.yml /mnt/hdd0/Kaggle/luxai/models/35_curriculum_learning 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1600 1650 1700 1800 1950 2000
+```
+
 ### 14.3 Results
 
 ### 14.4 Next steps
