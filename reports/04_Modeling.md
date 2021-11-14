@@ -1300,6 +1300,30 @@ weights of the other layers.
 
 ### 13.4 Next steps
 
+## Iteration 14. Curriculum for imitation learning
+
+### 14.1 Goal
+
+The goal of this iteration is to implement an automated pipeline to do curriculum learning for imitation
+learning. The best existing models have been trained by first pretraining on a lot of agents of the leaderboard
+and finally fine-tuning on the best 3 agents. I have the feeling that this could be done better if I
+add more stages to the training. This way I will be training on agents of increasing skill and that's why
+I'm calling this iteration curriculum learning.
+
+### 14.2 Development
+
+The idea is to create a script that given a template, a seed, the dataframe with all the agents and
+the thresholds that define the curriculum it will create the folders and files to do the trainings
+and also a bash script that will do all the steps.
+
+Thus I will have an automated way of training models that I could reuse when downloading more matches
+from the leaderboard.
+
+### 14.3 Results
+
+### 14.4 Next steps
+
+
 
 ## Iteration n. Iteration_title
 
