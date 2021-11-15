@@ -1320,10 +1320,20 @@ Thus I will have an automated way of training models that I could reuse when dow
 from the leaderboard.
 
 ```bash
-python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/35_curriculum_learning/template.yml /mnt/hdd0/Kaggle/luxai/models/35_curriculum_learning 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1600 1650 1700 1800 1950 2000
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/35_curriculum_learning/template.yml /mnt/hdd0/Kaggle/luxai/models/35_curriculum_learning 1 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1600 1650 1700 1800 1950 2000
+
+Stage 0 matches: 12280  agents: 42
+Stage 1 matches: 8138   agents: 39
+Stage 2 matches: 2521   agents: 14
+Stage 3 matches: 462    agents: 1
+Stage 4 matches: 306    agents: 1
+Stage 5 matches: 293    agents: 1
 ```
 
 ### 14.3 Results
+
+I have created the agent `megatron` that is able to defeat 60% of the times the agent `optimus_prime`
+and 73% of the times `three_toad_deluxe`.
 
 ### 14.4 Next steps
 
