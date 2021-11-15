@@ -86,9 +86,14 @@ def load_train_data(folder, method):
     elif method.startswith('wins_and_loses'):
         matches = [load_match_from_json(json_filepath, player=0) for json_filepath in tqdm(filepaths, desc='loading matches')]
         loses_weight = float(method.split('_')[-1])
-        invert_target_if_loss_match(matches, results, loses_weight) # this destroys the policy
+        invert_target_if_loss_match(matches, results, loses_weight)
         return combine_data_for_training(matches, verbose=False), results
-    # TODO: use all data, wins and loses from both players
+    elif method.startswith('all_data'):
+        matches = [load_match_from_json(json_filepath, player=0) for json_filepath in tqdm(filepaths, desc='loading matches')]
+        matches += [load_match_from_json(json_filepath, player=1) for json_filepath in tqdm(filepaths, desc='loading matches')]
+        loses_weight = float(method.split('_')[-1])
+        invert_target_if_loss_match(matches, np.concatenate([results, 1 - results]), loses_weight)
+        return combine_data_for_training(matches, verbose=False), results
 
 
 def get_matches_results(filepaths):
