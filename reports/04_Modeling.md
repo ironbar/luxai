@@ -1298,7 +1298,9 @@ weights of the other layers.
 
 ### 13.3 Results
 
-### 13.4 Next steps
+After many experiments I have not being able to improve an agent using my implementation of policy gradients.
+Maybe I need to be more patient with the experiments, but the end of the challenge is approaching and
+I should focus on the most promising options.
 
 ## Iteration 14. Curriculum for imitation learning
 
@@ -1337,7 +1339,23 @@ and 73% of the times `three_toad_deluxe`.
 
 ### 14.4 Next steps
 
+## Iteration 15. Add new input features
 
+### 15.1 Goal
+
+The goal of this iteration is to try with new input features to see if that enables better imitation
+learning. I have not changed the input since the beginning of the challenge so there may be room
+for improvement.
+
+### 15.2 Development
+
+My idea is to take a subset of the data, for example the three best Toad Brigade agents and train
+an agent on that data. Input features will be modified along experiments and validation loss will
+be the evaluation metric. Once we find the optimal configuration we will train an ensemble with it.
+
+### 15.3 Results
+
+### 15.4 Next steps
 
 ## Iteration n. Iteration_title
 
