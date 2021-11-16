@@ -1339,6 +1339,12 @@ and 73% of the times `three_toad_deluxe`.
 
 ### 14.4 Next steps
 
+![leaderboard_16_11/2021](res/2021-11-16-14-31-20.png)
+
+The end of the challenge is approaching and Toad Brigade still has a great advantage over the other players.
+So it makes sense to devote all my efforts to keep improving imitation learning because I might be second
+in the challenge if I'm able to better imitate them.
+
 ## Iteration 15. Add new input features
 
 ### 15.1 Goal
