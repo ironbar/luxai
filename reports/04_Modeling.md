@@ -1359,6 +1359,27 @@ My idea is to take a subset of the data, for example the three best Toad Brigade
 an agent on that data. Input features will be modified along experiments and validation loss will
 be the evaluation metric. Once we find the optimal configuration we will train an ensemble with it.
 
+```python
+import pandas as pd
+df = pd.read_csv('/home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv')
+df[df.FinalScore > 1900].to_csv('/home/gbarbadillo/luxai_ssd/agent_selection_20211113_three_toad_brigade', index=False)
+```
+
+```bash
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/36_feature_engineering/template.yml /mnt/hdd0/Kaggle/luxai/models/36_feature_engineering 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113_three_toad_brigade 1600
+```
+
+#### 15.2.1 Current features
+
+#### 15.2.2 Proposed new features
+
+- can unit build?
+- is cell empty?
+- number of new units that can be build
+- obstacles
+
+- step % 40 (like day hour)
+
 ### 15.3 Results
 
 ### 15.4 Next steps
