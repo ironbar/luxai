@@ -40,6 +40,7 @@ FEATURES_MAP = dict(
     is_opponent_in_coal_era=7, is_opponent_in_uranium_era=8,
     player_n_cities=9, player_n_units=10,
     opponent_n_cities=11, opponent_n_units=12,
+    hour=13,
 )
 
 
@@ -120,6 +121,7 @@ def make_input(obs):
     features[FEATURES_MAP['step']] = obs['step'] / 360
     features[FEATURES_MAP['is_night']] = obs['step'] % 40 >= 30
     features[FEATURES_MAP['is_last_day']] = obs['step'] >= 40*8
+    features[FEATURES_MAP['hour']] = obs['step'] % 40 / 40
     for prefix in ['player', 'opponent']:
         # Features are divided by 10 to avoid very big numbers
         features[FEATURES_MAP['%s_n_cities' % prefix]] = np.sum(board[CHANNELS_MAP['%s_city' % prefix]])/10

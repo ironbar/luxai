@@ -1362,11 +1362,14 @@ be the evaluation metric. Once we find the optimal configuration we will train a
 ```python
 import pandas as pd
 df = pd.read_csv('/home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv')
-df[df.FinalScore > 1900].to_csv('/home/gbarbadillo/luxai_ssd/agent_selection_20211113_three_toad_brigade', index=False)
+df[df.FinalScore > 1900].to_csv('/home/gbarbadillo/luxai_ssd/agent_selection_20211113_three_toad_brigade.csv', index=False)
 ```
 
 ```bash
+cd scripts/train_imitation_learning
 python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/36_feature_engineering/template.yml /mnt/hdd0/Kaggle/luxai/models/36_feature_engineering 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113_three_toad_brigade 1600
+cd ../preprocess_data
+python json_to_npz.py /home/gbarbadillo/luxai_ssd/agent_selection_20211113_three_toad_brigade.csv /home/gbarbadillo/luxai_ssd/matches_20211014/matches_json /home/gbarbadillo/luxai_ssd/matches_20211014/experimental/hour
 ```
 
 #### 15.2.1 Current features
