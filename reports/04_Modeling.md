@@ -1374,14 +1374,77 @@ python json_to_npz.py /home/gbarbadillo/luxai_ssd/agent_selection_20211113_three
 
 #### 15.2.1 Current features
 
+##### 15.2.1.1 Board features
+
+| name                                 | explanation                                         |
+|--------------------------------------|-----------------------------------------------------|
+| wood                                 | amount / 800                                        |
+| coal                                 | amount / 800                                        |
+| uranium                              | amount / 800                                        |
+| player_worker                        | n_units                                             |
+| player_cart                          | n_units                                             |
+| player_city                          | binary                                              |
+| opponent_worker                      | -                                                   |
+| opponent_cart                        | -                                                   |
+| opponent_city                        | -                                                   |
+| cooldown                             | ( cooldown  -  1 )/ 10                              |
+| road_level                           | road_level/6                                        |
+| player_city_fuel                     | n_nights_survive                                    |
+| opponent_city_fuel                   | -                                                   |
+| player_unit_cargo                    | cargo/max_cargo                                     |
+| opponent_unit_cargo                  | -                                                   |
+| player_unit_fuel                     | fuel/max_fuel                                       |
+| opponent_unit_fuel                   | -                                                   |
+| player_city_can_survive_next_night   | -                                                   |
+| opponent_city_can_survive_next_night | -                                                   |
+| player_city_can_survive_until_end    | -                                                   |
+| opponent_city_can_survive_until_end  | -                                                   |
+| resources_available                  | how many resources can be gathered at that position |
+| fuel_available                       | how many fuel can be gathered at that position      |
+| playable_area                        | 1                                                   |
+
+These features look ok.
+
+##### 15.2.1.2 1d features
+
+| name                       | explanation           |
+|----------------------------|-----------------------|
+| step                       | step/360              |
+| is_night                   | step % 40 > 30        |
+| is_last_day                | step > 40*8           |
+| player_research_points     | research_points / 200 |
+| opponent_research_points   | -                     |
+| is_player_in_coal_era      | research_points > 50  |
+| is_player_in_uranium_era   | research_points > 200 |
+| is_opponent_in_coal_era    | -                     |
+| is_opponent_in_uranium_era | -                     |
+| player_n_cities            | cities/10             |
+| player_n_units             | units/10              |
+| opponent_n_cities          | -                     |
+| opponent_n_units           | -                     |
+
+I'm not sure if knowing how many units and cities does each player has is relevant. Maybe is better
+to know if we are winning or losing by taking the difference between both. I don't think knowing
+that I have 40 or 50 units will change how the bot acts.
+
 #### 15.2.2 Proposed new features
 
-- can unit build?
-- is cell empty?
-- number of new units that can be build
-- obstacles
+##### 15.2.2.1 Board features
 
-- step % 40 (like day hour)
+| name           | explanation                                          |
+|----------------|------------------------------------------------------|
+| is_unit_full   | cargo == max_cargo                                   |
+| is_cell_empty  | no resources or cities on cell                       |
+| can_build_city | binary                                               |
+| obstacles      | enemy cities + units with cooldown >=1 not in cities |
+
+##### 15.2.2.2 1d features
+
+| name         | explanation                          |
+|--------------|--------------------------------------|
+| hour         | step % 40 / 40                       |
+| city_diff    | (player_cities - opponent_cities)/10 |
+| n_unit_slots | n_cities - n_units                   |
 
 ### 15.3 Results
 

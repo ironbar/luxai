@@ -29,7 +29,8 @@ CHANNELS_MAP = dict(
     player_city_can_survive_next_night=17, opponent_city_can_survive_next_night=18,
     player_city_can_survive_until_end=19, opponent_city_can_survive_until_end=20,
     resources_available=21, fuel_available=22,
-    playable_area=23,
+    player_is_unit_full=23, is_cell_emtpy=24, player_can_build_city=25,
+    player_obstacles=26, playable_area=27,
 )
 
 
@@ -116,6 +117,10 @@ def make_input(obs):
             board[CHANNELS_MAP['road_level'], x, y] = road_level/6
 
     board[CHANNELS_MAP['playable_area']] = 1
+    board[CHANNELS_MAP['player_is_unit_full']] = board[CHANNELS_MAP['player_unit_cargo']] == 1
+    board[CHANNELS_MAP['is_cell_emtpy']] = _is_cell_empty(board)
+    board[CHANNELS_MAP['player_can_build_city']] = _player_can_build_city(board)
+    board[CHANNELS_MAP['player_obstacles']] = _player_obstacles(board)
     add_resources_and_fuel_available_to_gather(board, features)
 
     features[FEATURES_MAP['step']] = obs['step'] / 360
@@ -260,6 +265,29 @@ def _expand_available_resource(channel):
     channel[1:] += channel_original[:-1]
     channel[:, :-1] += channel_original[:, 1:]
     channel[:, 1:] += channel_original[:, :-1]
+
+
+def _is_cell_empty(board):
+    is_cell_used = board[CHANNELS_MAP['player_city']] + board[CHANNELS_MAP['opponent_city']]
+    is_cell_used += board[CHANNELS_MAP['wood']] + board[CHANNELS_MAP['coal']] + board[CHANNELS_MAP['uranium']]
+    return is_cell_used == 0
+
+
+def _player_can_build_city(board):
+    can_build_city = board[CHANNELS_MAP['player_is_unit_full']].copy()
+    can_build_city *= board[CHANNELS_MAP['is_cell_emtpy']]
+    can_build_city *= np.clip(board[CHANNELS_MAP['player_worker']], None, 1)
+    can_build_city *= (board[CHANNELS_MAP['cooldown']] < 0)
+    return can_build_city
+
+
+def _player_obstacles(board):
+    obstacles = board[CHANNELS_MAP['opponent_city']]
+    frozen_units = board[CHANNELS_MAP['cooldown']] >= 0
+    for key in ['player', 'opponent']:
+        units = board[CHANNELS_MAP['%s_worker' % key]] + board[CHANNELS_MAP['%s_cart' % key]]
+        obstacles += (1 - board[CHANNELS_MAP['%s_city' % key]])*units*frozen_units
+    return obstacles
 
 
 def expand_board_size_adding_zeros(board, size=32):
