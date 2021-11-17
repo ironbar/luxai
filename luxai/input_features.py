@@ -39,10 +39,12 @@ FEATURES_MAP = dict(
     player_research_points=3, opponent_research_points=4,
     is_player_in_coal_era=5, is_player_in_uranium_era=6,
     is_opponent_in_coal_era=7, is_opponent_in_uranium_era=8,
-    player_n_cities=9, player_n_units=10,
-    opponent_n_cities=11, opponent_n_units=12,
-    hour=13, city_diff=14,
-    unit_free_slots=15,
+    # player_n_cities=9, player_n_units=10,
+    # opponent_n_cities=11, opponent_n_units=12,
+    # hour=13, city_diff=14,
+    # unit_free_slots=15,
+    hour=9, city_diff=10,
+    unit_free_slots=11,
 )
 
 
@@ -130,11 +132,11 @@ def make_input(obs):
     features[FEATURES_MAP['hour']] = obs['step'] % 40 / 40
     features[FEATURES_MAP['city_diff']] = np.sum(board[CHANNELS_MAP['player_city']]) - np.sum(board[CHANNELS_MAP['opponent_city']])
     features[FEATURES_MAP['unit_free_slots']] = np.sum(board[CHANNELS_MAP['player_city']]) - np.sum(board[CHANNELS_MAP['player_worker']]) - np.sum(board[CHANNELS_MAP['player_cart']])
-    for prefix in ['player', 'opponent']:
-        # Features are divided by 10 to avoid very big numbers
-        features[FEATURES_MAP['%s_n_cities' % prefix]] = np.sum(board[CHANNELS_MAP['%s_city' % prefix]])/10
-        features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_worker' % prefix]])/10
-        features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_cart' % prefix]])/10
+    # for prefix in ['player', 'opponent']:
+    #     # Features are divided by 10 to avoid very big numbers
+    #     features[FEATURES_MAP['%s_n_cities' % prefix]] = np.sum(board[CHANNELS_MAP['%s_city' % prefix]])/10
+    #     features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_worker' % prefix]])/10
+    #     features[FEATURES_MAP['%s_n_units' % prefix]] += np.sum(board[CHANNELS_MAP['%s_cart' % prefix]])/10
 
     board = np.transpose(board, axes=(1, 2, 0))
     features = np.expand_dims(features, axis=0)
