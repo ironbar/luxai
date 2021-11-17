@@ -1446,6 +1446,20 @@ that I have 40 or 50 units will change how the bot acts.
 | city_diff    | (player_cities - opponent_cities)/10 |
 | n_unit_slots | n_cities - n_units                   |
 
+#### 15.2.3 Experiment results
+
+| name                               | val loss | val loss round 0.6 |
+|------------------------------------|----------|--------------------|
+| 01_baseline_with_original_features | 0.1722   | 0.1751             |
+| 02_add_hour                        | 0.1698   | 0.1703             |
+| 03_add_can_build_city              | 0.1634   | 0.1693             |
+| 04_obstacles                       | 0.1656   | 0.1704             |
+| 05_city_diff                       | 0.1649   | 0.1661             |
+| 06_unit_free_slots                 | 0.1665   | 0.171              |
+
+It does not seem that obstacles is beneficial. There might be a better learning rate policy that could
+make me repeat the experiments, be less patient but reduce the learning rate less.
+
 ### 15.3 Results
 
 ### 15.4 Next steps
