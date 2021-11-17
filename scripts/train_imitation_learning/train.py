@@ -8,6 +8,7 @@ import sys
 import yaml
 import argparse
 import tensorflow as tf
+from scipy.interpolate import interp1d
 
 from luxai.cunet import cunet_luxai_model
 from luxai.cunet import config as cunet_config
@@ -59,6 +60,9 @@ def create_callbacks(callbacks_conf, output_folder):
             callbacks.append(tf.keras.callbacks.ModelCheckpoint(**callback_kwargs))
     if 'ReduceLROnPlateau' in callbacks_conf:
         callbacks.append(tf.keras.callbacks.ReduceLROnPlateau(**callbacks_conf['ReduceLROnPlateau']))
+    if 'LearningRateScheduler' in callbacks_conf:
+        schedule = interp1d(**callbacks_conf['LearningRateScheduler'])
+        callbacks.append(tf.keras.callbacks.LearningRateScheduler(schedule=lambda x: float(schedule(x))))
     return callbacks
 
 

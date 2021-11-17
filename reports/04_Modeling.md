@@ -1438,6 +1438,8 @@ that I have 40 or 50 units will change how the bot acts.
 | can_build_city | binary                                               |
 | obstacles      | enemy cities + units with cooldown >=1 not in cities |
 
+can I move to a position without risk of collision?
+
 ##### 15.2.2.2 1d features
 
 | name         | explanation                          |
