@@ -22,3 +22,6 @@ clean: clean-pyc
 
 env-export:
 	conda env export > environment.yml
+
+list-submissions:
+	kaggle competitions submissions lux-ai-2021
