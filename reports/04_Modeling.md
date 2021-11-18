@@ -1438,7 +1438,8 @@ that I have 40 or 50 units will change how the bot acts.
 | can_build_city | binary                                               |
 | obstacles      | enemy cities + units with cooldown >=1 not in cities |
 
-can I move to a position without risk of collision?
+- can I move to a position without risk of collision?
+- split cooldown
 
 ##### 15.2.2.2 1d features
 
@@ -1461,6 +1462,29 @@ can I move to a position without risk of collision?
 
 It does not seem that obstacles is beneficial. There might be a better learning rate policy that could
 make me repeat the experiments, be less patient but reduce the learning rate less.
+
+| name                               | val loss   | val loss round 0.6 |
+|------------------------------------|------------|--------------------|
+| 01_baseline_with_original_features | 0.1674     | 0.1728             |
+| 02_add_hour                        | 0.1656     | 0.169              |
+| 03_add_can_build_city              | 0.1653     | 0.1668             |
+| 04_obstacles                       | 0.1657     | 0.1679             |
+| 05_city_diff                       | 0.1625     | 0.1665             |
+| 06_unit_free_slots                 | 0.1619     | 0.1659             |
+| 07_remove_cities_and_units         | **0.1615** | **0.1656**         |
+| 08_remove_obstacles                | 0.1639     | 0.1665             |
+| 09_split_cooldown                  | 0.164      | 0.1661             |
+
+On this comparison we have been able to improve validation loss from 0.1674 to 0.1615 just
+by changing the features.
+
+#### 15.2.4 Side experiment: Dropout
+
+I have been experimenting with dropout at `/mnt/hdd0/Kaggle/luxai/models/38_dropout` because
+with current implementation dropout is only applied at one layer instead on all the 4 depths. However
+if we mantain the number of parameters changing dropout is not beneficial.
+
+It may be necessary to increase the model size to work with more dropout.
 
 ### 15.3 Results
 
