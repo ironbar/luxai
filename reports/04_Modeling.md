@@ -1486,9 +1486,53 @@ if we mantain the number of parameters changing dropout is not beneficial.
 
 It may be necessary to increase the model size to work with more dropout.
 
+#### 15.2.5 Train an ensemble with the new features
+
+Now I'm going to train an ensemble with the same configuration as `megatron` but using the new features.
+This will allow to directly compare the two agents and see if changing the features brought improvements.
+
+```bash
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/40_curriculum_learning_with_new_features/template.yml /mnt/hdd0/Kaggle/luxai/models/40_curriculum_learning_with_new_features 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1600 1650 1700 1800 1950 2000
+
+Stage 0 matches: 12280  agents: 42
+Stage 1 matches: 8138   agents: 39
+Stage 2 matches: 2521   agents: 14
+Stage 3 matches: 462    agents: 1
+Stage 4 matches: 306    agents: 1
+Stage 5 matches: 293    agents: 1
+```
+
+| seed | baseline stage 5 val loss | stage 5 val loss after feature engineering |
+|------|---------------------------|--------------------------------------------|
+| 0    | 0.169                     | 0.1605                                     |
+| 1    | 0.1778                    | 0.171                                      |
+| 2    | 0.1678                    | 0.1611                                     |
+| 3    | 0.1672                    | 0.1619                                     |
+| mean | 0.1705                    | 0.1636                                     |
+
+In this experiment using the new features reduced val loss from 0.1705 to 0.1636 on average.
+
+#### 15.2.6 Evidence in favour of using data augmentation when playing
+
+10 days, not enough evidence
+optimus_prime 1736
+optimus_prime_hf 1731
+
+30 days, signs of improvements
+superfocus_64_ensemble 1640
+superfocus_64_ensemble_hf 1665
+
+local
+
 ### 15.3 Results
 
+I have created the agent`fitipaldi` (from feature engineering) which is able to beat `three_toad_deluxe`, `optimus_prime` and `megatron`
+with probabilities 81%, 71% and 57% so it is the best agent so far. We will have to wait around 14 days
+to see its score on the leaderboard.
+
 ### 15.4 Next steps
+
+Find optimum path and final step for curriculum learning.
 
 ## Iteration n. Iteration_title
 
