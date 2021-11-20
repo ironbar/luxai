@@ -16,14 +16,14 @@ def main(args=None):
     args.score_thresholds.append(INF)
 
     for stage_idx, lower_threshold in enumerate(args.score_thresholds[:-1]):
-        output_folder = os.path.join(args.output_folder, 'seed%i' % args.seed, 'stage%i' % stage_idx)
+        output_folder = os.path.join(args.output_folder, 'seed%i%s' % (args.seed, args.sufix), 'stage%i' % stage_idx)
         upper_threshold = args.score_thresholds[stage_idx + 1]
         sub_df = filter_dataframe_with_score(df, lower_threshold, upper_threshold)
         print('Stage %i matches: %i\tagents: %i' % (stage_idx, len(sub_df), len(sub_df.SubmissionId.unique())))
         train, val = get_train_and_val(sub_df, args.seed, divisions=max(10, int(len(sub_df)//100)))
         save_train_and_val_dataframes(train, val, output_folder)
         save_train_configuration(args.template, output_folder, stage_idx, len(train), len(val))
-    print_commands_to_run_them_all(os.path.join(args.output_folder, 'seed%i' % args.seed))
+    print_commands_to_run_them_all(os.path.join(args.output_folder, 'seed%i%s' % (args.seed, args.sufix)))
 
 
 def filter_dataframe_with_score(df, lower_threshold, upper_threshold):
@@ -89,6 +89,7 @@ def parse_args(args):
     parser.add_argument('matches', help='Path to the csv file with all the matches')
     parser.add_argument('score_thresholds', help='Score thresholds that will be used to create the training stages',
                         nargs='*', type=int)
+    parser.add_argument('--sufix', help='Sufix to add to the name of the experiment', default='')
     return parser.parse_args(args)
 
 

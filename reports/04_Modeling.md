@@ -1544,6 +1544,43 @@ the final stage (train just on the best Toad Brigade agent, the best 2...)
 
 ### 16.2 Development
 
+#### 16.2.1 How many stages are necessary?
+
+I'm going to take as my baseline the training done for `fitipaldi` agent and remove stages or modify
+the grouping of agents. The goal will be to optimize the validation loss of the last stage.
+
+```bash
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1950 2000 --sufix _1950_2000
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1800 1950 2000 --sufix _1800_1950_2000
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1700 1800 1950 2000 --sufix _1700_1800_1950_2000
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1650 1700 1800 1950 2000 --sufix _1650_1700_1800_1950_2000
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1800 2000 --sufix _1800_2000
+
+
+
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1950_2000/stage0/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1950_2000/stage1/train_conf.yml
+
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1800_1950_2000/stage0/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1800_1950_2000/stage1/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1800_1950_2000/stage2/train_conf.yml
+
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_1950_2000/stage0/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_1950_2000/stage1/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_1950_2000/stage2/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_1950_2000/stage3/train_conf.yml
+
+sleep 200
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1800_2000/stage0/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1800_2000/stage1/train_conf.yml
+
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage0/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage1/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage2/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage3/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage4/train_conf.yml
+```
+
 ### 16.3 Results
 
 ### 16.4 Next steps
