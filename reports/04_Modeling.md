@@ -1534,6 +1534,20 @@ to see its score on the leaderboard.
 
 Find optimum path and final step for curriculum learning.
 
+## Iteration 16. Find best curriculum learning strategy
+
+### 16.1 Goal
+
+The end of the challenge is approaching and I want to find the best strategy to train the final
+agents. I have doubts regarding the path (how many stages are necessary) and also regarding
+the final stage (train just on the best Toad Brigade agent, the best 2...)
+
+### 16.2 Development
+
+### 16.3 Results
+
+### 16.4 Next steps
+
 ## Iteration n. Iteration_title
 
 <!---
