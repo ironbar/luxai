@@ -1522,11 +1522,12 @@ optimus_prime_hf 1731
 superfocus_64_ensemble 1640
 superfocus_64_ensemble_hf 1665
 
-local
+On local evaluation the change on agent `fitipaldi` is to small to be able to measure it on a
+reasonable amount of matches.
 
 ### 15.3 Results
 
-I have created the agent`fitipaldi` (from feature engineering) which is able to beat `three_toad_deluxe`, `optimus_prime` and `megatron`
+I have created the agent `fitipaldi` (from feature engineering) which is able to beat `three_toad_deluxe`, `optimus_prime` and `megatron`
 with probabilities 81%, 71% and 57% so it is the best agent so far. We will have to wait around 14 days
 to see its score on the leaderboard.
 
@@ -1555,7 +1556,11 @@ python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_st
 python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1700 1800 1950 2000 --sufix _1700_1800_1950_2000
 python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1650 1700 1800 1950 2000 --sufix _1650_1700_1800_1950_2000
 python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1800 2000 --sufix _1800_2000
-
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1700 1800 2000 --sufix _1700_1800_2000
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1650 1700 1800 2000 --sufix _1650_1700_1800_2000
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1600 1650 1700 1800 2000 --sufix _1600_1650_1700_1800_2000
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1700 2000 --sufix _1700_2000
+python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1600 1800 2000 --sufix 1600_1800_2000
 
 
 python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1950_2000/stage0/train_conf.yml
@@ -1579,7 +1584,39 @@ python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/
 python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage2/train_conf.yml
 python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage3/train_conf.yml
 python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage4/train_conf.yml
+
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_2000/stage0/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_2000/stage1/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_2000/stage2/train_conf.yml
+
+sleep 200
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1600_1650_1700_1800_2000/stage3/train_conf.yml
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1600_1650_1700_1800_2000/stage4/train_conf.yml
+
 ```
+
+| seed | baseline stage 5 val loss | stage 5 val loss after feature engineering | better curriculum learning |
+|------|---------------------------|--------------------------------------------|----------------------------|
+| 0    | 0.169                     | 0.1605                                     | 0.1563                     |
+| 1    | 0.1778                    | 0.171                                      | 0.1687                     |
+| 2    | 0.1678                    | 0.1611                                     | 0.1561                     |
+| 3    | 0.1672                    | 0.1619                                     | 0.1574                     |
+| mean | 0.1705                    | 0.1636                                     | 0.1596                     |
+
+With this I create the agent
+
+#### 16.2.1 Side experiment: adding map size to input features
+
+Although we are feeding a channel with the input map, maybe is interesting to use the map size
+for contitioning the agent. I will be doing the experiment just like I did on feature engineering
+on the folder `/mnt/hdd0/Kaggle/luxai/models/37_feature_engineering`
+
+```bash
+cd scripts/preprocess_data
+python json_to_npz.py /home/gbarbadillo/luxai_ssd/agent_selection_20211113_three_toad_brigade.csv /home/gbarbadillo/luxai_ssd/matches_20211014/matches_json /home/gbarbadillo/luxai_ssd/matches_20211014/experimental/map_size
+```
+
+It did not improve over the best result.
 
 ### 16.3 Results
 
