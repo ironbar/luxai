@@ -1561,39 +1561,23 @@ python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_st
 python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1600 1650 1700 1800 2000 --sufix _1600_1650_1700_1800_2000
 python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1700 2000 --sufix _1700_2000
 python create_curriculum_training.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/template.yml /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211113.csv 1600 1800 2000 --sufix 1600_1800_2000
-
-
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1950_2000/stage0/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1950_2000/stage1/train_conf.yml
-
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1800_1950_2000/stage0/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1800_1950_2000/stage1/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1800_1950_2000/stage2/train_conf.yml
-
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_1950_2000/stage0/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_1950_2000/stage1/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_1950_2000/stage2/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_1950_2000/stage3/train_conf.yml
-
-sleep 200
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1800_2000/stage0/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1800_2000/stage1/train_conf.yml
-
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage0/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage1/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage2/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage3/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1650_1700_1800_1950_2000/stage4/train_conf.yml
-
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_2000/stage0/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_2000/stage1/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1700_1800_2000/stage2/train_conf.yml
-
-sleep 200
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1600_1650_1700_1800_2000/stage3/train_conf.yml
-python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/seed0_1600_1650_1700_1800_2000/stage4/train_conf.yml
-
 ```
+
+| name                                | final min val loss |
+|-------------------------------------|--------------------|
+| seed0_1950_2000                     | 0.174              |
+| seed0_1800_1950_2000                | 0.1686             |
+| seed0_1700_1800_1950_2000           | 0.163              |
+| seed0_1650_1700_1800_1950_2000      | 0.1608             |
+| seed0_1600_1650_1700_1800_1950_2000 | 0.1605             |
+| seed0_1800_2000                     | 0.1654             |
+| seed0_1700_1800_2000                | 0.1595             |
+| seed0_1650_1700_1800_2000           | 0.1597             |
+| seed0_1600_1650_1700_1800_2000      | 0.1563             |
+| seed0_1700_2000                     | 0.1629             |
+| seed0_1600_1800_2000                | 0.1648             |
+
+The best path seems to be `seed0_1600_1650_1700_1800_2000`. With this I create the agent `stacy` that has a better use of stages.
 
 | seed | baseline stage 5 val loss | stage 5 val loss after feature engineering | better curriculum learning |
 |------|---------------------------|--------------------------------------------|----------------------------|
@@ -1603,9 +1587,7 @@ python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/41_optimal_stages/
 | 3    | 0.1672                    | 0.1619                                     | 0.1574                     |
 | mean | 0.1705                    | 0.1636                                     | 0.1596                     |
 
-With this I create the agent
-
-#### 16.2.1 Side experiment: adding map size to input features
+#### 16.2.2 Side experiment: adding map size to input features
 
 Although we are feeding a channel with the input map, maybe is interesting to use the map size
 for contitioning the agent. I will be doing the experiment just like I did on feature engineering
@@ -1618,9 +1600,38 @@ python json_to_npz.py /home/gbarbadillo/luxai_ssd/agent_selection_20211113_three
 
 It did not improve over the best result.
 
+#### 16.2.3 Training on three best toad agents
+
+I have created `terminator` agent by training on the best three toad agents. So instead
+of using the configuration `1600_1650_1700_1800_2000` I have used `1600_1650_1700_1800`.
+
+Local evaluation results show that it is slighlty weaker than `stacy` agents, so it seems is
+better to do the last training just on the best agent.
+
 ### 16.3 Results
 
+On this iteration I have created agents `stacy` and `terminator`. On local evaluation `stacy` seems
+to be the best agent so far, althought not much better than `fitipaldi` and `megatron`
+
 ### 16.4 Next steps
+
+I'm thinking of training a single big model instead of 4 smaller models.
+
+## Iteration 17. Bigger models
+
+### 17.1 Goal
+
+The goal of this iteration is to see if using bigger models yields better results now that we
+have more data available for training.
+
+### 17.2 Development
+
+On a first step I'm going to train with the same data as `stacy` so I can make a direct comparison
+between them.
+
+### 17.3 Results
+
+### 17.4 Next steps
 
 ## Iteration n. Iteration_title
 
