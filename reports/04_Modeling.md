@@ -1642,7 +1642,8 @@ Maybe I should increase patience to 3 because for example on stage1 I see that t
 
 I have concerns about the metrics and the losses used for training. On a first step I'm going to
 do predictions on the validation set and explore the data for getting a better understanding and new
-ideas.
+ideas. I have the intuition that with the correct loss and metrics a bigger model should be better
+than 4 smaller models.
 
 ### 17.3 Results
 
