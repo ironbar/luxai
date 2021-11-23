@@ -1629,6 +1629,21 @@ have more data available for training.
 On a first step I'm going to train with the same data as `stacy` so I can make a direct comparison
 between them.
 
+I have created agent `obelix` which is not as good as `stacy` on local validation.
+
+I might do some variations with dropout because I have found that previous experiments with dropout did not have the correct
+number of final layer filters.
+
+Also I might reduce the white extracost to see how the errors during train change.
+
+Maybe I should increase patience to 3 because for example on stage1 I see that the learning rate was very quickly decreased.
+
+### 17.2.1 Predictions study
+
+I have concerns about the metrics and the losses used for training. On a first step I'm going to
+do predictions on the validation set and explore the data for getting a better understanding and new
+ideas.
+
 ### 17.3 Results
 
 ### 17.4 Next steps
