@@ -66,7 +66,23 @@ def data_generator(n_matches, batch_size, matches_json_dir, matches_cache_npz_di
             batch_indices = indices[batch_idx*batch_size: (batch_idx+1)*batch_size]
             x = data[0][0][batch_indices], data[0][1][batch_indices]
             y = data[1][0][batch_indices], data[1][1][batch_indices]
-            yield random_data_augmentation(x, y)
+            x, y = random_data_augmentation(x, y)
+            yield x, adapt_output_to_new_model_architecture(y)
+
+
+def adapt_output_to_new_model_architecture(y):
+    """ Expands the output from 2 to 4 following the new action and policy convention """
+    return create_action_output(y[0]), y[0], create_action_output(y[1]), y[1]
+
+
+def create_action_output(y):
+    """
+    Action output has two channels, the first says wether to take an action or not,
+    the second has the mask
+    """
+    action_output = y[..., -2:].copy()
+    action_output[..., 0] = np.max(y[..., :-1])
+    return action_output
 
 
 def episode_indices_generator(total_size, group_size):
