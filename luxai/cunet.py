@@ -84,8 +84,10 @@ def cunet_luxai_model(config):
             kernel_size=(3, 3), strides=strides,
         )
     outputs = [
-        Conv2D(filters=10, kernel_size=1, activation=config.ACT_LAST, name='unit_action')(x),
-        Conv2D(filters=3, kernel_size=1, activation=config.ACT_LAST, name='city_action')(x)
+        Conv2D(filters=1, kernel_size=1, activation='sigmoid', name='unit_action')(x),
+        Conv2D(filters=10, kernel_size=1, activation='softmax', name='unit_policy')(x),
+        Conv2D(filters=1, kernel_size=1, activation='sigmoid', name='city_action')(x),
+        Conv2D(filters=3, kernel_size=1, activation='softmax', name='city_policy')(x)
     ]
     model = Model(inputs=[board_input, input_conditions], outputs=outputs)
     model.save = partial(model.save, include_optimizer=False) # this allows to use ModelCheckpoint callback, otherwise fails to serialize the loss function

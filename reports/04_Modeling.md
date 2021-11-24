@@ -1676,6 +1676,9 @@ The motivation for the change comes from the study done at 17.2.1
 I will create a new branch for this breaking changes, that way I could go to master if things
 do not work well.
 
+I want to do a proof of concept retraining just the final stage. I could do a retrain if I load the
+weights skipping the layers that do not match.
+
 ### 18.3 Results
 
 ### 18.4 Next steps
