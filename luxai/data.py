@@ -81,7 +81,7 @@ def create_action_output(y):
     the second has the mask
     """
     action_output = y[..., -2:].copy()
-    action_output[..., 0] = np.max(y[..., :-1])
+    action_output[..., 0] = np.max(y[..., :-1], axis=-1)
     return action_output
 
 
