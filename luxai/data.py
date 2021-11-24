@@ -71,8 +71,11 @@ def data_generator(n_matches, batch_size, matches_json_dir, matches_cache_npz_di
 
 
 def adapt_output_to_new_model_architecture(y):
-    """ Expands the output from 2 to 4 following the new action and policy convention """
-    return create_action_output(y[0]), y[0], create_action_output(y[1]), y[1]
+    """
+    Expands the output from 2 to 4 following the new action and policy convention
+    To do so creates action output and removes mask from policy output
+    """
+    return create_action_output(y[0]), y[0][..., :-1], create_action_output(y[1]), y[1][..., :-1]
 
 
 def create_action_output(y):
