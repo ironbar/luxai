@@ -24,13 +24,15 @@ def train(config_path):
         train_conf = yaml.safe_load(f)
     output_folder = os.path.dirname(os.path.realpath(config_path))
 
-    train_enqueuer, val_enqueuer = get_enqueuers(train_conf['data'])
-    model = create_model(train_conf['model_params'])
-    callbacks = create_callbacks(train_conf['callbacks'], output_folder)
-    model.fit(x=train_enqueuer.get(), validation_data=val_enqueuer.get(),
-              callbacks=callbacks, **train_conf['train_kwargs'])
-    train_enqueuer.stop()
-    val_enqueuer.stop()
+    strategy = tf.distribute.MirroredStrategy()
+    with strategy.scope():
+        train_enqueuer, val_enqueuer = get_enqueuers(train_conf['data'])
+        model = create_model(train_conf['model_params'])
+        callbacks = create_callbacks(train_conf['callbacks'], output_folder)
+        model.fit(x=train_enqueuer.get(), validation_data=val_enqueuer.get(),
+                  callbacks=callbacks, **train_conf['train_kwargs'])
+        train_enqueuer.stop()
+        val_enqueuer.stop()
 
 
 def get_enqueuers(data_conf):
