@@ -100,8 +100,14 @@ def cunet_luxai_model(config):
 
     model.compile(
         optimizer=Adam(lr=config.LR, beta_1=0.5),
-        loss=get_loss_function(config.loss_name, config.loss_kwargs),
-        metrics=[masked_error, true_positive_error, true_negative_error],
+        # loss=get_loss_function(config.loss_name, config.loss_kwargs),
+        loss = {
+            'unit_action': masked_binary_crossentropy,
+            'city_action': masked_binary_crossentropy,
+            'unit_policy': masked_categorical_crossentropy,
+            'city_policy': masked_categorical_crossentropy,
+        },
+        # metrics=[masked_error, true_positive_error, true_negative_error],
         loss_weights=config.loss_weights,
     )
     return model
@@ -118,6 +124,12 @@ def get_loss_function(loss_name, kwargs):
 def masked_binary_crossentropy(y_true, y_pred, true_weight=1):
     mask, labels = _split_y_true_on_labels_and_mask(y_true)
     loss = custom_binary_crossentropy(labels, y_pred, true_weight=true_weight)
+    return apply_mask_to_loss(loss, mask)
+
+
+def masked_categorical_crossentropy(y_true, y_pred):
+    mask, labels = _split_y_true_on_labels_and_mask(y_true)
+    loss = -labels*K.log(y_pred + K.epsilon())
     return apply_mask_to_loss(loss, mask)
 
 
