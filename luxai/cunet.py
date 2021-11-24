@@ -18,6 +18,11 @@ from cunet.train.models.cunet_model import (
     slice_tensor, slice_tensor_range, cunet_model, config
 )
 
+from luxai.metrics import (
+    masked_binary_crossentropy, masked_categorical_crossentropy,
+    masked_error, masked_categorical_error
+)
+
 def cunet_luxai_model(config):
     board_input = Input(shape=config.INPUT_SHAPE, name='board_input')
     x = board_input
@@ -107,78 +112,13 @@ def cunet_luxai_model(config):
             'unit_policy': masked_categorical_crossentropy,
             'city_policy': masked_categorical_crossentropy,
         },
+        metrics = {
+            'unit_action': masked_error,
+            'city_action': masked_error,
+            'unit_policy': masked_categorical_error,
+            'city_policy': masked_categorical_error,
+        },
         # metrics=[masked_error, true_positive_error, true_negative_error],
         loss_weights=config.loss_weights,
     )
     return model
-
-
-def get_loss_function(loss_name, kwargs):
-    name_to_loss = {
-        'masked_binary_crossentropy': masked_binary_crossentropy,
-        'masked_focal_loss': masked_focal_loss,
-    }
-    return partial(name_to_loss[loss_name], **kwargs)
-
-
-def masked_binary_crossentropy(y_true, y_pred, true_weight=1):
-    mask, labels = _split_y_true_on_labels_and_mask(y_true)
-    loss = custom_binary_crossentropy(labels, y_pred, true_weight=true_weight)
-    return apply_mask_to_loss(loss, mask)
-
-
-def masked_categorical_crossentropy(y_true, y_pred):
-    mask, labels = _split_y_true_on_labels_and_mask(y_true)
-    loss = -labels*K.log(y_pred + K.epsilon())
-    return apply_mask_to_loss(loss, mask)
-
-
-def apply_mask_to_loss(loss, mask):
-    return K.sum(loss*mask)/(K.sum(mask)*K.cast_to_floatx(K.shape(loss)[-1]))
-
-
-def custom_binary_crossentropy(y_true, y_pred, true_weight=1):
-    """https://github.com/keras-team/keras/blob/3a33d53ea4aca312c5ad650b4883d9bac608a32e/keras/backend.py#L5014"""
-    bce = true_weight*y_true*K.log(y_pred + K.epsilon()) + (1 - y_true)*K.log(1 - y_pred + K.epsilon())
-    return -bce
-
-
-def masked_error(y_true, y_pred):
-    mask, labels = _split_y_true_on_labels_and_mask(y_true)
-    accuracy = K.cast_to_floatx(labels == K.round(y_pred))
-    error = 1 - accuracy
-    return apply_mask_to_loss(error, mask)
-
-
-def true_positive_error(y_true, y_pred):
-    return true_generic_error(y_true, y_pred, label=1)
-
-
-def true_negative_error(y_true, y_pred):
-    return true_generic_error(y_true, y_pred, label=0)
-
-
-def true_generic_error(y_true, y_pred, label):
-    mask, labels = _split_y_true_on_labels_and_mask(y_true)
-    mask = mask * K.cast_to_floatx(labels == label)
-    accuracy = K.cast_to_floatx(labels == K.round(y_pred))
-    error = 1 - accuracy
-    return apply_mask_to_loss(error, mask)
-
-
-def _split_y_true_on_labels_and_mask(y_true):
-    mask = y_true[:, :, :, -1:]
-    y_true = y_true[:, :, :, :-1]
-    return mask, y_true
-
-
-def masked_focal_loss(y_true, y_pred, zeta=1, true_weight=1):
-    mask, labels = _split_y_true_on_labels_and_mask(y_true)
-    return apply_mask_to_loss(focal_loss(labels, y_pred, zeta, true_weight=true_weight), mask)
-
-
-def focal_loss(y_true, y_pred, zeta, true_weight=1):
-    """https://github.com/umbertogriffo/focal-loss-keras"""
-    loss = true_weight*y_true*K.log(y_pred + K.epsilon())*(1 - y_pred + K.epsilon())**zeta
-    loss += (1 - y_true)*K.log(1 - y_pred + K.epsilon())*(y_pred + K.epsilon())**zeta
-    return -loss
