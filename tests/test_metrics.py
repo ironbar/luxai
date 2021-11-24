@@ -2,7 +2,8 @@ import pytest
 import numpy as np
 
 from luxai.metrics import (
-    masked_binary_crossentropy, masked_error, focal_loss)
+    masked_binary_crossentropy, masked_error, focal_loss,
+    categorical_error)
 
 
 @pytest.mark.parametrize('y_pred, y_true, mask, loss', [
@@ -66,3 +67,13 @@ def test_masked_error(y_pred, y_true, mask, loss):
 ])
 def test_focal_loss(y_pred, y_true, zeta, loss):
     assert pytest.approx(loss, abs=1e-6) == focal_loss(y_true, y_pred, zeta)
+
+@pytest.mark.parametrize('y_pred, y_true, error,', [
+    ([[1, 0, 0]], [[1, 0, 0]], [0]),
+    ([[1, 0, 0]], [[0, 1, 0]], [1]),
+    ([[1, 0, 0], [1, 0, 0]], [[1, 0, 0], [1, 0, 0]], [0, 0]),
+    ([[1, 0, 0], [1, 0, 0]], [[1, 0, 0], [0, 1, 0]], [0, 1]),
+])
+def test_categorical_error(y_true, y_pred, error):
+    y_true, y_pred, error = np.array(y_true), np.array(y_pred), np.array(error)
+    assert pytest.approx(error) == categorical_error(y_true, y_pred)

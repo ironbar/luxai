@@ -45,10 +45,15 @@ def masked_error(y_true, y_pred):
 def masked_categorical_error(y_true, y_pred):
     """https://github.com/keras-team/keras/blob/2c48a3b38b6b6139be2da501982fd2f61d7d48fe/keras/metrics.py#L3544"""
     mask, labels = _split_y_true_on_labels_and_mask(y_true)
-    accuracy = K.cast_to_floatx(K.equal(K.argmax(labels, axis=-1), K.argmax(y_pred, axis=-1)))
-    error = 1 - accuracy
+    error = categorical_error(labels, y_pred)
     # seems to be failing here, create test and check
     return apply_mask_to_loss(error, mask)
+
+
+def categorical_error(y_true, y_pred):
+    accuracy = K.cast_to_floatx(K.equal(K.argmax(y_true, axis=-1), K.argmax(y_pred, axis=-1)))
+    error = 1 - accuracy
+    return error
 
 
 def true_positive_error(y_true, y_pred):
