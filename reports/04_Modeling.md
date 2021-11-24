@@ -1634,9 +1634,11 @@ I have created agent `obelix` which is not as good as `stacy` on local validatio
 I might do some variations with dropout because I have found that previous experiments with dropout did not have the correct
 number of final layer filters.
 
-Also I might reduce the white extracost to see how the errors during train change.
+Also I might reduce the true weight to see how the errors during train change.
 
 Maybe I should increase patience to 3 because for example on stage1 I see that the learning rate was very quickly decreased.
+
+I have also created a `obelix_tw16` agent changing the true weight from 32 to 16.
 
 ### 17.2.1 Predictions study
 
@@ -1645,9 +1647,39 @@ do predictions on the validation set and explore the data for getting a better u
 ideas. I have the intuition that with the correct loss and metrics a bigger model should be better
 than 4 smaller models.
 
+![unit_action_correct_distribution](res/unit_action_correct_distribution.png)
+![city_action_correct_distribution](res/city_action_correct_distribution.png)
+
+- We have found a big problem on unit actions, 40% of the time that the unit needs to stay without taking action it takes one. Cities do not have this problem.
+- We have also found that is very rare to have 2 units on same position (0.5%) and even more rare to take 2 actions (0.2%)
+
 ### 17.3 Results
 
 ### 17.4 Next steps
+
+## Iteration 18. New model output
+
+### 18.1 Goal
+
+The goal of this iteration is to modify the model output to predict wether to take an action
+and the policy over the possible actions. Current implementation does both tasks at the same
+time.
+
+Current implementation has a binary distribution over all the actions. Proposed implementation
+has a binary distribution over wether to take an action and a softmax distribution over the
+possible actions.
+
+The motivation for the change comes from the study done at 17.2.1
+
+### 18.2 Development
+
+I will create a new branch for this breaking changes, that way I could go to master if things
+do not work well.
+
+### 18.3 Results
+
+### 18.4 Next steps
+
 
 ## Iteration n. Iteration_title
 
