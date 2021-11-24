@@ -75,7 +75,6 @@ def create_model(model_params: dict):
     else:
         cunet_config.FILTERS_LAYER_1 = model_params['filters_layer_1']
         cunet_config.N_LAYERS = model_params['n_layers']
-    cunet_config.ACT_LAST = model_params['act_last']
     # Condition parameters
     cunet_config.Z_DIM = model_params['z_dim']
     cunet_config.CONTROL_TYPE = model_params['control_type']
@@ -92,7 +91,7 @@ def create_model(model_params: dict):
     model.summary()
     if 'pretrained_weights' in model_params:
         print('Loading model weights from: %s' % model_params['pretrained_weights'])
-        model.load_weights(model_params['pretrained_weights'])
+        model.load_weights(model_params['pretrained_weights'], skip_mismatch=True, by_name=True)
     return model
 
 
