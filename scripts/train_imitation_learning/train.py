@@ -82,8 +82,8 @@ def create_model(model_params: dict):
     cunet_config.N_NEURONS = model_params['n_neurons']
     # Other
     cunet_config.LR = model_params['lr']
-    cunet_config.loss_name = model_params['loss']
-    cunet_config.loss_kwargs = model_params['loss_kwargs']
+    # cunet_config.loss_name = model_params['loss']
+    # cunet_config.loss_kwargs = model_params['loss_kwargs']
     cunet_config.loss_weights = model_params.get('loss_weights', None)
     cunet_config.freeze_bn_layers = model_params.get('freeze_bn_layers', False)
 
