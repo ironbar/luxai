@@ -20,13 +20,19 @@ def masked_binary_crossentropy(y_true, y_pred, true_weight=1):
 
 
 def masked_categorical_crossentropy(y_true, y_pred):
-    mask, labels = _split_y_true_on_labels_and_mask(y_true)
+    _, labels = _split_y_true_on_labels_and_mask(y_true)
+    mask = _get_mask_for_categorical(labels)
     loss = -labels*K.log(y_pred + K.epsilon())
     return apply_mask_to_loss(loss, mask)
 
 
+def _get_mask_for_categorical(y_true):
+    return K.expand_dims(K.max(y_true, axis=-1), axis=-1)
+
+
 def apply_mask_to_loss(loss, mask):
-    return K.sum(loss*mask)/(K.sum(mask)*K.cast_to_floatx(K.shape(loss)[-1]))
+    # return K.sum(loss*mask)/(K.sum(mask)*K.cast_to_floatx(K.shape(loss)[-1]))
+    return K.sum(loss*mask)/K.sum(mask)
 
 
 def custom_binary_crossentropy(y_true, y_pred, true_weight=1):
@@ -44,9 +50,9 @@ def masked_error(y_true, y_pred):
 
 def masked_categorical_error(y_true, y_pred):
     """https://github.com/keras-team/keras/blob/2c48a3b38b6b6139be2da501982fd2f61d7d48fe/keras/metrics.py#L3544"""
-    mask, labels = _split_y_true_on_labels_and_mask(y_true)
+    _, labels = _split_y_true_on_labels_and_mask(y_true)
+    mask = _get_mask_for_categorical(labels)
     error = K.expand_dims(categorical_error(labels, y_pred), axis=-1)
-    # seems to be failing here, create test and check
     return apply_mask_to_loss(error, mask)
 
 
