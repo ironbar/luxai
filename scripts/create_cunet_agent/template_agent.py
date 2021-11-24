@@ -38,7 +38,7 @@ def predict_with_data_augmentation(model, model_input):
 
 
 def average_predictions(preds):
-    return [np.mean([pred[idx] for pred in preds], axis=0) for idx in range(2)]
+    return [np.mean([pred[idx] for pred in preds], axis=0) for idx in range(len(preds[0]))]
 
 
 def agent(observation, configuration):
@@ -50,11 +50,18 @@ def agent(observation, configuration):
     preds = average_predictions(preds)
     preds = [crop_board_to_original_size(pred, observation) for pred in preds]
     active_unit_to_position, active_city_to_position, unit_to_position, city_to_position = ret[2:]
-    action_kwargs = dict(action_threshold=0.5, policy='greedy')
+    action_kwargs = dict(action_threshold=0.2, policy='greedy')
+    mask_threshold = 0.2
+
+    unit_action, unit_policy = preds[0][0], preds[1][0]
+    unit_policy *= unit_action > mask_threshold
     actions = create_actions_for_units_from_model_predictions(
-        preds[0][0], active_unit_to_position, unit_to_position, observation,
+        unit_policy, active_unit_to_position, unit_to_position, observation,
         set(city_to_position.keys()), **action_kwargs)
+
+    city_action, city_policy = preds[2][0], preds[3][0]
+    city_policy *= city_action > mask_threshold
     actions += create_actions_for_cities_from_model_predictions(
-        preds[1][0], active_city_to_position, len(city_to_position) - len(unit_to_position),
+        city_policy, active_city_to_position, len(city_to_position) - len(unit_to_position),
         **action_kwargs)
     return actions
