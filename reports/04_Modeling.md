@@ -1679,6 +1679,31 @@ do not work well.
 I want to do a proof of concept retraining just the final stage. I could do a retrain if I load the
 weights skipping the layers that do not match.
 
+### 18.2.1 First results
+
+On the first comparison we have seen that althougth action prediction has a different working point
+the results are almost the same as the old model. A training from zero has been launched to see if
+there is any difference.
+
+On a first place we see the old distribution, and next we see the distribution for the new model with
+four outputs.
+
+![old_take_action_distribution](res/old_take_action_distribution.png)
+
+![new_take_action_distribution](res/new_take_action_distribution.png)
+
+It seems that training metrics are better now and could be giving more information to guide
+architecture or hyperparameter tuning.
+
+I have trained a model from zero and results are slightly better than retraining from an old
+model, probing that new implementation is better, but difference is small.
+
+### 18.2.2 Architecture and hyperparameters tuning
+
+Althought initial results are almost the same the new implementation has the advantage of
+having an easier loss function and the metrics are measuring exactly what we need. My hypothesis
+is that with current implementation we might find a better training configuration.
+
 ### 18.3 Results
 
 `batman`
