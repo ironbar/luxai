@@ -74,7 +74,7 @@ def cunet_luxai_model(config):
     for i in range(n_layers):
         is_final_block = i == n_layers - 1  # the las layer is different
         # not dropout in the first block and the last two encoder blocks
-        dropout = not (i == 0 or i == n_layers - 1 or i == n_layers - 2)
+        dropout = config.dropout[i]
         # for getting the number of filters
         encoder_layer = encoder_layers[n_layers - i - 1]
         n_filters = layer_filters[n_layers - i - 1]
