@@ -103,6 +103,17 @@ def cunet_luxai_model(config):
                 print('Freezing layer: %s' % str(layer))
                 layer.trainable = False
 
+    # adding regularization
+    if config.regularizer_kwargs is not None:
+        print('Adding regularization: %s' % str(config.regularizer_kwargs))
+        regularizer = tf.keras.regularizers.L1L2(**config.regularizer_kwargs)
+        for layer in model.layers:
+            for attr in ['kernel_regularizer']:
+                if hasattr(layer, attr):
+                    layer.add_loss(lambda layer=layer: regularizer(layer.kernel))
+                    print(layer.name)
+                    # setattr(layer, attr, regularizer)
+
     model.compile(
         optimizer=Adam(lr=config.LR, beta_1=0.5),
         # loss=get_loss_function(config.loss_name, config.loss_kwargs),

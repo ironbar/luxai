@@ -87,6 +87,7 @@ def create_model(model_params: dict):
     cunet_config.loss_weights = model_params.get('loss_weights', None)
     cunet_config.freeze_bn_layers = model_params.get('freeze_bn_layers', False)
     cunet_config.dropout = model_params['dropout']
+    cunet_config.regularizer_kwargs = model_params.get('regularizer_kwargs', None)
 
     model = cunet_luxai_model(cunet_config)
     model.summary()

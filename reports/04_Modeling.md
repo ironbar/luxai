@@ -1704,9 +1704,34 @@ Althought initial results are almost the same the new implementation has the adv
 having an easier loss function and the metrics are measuring exactly what we need. My hypothesis
 is that with current implementation we might find a better training configuration.
 
+This are the parameters I'm going to change:
+
+- model capacity
+- dropout
+- learning rate
+- conditioning?
+- regularization?
+
+constant learning rate?
+remove or add dropout?
+
+For the analysis I will be focusing on units because city predictions are already very good. I will
+be using error metrics because they are more easily interpretable than loss.
+
+|                      | train            |                  | val              |                  |
+|----------------------|------------------|------------------|------------------|------------------|
+| name                 | action error (%) | policy error (%) | action error (%) | policy error (%) |
+| 01_baseline_256x4    | 7.9              | 14.8             | 10.5             | 21               |
+| 02_baseline_512x4    | 6.9              | 12.4             | 10.5             | 20.8             |
+| 03_256x4_dropout0000 | 7.2              | 13               | 10.6             | 21.2             |
+
+Adding dropout seems to improve generalization slightly. -> add more dropout
+
+I have to both improve train error and generalization to be able to halve the validation error. -> conditioning and learning rate
+
 ### 18.3 Results
 
-`batman`
+`batman` rises
 
 ### 18.4 Next steps
 
