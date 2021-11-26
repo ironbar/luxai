@@ -48,12 +48,15 @@ def data_generator(n_matches, batch_size, matches_json_dir, matches_cache_npz_di
     A generator that loads the episodes in a random order
     """
     df = pd.read_csv(agent_selection_path)
-    episode_id_and_player_pairs = list(zip(df.EpisodeId, df.Index))
     for episode_indices in episode_indices_generator(len(df), n_matches):
         matches = []
         for idx in episode_indices:
             try:
-                matches.append(load_match(*episode_id_and_player_pairs[idx], matches_json_dir, matches_cache_npz_dir))
+                episode_id, player, submission_id = df.loc[idx, ['EpisodeId', 'Index', 'SubmissionId']]
+                match = load_match(episode_id, player, matches_json_dir, matches_cache_npz_dir)
+                match['features'] = np.concatenate(
+                    [match['features'], _create_id_ohe(submission_id, len(match['features']))], axis=2)
+                matches.append(match)
             except Exception as e:
                 print('Could not load match: %s, exception: %s' % (str(episode_id_and_player_pairs[idx]), str(e)))
         data = combine_data_for_training(matches, verbose=False)
@@ -68,6 +71,13 @@ def data_generator(n_matches, batch_size, matches_json_dir, matches_cache_npz_di
             y = data[1][0][batch_indices], data[1][1][batch_indices]
             x, y = random_data_augmentation(x, y)
             yield x, adapt_output_to_new_model_architecture(y)
+
+
+def _create_id_ohe(submission_id, size):
+    id_to_idx = {23297953: 0, 23281649: 1, 23032370: 2}
+    ohe = np.zeros((size, 1, len(id_to_idx)), dtype=np.float32)
+    ohe[..., id_to_idx[submission_id]] = 1
+    return ohe
 
 
 def adapt_output_to_new_model_architecture(y):
