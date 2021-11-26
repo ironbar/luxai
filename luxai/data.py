@@ -6,6 +6,7 @@ import json
 import numpy as np
 from tqdm import tqdm
 import pandas as pd
+import yaml
 
 from luxai.input_features import make_input, expand_board_size_adding_zeros
 from luxai.output_features import create_actions_mask, create_output_features
@@ -43,22 +44,23 @@ def load_best_n_matches(n_matches, matches_json_dir, matches_cache_npz_dir, agen
     return matches
 
 
-def data_generator(n_matches, batch_size, matches_json_dir, matches_cache_npz_dir, agent_selection_path):
+def data_generator(n_matches, batch_size, matches_json_dir, matches_cache_npz_dir,
+                   agent_selection_path, submission_id_to_idx_path):
     """
     A generator that loads the episodes in a random order
     """
     df = pd.read_csv(agent_selection_path)
+    submission_id_to_idx = load_submission_id_to_idx(submission_id_to_idx_path)
     for episode_indices in episode_indices_generator(len(df), n_matches):
         matches = []
         for idx in episode_indices:
             try:
                 episode_id, player, submission_id = df.loc[idx, ['EpisodeId', 'Index', 'SubmissionId']]
                 match = load_match(episode_id, player, matches_json_dir, matches_cache_npz_dir)
-                match['features'] = np.concatenate(
-                    [match['features'], _create_id_ohe(submission_id, len(match['features']))], axis=2)
+                add_submission_id_to_features(match, submission_id, submission_id_to_idx)
                 matches.append(match)
             except Exception as e:
-                print('Could not load match: %s, exception: %s' % (str(episode_id_and_player_pairs[idx]), str(e)))
+                print('Could not load match: %s, exception: %s' % (str(episode_id), str(e)))
         data = combine_data_for_training(matches, verbose=False)
         del matches
 
@@ -73,8 +75,18 @@ def data_generator(n_matches, batch_size, matches_json_dir, matches_cache_npz_di
             yield x, adapt_output_to_new_model_architecture(y)
 
 
-def _create_id_ohe(submission_id, size):
-    id_to_idx = {23297953: 0, 23281649: 1, 23032370: 2}
+def load_submission_id_to_idx(filepath):
+    with open(filepath, 'r') as f:
+        return yaml.safe_load(f)
+
+
+def add_submission_id_to_features(match, submission_id, id_to_idx):
+    match['features'] = np.concatenate(
+        [match['features'], _create_id_ohe(submission_id, len(match['features']), id_to_idx)],
+        axis=-1)
+
+
+def _create_id_ohe(submission_id, size, id_to_idx):
     ohe = np.zeros((size, 1, len(id_to_idx)), dtype=np.float32)
     ohe[..., id_to_idx[submission_id]] = 1
     return ohe
