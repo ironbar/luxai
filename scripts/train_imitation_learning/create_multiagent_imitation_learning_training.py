@@ -21,7 +21,8 @@ def main(args=None):
     df = pd.read_csv(args.matches)
     df = filter_dataframe_with_score(df, args.score_threshold, int(1e6))
 
-    print('A total of %i agents will be used' % len(df['SubmissionId'].unique()))
+    n_agents = len(df['SubmissionId'].unique())
+    print('A total of %i agents will be used' % n_agents)
     print(df.groupby('SubmissionId').head(1))
 
     output_folder = os.path.join(args.output_folder, 'seed%i%s' % (args.seed, args.sufix))
@@ -29,7 +30,7 @@ def main(args=None):
     create_submission_id_to_idx(output_folder, df)
     train, val = get_train_and_val(df, args.seed, divisions=args.folds)
     save_train_and_val_dataframes(train, val, output_folder)
-    save_train_configuration(args.template, output_folder, len(train), len(val), args.max_steps_per_epoch)
+    save_train_configuration(args.template, output_folder, len(train), len(val), n_agents, args.max_steps_per_epoch)
     print_commands_to_run_them_all(output_folder)
 
 
@@ -54,9 +55,11 @@ def get_train_and_val(df, seed, divisions=20):
     return train, val
 
 
-def save_train_configuration(template_path, output_folder, train_matches, val_matches, max_steps_per_epoch):
+def save_train_configuration(template_path, output_folder, train_matches, val_matches, n_agents, max_steps_per_epoch):
     with open(template_path, 'r') as f:
         train_conf = yaml.safe_load(f)
+    # change model input features
+    train_conf['model_params']['z_dim'] += n_agents
     # update train and val dataframes
     for key in ['train', 'val']:
         train_conf['data'][key]['agent_selection_path'] = os.path.realpath(
