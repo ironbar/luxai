@@ -67,7 +67,10 @@ def save_train_configuration(template_path, output_folder, train_matches, val_ma
         train_conf['data'][key]['submission_id_to_idx_path'] = os.path.realpath(
             os.path.join(output_folder, SUBMISSION_ID_TO_IDX_NAME))
     # change the train and val steps
-    train_conf['train_kwargs']['steps_per_epoch'] = min(max_steps_per_epoch, int(train_matches*360/train_conf['data']['train']['batch_size']))
+    # I'm going to use half the steps to allow easier comparison between small and big trainings
+    desired_steps_per_epoch = int(train_matches*360/train_conf['data']['train']['batch_size'])//2
+    train_conf['train_kwargs']['steps_per_epoch'] = min(max_steps_per_epoch, desired_steps_per_epoch)
+    print('desired_steps_per_epoch: %i (real %i)' % (desired_steps_per_epoch, train_conf['train_kwargs']['steps_per_epoch']))
     train_conf['train_kwargs']['validation_steps'] = int(val_matches*360/train_conf['data']['val']['batch_size'])
     with open(os.path.join(output_folder, 'train_conf.yml'), 'w') as f:
         yaml.dump(train_conf, f, sort_keys=False)
@@ -100,7 +103,7 @@ def parse_args(args):
     parser.add_argument('score_threshold', help='Score thresholds that will be used to create the training stages', type=float)
     parser.add_argument('--sufix', help='Sufix to add to the name of the experiment', default='')
     parser.add_argument('--folds', help='Number of partitions of the train data', default=10, type=int)
-    parser.add_argument('--max_steps_per_epoch', help='Number of partitions of the train data', default=2000, type=int)
+    parser.add_argument('--max_steps_per_epoch', help='Number of partitions of the train data', default=4000, type=int)
     return parser.parse_args(args)
 
 
