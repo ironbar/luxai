@@ -83,6 +83,7 @@ def print_commands_to_run_them_all(output_folder):
 
 def parse_args(args):
     epilog = """
+    python create_multiagent_imitation_learning_training.py /mnt/hdd0/Kaggle/luxai/models/49_submission_id_as_input/template.yml /mnt/hdd0/Kaggle/luxai/models/49_submission_id_as_input 0 /home/gbarbadillo/luxai_ssd/agent_selection_20211125.csv 1900 --sufix _agents3
     """
     description = """
     Creates the folders and files needed for curriculum training and also a script to do all
