@@ -1770,12 +1770,35 @@ path to explore.
 ### 18.4 Next steps
 
 
-## Iteration n. Iteration_title
+## Iteration 19. Multi agent imitation learning
 
 <!---
 The work is done using short iterations. Each iteration needs to have a very
 clear goal. This allows to gain greater knowledge of the problem on each iteration.
 --->
+
+### 19.1 Goal
+
+The goal of this iteration is to explore the approach of multi agent imitation learning where the model
+is trained with multiple agent data and it is conditioned on the id of the agents. Thus the model
+learns to imitate how the different agents play. On prediction we can decide which agent we will like
+to imitate.
+
+The hypothesis is that learning to imitate multiple agents will force the model to learn better features
+that will help to imitate the best agent (which is the final goal).
+
+We hope that this approach will be better than curriculum learning because it is a single stage training.
+On curriculum learning there is the risk of forgetting what was learned on previous stages.
+
+### 19.2 Development
+
+Maybe I have to leave more or less free the max steps per epoch to be fully comparable.
+
+### 19.3 Results
+
+### 19.4 Next steps
+
+## Iteration n. Title
 
 ### n.1 Goal
 
