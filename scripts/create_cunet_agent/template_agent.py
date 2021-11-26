@@ -41,9 +41,18 @@ def average_predictions(preds):
     return [np.mean([pred[idx] for pred in preds], axis=0) for idx in range(len(preds[0]))]
 
 
+def add_agent_id_to_features(features, model, agent_to_imitate_idx):
+    ohe_size = model.input_shape[1][-1] - features.shape[-1]
+    ohe = np.zeros((1, ohe_size), dtype=np.float32)
+    ohe[..., agent_to_imitate_idx] = 1
+    features = np.concatenate([features, ohe], axis=-1)
+    return features
+
+
 def agent(observation, configuration):
     ret = make_input(observation)
     board, features = ret[:2]
+    features = add_agent_id_to_features(features, models[0], agent_to_imitate_idx=0)
     model_input = [expand_board_size_adding_zeros(np.expand_dims(board, axis=0)),
                    np.expand_dims(features, axis=0)]
     preds = [predict_with_data_augmentation(model, model_input) for model in models]
