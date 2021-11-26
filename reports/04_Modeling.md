@@ -1679,7 +1679,7 @@ do not work well.
 I want to do a proof of concept retraining just the final stage. I could do a retrain if I load the
 weights skipping the layers that do not match.
 
-### 18.2.1 First results
+#### 18.2.1 First results
 
 On the first comparison we have seen that althougth action prediction has a different working point
 the results are almost the same as the old model. A training from zero has been launched to see if
@@ -1698,7 +1698,7 @@ architecture or hyperparameter tuning.
 I have trained a model from zero and results are slightly better than retraining from an old
 model, probing that new implementation is better, but difference is small.
 
-### 18.2.2 Architecture and hyperparameters tuning
+#### 18.2.2 Architecture and hyperparameters tuning
 
 Althought initial results are almost the same the new implementation has the advantage of
 having an easier loss function and the metrics are measuring exactly what we need. My hypothesis
@@ -1718,16 +1718,50 @@ remove or add dropout?
 For the analysis I will be focusing on units because city predictions are already very good. I will
 be using error metrics because they are more easily interpretable than loss.
 
-|                      | train            |                  | val              |                  |
-|----------------------|------------------|------------------|------------------|------------------|
-| name                 | action error (%) | policy error (%) | action error (%) | policy error (%) |
-| 01_baseline_256x4    | 7.9              | 14.8             | 10.5             | 21               |
-| 02_baseline_512x4    | 6.9              | 12.4             | 10.5             | 20.8             |
-| 03_256x4_dropout0000 | 7.2              | 13               | 10.6             | 21.2             |
+|                             | train            |                  | val              |                  | diff             |                  |
+|-----------------------------|------------------|------------------|------------------|------------------|------------------|------------------|
+| name                        | action error (%) | policy error (%) | action error (%) | policy error (%) | action error (%) | policy error (%) |
+| 01_baseline_256x4           | 7.9              | 14.8             | 10.5             | 21               | 2.6              | 6.2              |
+| 02_baseline_512x4           | 6.9              | 12.4             | 10.5             | 20.8             | 3.6              | 8.4              |
+| 03_256x4_dropout0000        | 7.2              | 13               | 10.6             | 21.2             | 3.4              | 8.2              |
+| 04_256x4_dropout1100        | 8                | 15.4             | 10.3             | 20.5             | 2.3              | 5.1              |
+| 05_256x4_dropout1110        | 8.7              | 17               | 10.3             | 20.9             | 1.6              | 3.9              |
+| 06_256x4_dropout1111        | 9.8              | 18.89            | 10.4             | 21.3             | 0.6              | 2.41             |
+| 10_256x4_dropout0000_l2_1e5 | 8.1              | 15.4             | 10.4             | 20.8             | 2.3              | 5.4              |
+| 11_256x4_dropout0000_l2_1e6 | 7.7              | 14.3             | 10.7             | 21.2             | 3                | 6.9              |
+| 12_256x4_dropout0000_l2_1e7 | 7.4              | 13.8             | 10.6             | 21.3             | 3.2              | 7.5              |
+| 13_256x4_dropout0000_l2_1e8 | 7.5              | 13.7             | 10.6             | 21.2             | 3.1              | 7.5              |
+| 14_512x4_dropout0000_l2_1e6 | 7                | 13               | 10.5             | 20.8             | 3.5              | 7.8              |
+| 15_256x4_dropout1100_l2_1e5 | 8.4              | 17.2             | 10.8             | 20.8             | 2.4              | 3.6              |
 
-Adding dropout seems to improve generalization slightly. -> add more dropout
+Neither dropout or l2 regularization give big improvements. They seem to improve slighlty. On this
+experiment using the bigger model with 512 filters does not pay off.
 
-I have to both improve train error and generalization to be able to halve the validation error. -> conditioning and learning rate
+I have to both improve train error and generalization to be able to halve the validation error.
+
+Using a constant learning rate produced worst results.
+
+#### 18.2.2 Proof of concept: Use agent id as input
+
+Since I have not been able to make big improvements on the previous experiment I would like to try a new
+idea: I will be using agent id with one hot encoding as input with the features. That way the model
+will be encouraged to learn to play in the style of the different agents.
+
+That seems a really good fit for conditioned unet and a beautiful idea. I believe this architecture
+was used for different musical instruments so it may have sense to learn to play like different agents.
+
+As a start point I will be using data from the best three Toad Brigade agents just like in the experiment
+above and thus I have a baseline. If it works I will extend to arbitrary data.
+
+|                             | train            |                  | val              |                  | diff             |                  |
+|-----------------------------|------------------|------------------|------------------|------------------|------------------|------------------|
+| name                        | action error (%) | policy error (%) | action error (%) | policy error (%) | action error (%) | policy error (%) |
+| 01_baseline_256x4           | 7.9              | 14.8             | 10.5             | 21               | 2.6              | 6.2              |
+| 02_256x4_with_id            | 7.7              | 14.4             | 9.8              | 19.8             | 2.1              | 5.4              |
+
+It can be see a clear improvement when using agent id as input. Furthermore if we compare it with
+the experiments of the previous section that only showed tiny improvements. This looks like a promising
+path to explore.
 
 ### 18.3 Results
 
