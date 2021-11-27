@@ -1794,6 +1794,29 @@ On curriculum learning there is the risk of forgetting what was learned on previ
 
 Maybe I have to leave more or less free the max steps per epoch to be fully comparable.
 
+#### 19.2.1 Experiment with the amount of training data
+
+On this experiment I leave the architecture unchanged and I will modify how many agents are used
+for training. The goal is to see if using more agents is beneficial when using agent id as input.
+
+The table below shows the validation error
+
+|                     | unit             |                  | city             |                  |
+|---------------------|------------------|------------------|------------------|------------------|
+| name                | action error (%) | policy error (%) | action error (%) | policy error (%) |
+| seed0_agents1       | 11.9             | 21.4             | 0.21             | 6.6              |
+| seed0_agents3       | 10.7             | 19.5             | 0.21             | 6.4              |
+| seed0_threshold1800 | 10.7             | 18.9             | 0.21             | 6.6              |
+| seed0_threshold1700 | 10.3             | 18.7             | 0.28             | 6.7              |
+
+#### TODO
+
+- Does increasing the model capacity improves validation error? Probably the bigger the train set the bigger the effect
+- Does increasing the capacity of the conditioning branch improves validation error, we are now requiring a more complex
+task so it may have sense to increase capacity there.
+- Oversampling. When using a lot of agents it may have sense to give a bigger weight to the agents with the higher score.
+
+
 ### 19.3 Results
 
 ### 19.4 Next steps
