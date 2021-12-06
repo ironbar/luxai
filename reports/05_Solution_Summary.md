@@ -68,15 +68,130 @@ This features are feed to the conditioning branch.
 ## Model architecture
 
 The model uses the [Conditioned Unet](https://github.com/gabolsgabs/cunet) with some variations to tune
-the architecture for the challenge.
+the architecture for the challenge. It is implemented on `luxai/cunet.py`
 
-TODO: plot of the model, number of parameters
+![picture of the model architecture](https://github.com/gabolsgabs/cunet/raw/master/.markdown_images/c-u-net.png)
+
+The model has almost 24M of parameters. It has 4 levels and all of them have the same number of filters: 512
+
+```python
+(None, 32, 32, 28) # map features input size
+(None, 32, 32, 512) # level 1
+(None, 16, 16, 512) # level 2
+(None, 8, 8, 512) # level 3
+(None, 4, 4, 512) # level 4
+```
+
+The model has 4 outputs, 2 for units and 2 for cities. The first output is sigmoid and predicts wether
+the city or the unit has to take an action. The second output is a softmax that predicts the distribution
+over the possible actions. More details about the output can be found at `luxai/output_features.py`
+
+```python
+(None, 32, 32, 1) # unit_action output
+(None, 32, 32, 10) # unit_policy output
+(None, 32, 32, 1) # city_action output
+(None, 32, 32, 3) # city_policy output
+
+UNIT_ACTIONS_MAP = {
+    'm n': 0, # move north
+    'm e': 1, # move east
+    'm s': 2, # move south
+    'm w': 3, # move west
+    't n': 4, # transfer north
+    't e': 5, # transfer east
+    't s': 6, # transfer south
+    't w': 7, # transfer west
+    'bcity': 8, # build city
+    'p': 9, # pillage
+}
+
+
+CITY_ACTIONS_MAP = {
+    'r': 0, # research
+    'bw': 1, # build worker
+    'bc': 2, # build cart
+}
+```
 
 ## Training
 
-HW, training time, train params, data augmentation
+Training the model on a single 3090 gpu usually takes less than one day. All the outputs are trained
+using masked losses. The action prediction output is only trained when the unit is active, and the policy output is only trained when the unit took an action.
+
+The training parameters used on the final solution are:
+
+```yaml
+model_params:
+  board_shape:
+  - 32
+  - 32
+  - 28
+  layer_filters:
+  - 512
+  - 512
+  - 512
+  - 512
+  dropout:
+  - 0
+  - 1
+  - 0
+  - 0
+  final_layer_filters: 512
+  z_dim: 94
+  control_type: dense
+  film_type: complex
+  n_neurons:
+  - 16
+  lr: 0.001
+  loss_weights:
+    unit_action: 1
+    city_action: 0.1
+    unit_policy: 1
+    city_policy: 0.1
+train_kwargs:
+  epochs: 600
+  steps_per_epoch: 4000
+  validation_steps: 75
+  verbose: 2
+callbacks:
+  EarlyStopping:
+    monitor: val_loss
+    patience: 40
+  ModelCheckpoint_best_val_loss:
+    filepath: '%s/best_val_loss_model.h5'
+    monitor: val_loss
+    save_best_only: true
+  ReduceLROnPlateau:
+    monitor: val_loss
+    factor: 0.7
+    patience: 5
+    min_lr: 0.0001
+data:
+  max_queue_size: 200
+  train:
+    n_matches: 50
+    batch_size: 128
+    matches_json_dir: /home/gbarbadillo/luxai_ssd/matches_20211014/matches_json
+    matches_cache_npz_dir: /home/gbarbadillo/luxai_ssd/matches_npz_v2
+    agent_selection_path: /mnt/hdd0/Kaggle/luxai/models/51_models_for_submissions/seed0_threshold1700_512x4_oversample2/train.csv
+    submission_id_to_idx_path: /mnt/hdd0/Kaggle/luxai/models/51_models_for_submissions/seed0_threshold1700_512x4_oversample2/submission_id_to_idx.yml
+  val:
+    n_matches: 50
+    batch_size: 128
+    matches_json_dir: /home/gbarbadillo/luxai_ssd/matches_20211014/matches_json
+    matches_cache_npz_dir: /home/gbarbadillo/luxai_ssd/matches_npz_v2
+    agent_selection_path: /mnt/hdd0/Kaggle/luxai/models/51_models_for_submissions/seed0_threshold1700_512x4_oversample2/val.csv
+    submission_id_to_idx_path: /mnt/hdd0/Kaggle/luxai/models/51_models_for_submissions/seed0_threshold1700_512x4_oversample2/submission_id_to_idx.yml
+```
+
+```bash
+python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/51_models_for_submissions/seed0_threshold1700_512x4_oversample2/train_conf.yml
+```
 
 ## Agent
 
 Copying the code, data augmentation
 
+## Work evolution summary
+
+Paste the table of the local evaluation, and add iteration and comments
