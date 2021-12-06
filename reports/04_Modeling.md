@@ -1765,7 +1765,6 @@ path to explore.
 
 ### 18.3 Results
 
-`batman` rises
 
 ### 18.4 Next steps
 

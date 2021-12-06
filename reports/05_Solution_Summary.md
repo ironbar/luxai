@@ -190,8 +190,30 @@ python train_with_generators.py /mnt/hdd0/Kaggle/luxai/models/51_models_for_subm
 
 ## Agent
 
-Copying the code, data augmentation
+There is a script in `scripts/create_cunet_agent` that copies the necessary code from the library and creates an standalone agent.
+It is possible to use data augmentation at prediction and horizontal flip is being used.
+
+```bash
+python create_cunet_agent.py ../../agents/nairu_th02 /mnt/hdd0/Kaggle/luxai/models/51_models_for_submissions/seed0_threshold1700_512x4_oversample2/best_val_loss_model.h5
+```
 
 ## Work evolution summary
 
-Paste the table of the local evaluation, and add iteration and comments
+| Name              | Score=(μ - 3σ) | Mu: μ, Sigma: σ   | Matches | Iteration                                                |
+|-------------------|----------------|-------------------|---------|----------------------------------------------------------|
+| batman_th02       | 28.2880638     | μ=30.874, σ=0.862 | 379     | Iteration 19. Multi agent imitation learning             |
+| nairu_th02        | 28.2286951     | μ=30.680, σ=0.817 | 355     | Iteration 19. Multi agent imitation learning             |
+| obelix_tw16       | 27.1845385     | μ=29.672, σ=0.829 | 377     | Iteration 17. Bigger models                              |
+| stacy             | 25.6312322     | μ=28.089, σ=0.819 | 326     | Iteration 16. Find best curriculum learning strategy     |
+| fitipaldi         | 24.7983582     | μ=27.229, σ=0.810 | 269     | Iteration 15. Add new input features                     |
+| terminator        | 24.54492       | μ=27.031, σ=0.829 | 320     | Iteration 16. Find best curriculum learning strategy     |
+| megatron          | 23.5115103     | μ=25.989, σ=0.826 | 291     | Iteration 14. Curriculum for imitation learning          |
+| optimus_prime     | 22.8269992     | μ=25.328, σ=0.834 | 269     | Iteration 11. Architecture search                        |
+| three_toad_deluxe | 21.2721509     | μ=23.815, σ=0.848 | 254     | Iteration 10. Download more data for pretraining         |
+| superfocus_64     | 15.5938105     | μ=18.430, σ=0.945 | 230     | Iteration 7. Focus on data from a single or a few agents |
+| pagliacci_64      | 12.8266533     | μ=15.987, σ=1.053 | 217     | Iteration 5. Imitation learning with data augmentation   |
+| napoleon_128      | 11.4556515     | μ=14.733, σ=1.092 | 195     | Iteration 6. Training on all the data                    |
+
+According to this [python implementation of trueskill](https://trueskill.org/) if the different of score
+is 4.17 then the probability of winning is 76%. The table above shows a steady progress in local validation
+score during the challenge.
