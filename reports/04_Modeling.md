@@ -1865,16 +1865,27 @@ Total Matches: 1647 | Matches Queued: 23
 Local validation seems to suggest that nairu is the most powerful of the trained models, although we
 will have to see if that translates to the leaderboard.
 
+#### 19.2.4 Curiosity: playing like the worst agent used for training
+
+One interesting thing of this approach is that we can decide which agent we are going to imitate when
+playing. What makes sense is to play like the best agent, but we can also decide to play like the worse
+agent.
+
+| winner             | loser             | wins | matches | win rate | uncertainty 95% |
+|--------------------|-------------------|------|---------|----------|-----------------|
+| batman_th02        | three_toad_deluxe | 307  | 333     | 92%      | 3%              |
+| batman_th02_m1     | three_toad_deluxe | 46   | 126     | 37%      | 8%              |
+
+In this example we can see that when using the worst agent used for training the win rate decreases from
+92% to 37%. Thus we can see that the model has learned to imitate different agents.
+
 ### 19.3 Results
 
-### 19.4 Next steps
+I have submitted many agents on this iteration because it's the end of the challenge and each agent
+is a ticket for the leaderboard lottery.
 
-## Iteration n. Title
+![leaderboard_12h_before_end](res/leaderboard_12h_before_end.png)
 
-### n.1 Goal
-
-### n.2 Development
-
-### n.3 Results
-
-### n.4 Next steps
+Above we can see the leaderboard 12 hours before the end of submission period. I believe that gold
+is almost certain because the distance with 12 position is very big. I'm not sure if I will end
+in the money, hopefully the last submited agents will be good enough to secure a position in the top 5.
