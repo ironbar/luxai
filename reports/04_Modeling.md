@@ -1769,7 +1769,6 @@ path to explore.
 
 ### 18.4 Next steps
 
-
 ## Iteration 19. Multi agent imitation learning
 
 <!---
@@ -1808,14 +1807,63 @@ The table below shows the validation error
 | seed0_agents3       | 10.7             | 19.5             | 0.21             | 6.4              |
 | seed0_threshold1800 | 10.7             | 18.9             | 0.21             | 6.6              |
 | seed0_threshold1700 | 10.3             | 18.7             | 0.28             | 6.7              |
+| seed0_threshold1650 | 10.5             | 19               | 0.28             | 6.9              |
+| seed0_threshold1600 | 11               | 19.7             | 0.26             | 7.2              |
 
-#### TODO
+For this experiment using a threshold of 1700 over the agents score using for training is the optimum.
 
-- Does increasing the model capacity improves validation error? Probably the bigger the train set the bigger the effect
-- Does increasing the capacity of the conditioning branch improves validation error, we are now requiring a more complex
-task so it may have sense to increase capacity there.
-- Oversampling. When using a lot of agents it may have sense to give a bigger weight to the agents with the higher score.
+#### 19.2.2 Variations over model and oversampling best agents
 
+|                                                 | unit             |                  | city             |                  |
+|-------------------------------------------------|------------------|------------------|------------------|------------------|
+| name                                            | action error (%) | policy error (%) | action error (%) | policy error (%) |
+| seed0_threshold1700                             | 10.3             | 18.7             | 0.28             | 6.7              |
+| seed0_threshold1700_control16_16                | 15.3             | 22.4             | 0.36             | 8.1              |
+| seed0_threshold1700_control32                   | 10.3             | 18.6             | 0.21             | 6.4              |
+| seed0_threshold1700_oversample2                 | 10.2             | 18.4             | 0.25             | 6.7              |
+| seed0_threshold1700_oversample4                 | 10.4             | 18.5             | 0.24             | 6.2              |
+| seed0_threshold1700_512x4_oversample2           | 10               | 18               | 0.21             | 6.3              |
+| seed0_threshold1650_512x4_oversample4           | 10               | 17.6             | 0.23             | 6                |
+| seed0_threshold1700_256x4_nodropout_oversample2 | 10.3             | 18.1             | 0.23             | 6.4              |
+| seed0_threshold1650_256x4_nodropout_oversample4 | 10.4             | 18.5             | 0.26             | 6.2              |
+| seed0_threshold1700_512x4_nodropout_oversample2 | 10.2             | 18.1             | 0.23             | 6.2              |
+
+- Using two layers in control branch is clearly worse
+- Increasing the number of units in control branch does not have a clear effect
+- Using oversample over the three best agents does improve accuracy
+- Increasing the model size improves accuracy
+- Removing dropout increases accuracy
+
+Using the 512x4 models from this experiments I have created agents `batman`, `robin` and `joker`.
+On local validation `batman` agent is clearly better than any of my previous agents. This suggest
+that this approach is better than the previous curriculum learning.
+
+#### 19.2.3 Final models
+
+I have downloaded the matches at date 01/12/2021 which is the last update of Kaggle's Meta dataset. Using
+that data I have trained four models.
+
+| name  | dropout | size  |
+|-------|---------|-------|
+| link  | yes     | 256x4 |
+| zelda | no      | 256x4 |
+| nairu | yes     | 512x4 |
+| sheik | no      | 512x4 |
+
+Total Matches: 1647 | Matches Queued: 23
+
+| Name                | ID           | Score=(μ - 3σ) | Mu: μ, Sigma: σ   | Matches |
+|---------------------|--------------|----------------|-------------------|---------|
+| nairu_th02/main.py  | 77kBdGPexC3Y | 23.1658368     | μ=25.518, σ=0.784 | 540     |
+| sheik_th02/main.py  | Y12U90UnXYek | 22.7685413     | μ=25.116, σ=0.783 | 492     |
+| zelda_th02/main.py  | aNGxxS00rfy4 | 22.7603032     | μ=25.108, σ=0.783 | 534     |
+| link_th02/main.py   | zYGEtOH0SjiF | 21.9723224     | μ=24.321, σ=0.783 | 511     |
+| batman_th02/main.py | UqmVZMBaJWuy | 21.6663017     | μ=24.012, σ=0.782 | 446     |
+| robin_th02/main.py  | q9ZfCFTDjrIL | 20.4994955     | μ=22.862, σ=0.787 | 394     |
+| joker_th02/main.py  | y4gPb520RjMK | 18.9583960     | μ=21.348, σ=0.796 | 377     |
+
+Local validation seems to suggest that nairu is the most powerful of the trained models, although we
+will have to see if that translates to the leaderboard.
 
 ### 19.3 Results
 
