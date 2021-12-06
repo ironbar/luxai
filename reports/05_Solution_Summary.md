@@ -7,6 +7,9 @@ agents at the same time. By learning to imitate different agents the model gener
 because it had to learn better representations of the data. One funny thing of this approach is that
 the model can imitate the different agents on prediction also.
 
+This approach worked because Toad Brigade agents were much better than the other teams. At the time of closing the submission period there is a difference of ~300 points in leaderboard between my agents and Toad Brigade's agents, it may go down because my best agents did not have time to converge but the difference is big. So the lesson learned is that using imitation learning
+can provide a very strong agent, but 300 matches are not enough to get a good copy of the agent.
+
 ## Training data
 
 All matches from agents with a leaderboard score higher than 1700 on 01/12/2021 were used for training. That comprises a total of 82 different agents and close to 16k matches.
