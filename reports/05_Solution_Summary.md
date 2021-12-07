@@ -1,4 +1,4 @@
-# Solution Summary
+# Learning to imitate the best leaderboard agents using Conditional Unet
 <!---https://www.kaggle.com/wiki/WinningModelDocumentationTemplate --->
 
 The final solution for the Lux AI challenge used Imitation Learning with a [Conditioned Unet](https://github.com/gabolsgabs/cunet). The conditioning mechanism was used to provide global information about the state of the game and
