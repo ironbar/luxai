@@ -121,6 +121,13 @@ CITY_ACTIONS_MAP = {
 Training the model on a single 3090 gpu usually takes less than one day. All the outputs are trained
 using masked losses. The action prediction output is only trained when the unit is active, and the policy output is only trained when the unit took an action.
 
+The validation errors of the best model can be found below.
+
+|              | unit             |                  | city             |                  |
+|--------------|------------------|------------------|------------------|------------------|
+| name         | action error (%) | policy error (%) | action error (%) | policy error (%) |
+| best_model   | 10               | 18               | 0.21             | 6.3              |
+
 The training parameters used on the final solution are:
 
 ```yaml
@@ -200,23 +207,49 @@ It is possible to use data augmentation at prediction and horizontal flip is bei
 python create_cunet_agent.py ../../agents/nairu_th02 /mnt/hdd0/Kaggle/luxai/models/51_models_for_submissions/seed0_threshold1700_512x4_oversample2/best_val_loss_model.h5
 ```
 
-## Work evolution summary
+## Agent evolution summary
 
 | Name              | Score=(μ - 3σ) | Mu: μ, Sigma: σ   | Matches | Iteration                                                |
 |-------------------|----------------|-------------------|---------|----------------------------------------------------------|
-| nairu_th02        | 29.0458833     | μ=31.473, σ=0.809 | 749     | Iteration 19. Multi agent imitation learning             |
-| batman_th02       | 28.78259       | μ=31.312, σ=0.843 | 927     | Iteration 19. Multi agent imitation learning             |
-| obelix_tw16       | 27.0421877     | μ=29.548, σ=0.835 | 880     | Iteration 17. Bigger models                              |
-| terminator        | 26.1009007     | μ=28.574, σ=0.824 | 724     | Iteration 16. Find best curriculum learning strategy     |
-| stacy             | 24.9739949     | μ=27.427, σ=0.818 | 745     | Iteration 16. Find best curriculum learning strategy     |
-| fitipaldi         | 24.9065538     | μ=27.391, σ=0.828 | 670     | Iteration 15. Add new input features                     |
-| megatron          | 22.6356894     | μ=25.150, σ=0.838 | 640     | Iteration 14. Curriculum for imitation learning          |
-| optimus_prime     | 22.3427368     | μ=24.804, σ=0.821 | 582     | Iteration 11. Architecture search                        |
-| three_toad_deluxe | 19.2663327     | μ=21.823, σ=0.852 | 589     | Iteration 10. Download more data for pretraining         |
-| superfocus_64     | 18.5937417     | μ=21.228, σ=0.878 | 544     | Iteration 7. Focus on data from a single or a few agents |
-| pagliacci_64      | 12.8433796     | μ=15.804, σ=0.987 | 528     | Iteration 5. Imitation learning with data augmentation   |
-| napoleon_128      | 9.9689721      | μ=13.108, σ=1.046 | 448     | Iteration 6. Training on all the data                    |
+| nairu_th02        | 29.0           | μ=31.473, σ=0.809 | 749     | Iteration 19. Multi agent imitation learning             |
+| batman_th02       | 28.8           | μ=31.312, σ=0.843 | 927     | Iteration 19. Multi agent imitation learning             |
+| obelix_tw16       | 27.0           | μ=29.548, σ=0.835 | 880     | Iteration 17. Bigger models                              |
+| terminator        | 26.1           | μ=28.574, σ=0.824 | 724     | Iteration 16. Find best curriculum learning strategy     |
+| stacy             | 25.0           | μ=27.427, σ=0.818 | 745     | Iteration 16. Find best curriculum learning strategy     |
+| fitipaldi         | 24.9           | μ=27.391, σ=0.828 | 670     | Iteration 15. Add new input features                     |
+| megatron          | 22.6           | μ=25.150, σ=0.838 | 640     | Iteration 14. Curriculum for imitation learning          |
+| optimus_prime     | 22.3           | μ=24.804, σ=0.821 | 582     | Iteration 11. Architecture search                        |
+| three_toad_deluxe | 19.3           | μ=21.823, σ=0.852 | 589     | Iteration 10. Download more data for pretraining         |
+| superfocus_64     | 18.6           | μ=21.228, σ=0.878 | 544     | Iteration 7. Focus on data from a single or a few agents |
+| pagliacci_64      | 12.8           | μ=15.804, σ=0.987 | 528     | Iteration 5. Imitation learning with data augmentation   |
+| napoleon_128      | 10.0           | μ=13.108, σ=1.046 | 448     | Iteration 6. Training on all the data                    |
 
 According to this [python implementation of trueskill](https://trueskill.org/) if the different of score
 is 4.17 then the probability of winning is 76%. The table above shows a steady progress in local validation
 score during the challenge.
+
+## Little story about my experience with the challenge
+
+From the beginning I realized that the complexity of the game and the slow simulation will make reinforcement
+learning very hard. Thus I first tried writing a rule based agent with was fun at first but after some weeks
+working on it without improvements I decided to create a game interface to play the game myself
+and gain a better understanding of the game.
+
+TODO: gif of the game
+
+After playing some games and watching replays from the leaderboard I had the feeling that I was able
+to play much better than the best agents at that time. Thus I decided to use imitation learning to copy
+my style of playing.
+
+However I did a proof of concept using games from the leaderboard to see how many matches were needed
+to train an agent. Since there was 2d map information and also global information I decided to use
+a conditional unet for the experiment. It turned to work surprisingly well reaching top positions in
+the leaderboard. At that time Toad Brigade had started to lead with big distance over the other teams,
+so I decided to skip the part of playing the game myself and just copy Toad Brigade.
+
+The rest of the challenge was spend doing multiple optimizations to the model, data...
+
+Finally after many experiments with dropout, regularization and model capacity to try to improve
+generalization of the model I had the idea of giving the identity of the agent to imitate as input
+in the condition branch. This has given a boost on local validation scores, hopefully it will also work
+on the leaderboard.
