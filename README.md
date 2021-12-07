@@ -1,6 +1,6 @@
 # luxai
 
-![](reports/res/project_picture.png)
+![luxai image](reports/res/project_picture.png)
 
 Gather the most resources and survive the night!
 
@@ -22,12 +22,12 @@ I have skipped Evaluation and Deployment steps because they are not usually done
 
 ## Code structure
 
-     |_ source
+     |_ luxai: library with code for the challenge
      |_ forum: all the scritps and notebooks taken from the forum
-     |_ logs: folder for storing all kind of stats and logs. For example the
-     score of each model, results from experiments
      |_ notebooks: jupyter notebooks made during the challenge. They start by number for easier sorting.
      |_ reports: documents made during the challenge according to CRISP-DM methodology
      |_ tests: folder with tests for the library
      |_ data: folder with light data from teh challenge
      |_ rules: the official rules of the challenge
+     |_ agents: folder with agents for the challenge
+     |_ scripts: scripts for training agents, playing the game...
