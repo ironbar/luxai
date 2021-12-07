@@ -111,7 +111,7 @@ class GameInterface():
             show_focus_on_active_unit(updated_render, unit)
             updated_caption = caption + '\nAvailable units: %i Actions: %s' % (len(available_units), str(actions))
             key = self.display_render(updated_render, updated_caption)
-            print(key)
+            # print(key)
             if key == 27: # ESC
                 print('Turning off game interface, game will continue automatically until the end')
                 self.game_interface_is_on = False
@@ -227,13 +227,28 @@ def create_transfer_action(unit, direction, units):
 def parse_args(args):
     epilog = """
     python scripts/game_player.py/game_player.py
+
+    Instructions:
+    SPACE: next step
+    4, 6: previour or next active unit/city
+    DELETE: delete all actions from units
+    TAB: delete all actions from cities
+    Unit controls
+    w, a, s, d, c: move
+    b: build city
+    i, j, k, l: transfer
+    City controls
+    r: research
+    w: build worker
+    c: build cart
+    n: do nothing
     """
     description = """
     Interface for playing luxai game
     """
     parser = argparse.ArgumentParser(
         description=description,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=epilog)
     parser.add_argument('--player0', help='Path to python script for player0', default=DEFAULT_AGENT)
     parser.add_argument('--player1', help='Path to python script for player1', default=DEFAULT_AGENT)
