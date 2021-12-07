@@ -235,7 +235,7 @@ learning very hard. Thus I first tried writing a rule based agent with was fun a
 working on it without improvements I decided to create a game interface to play the game myself
 and gain a better understanding of the game.
 
-TODO: gif of the game
+![game_player.gif](res/game_player.gif)
 
 After playing some games and watching replays from the leaderboard I had the feeling that I was able
 to play much better than the best agents at that time. Thus I decided to use imitation learning to copy
