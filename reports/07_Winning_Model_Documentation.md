@@ -146,17 +146,33 @@ No
 
 #### What training methods did you use?
 
+The final solution for the Lux AI challenge used Imitation Learning with a [Conditioned Unet](https://github.com/gabolsgabs/cunet). Thus it is supervised learning.
+
 #### Did you ensemble the models?
 
+The final solution has a single big model with around 24M of parameters. Previously I tried ensembling
+when I had smaller models like 5M parameters.
+
 #### If you did ensemble, how did you weight the different models?
+
+Not applicable.
 
 ### A6. Interesting findings
 
 #### What was the most important trick you used?
 
+The most beautiful trick used was to give the identity of the agent needed to imitate as input. This allowed
+to condition the policy of the agent and thus the model trained was able to imitate multiple different
+agents.
+
 #### What do you think set you apart from others in the competition?
 
+I discovered that imitation learning was successfull earlier than the other people and that gave me
+time to finetune a lot of details that helped to stand above other guys using imitation learning.
+
 #### Did you find any interesting relationships in the data that don't fit in the sections above?
+
+There was no dataset, so this is not applicable.
 
 ### A7. Simple Features and Methods
 
@@ -171,6 +187,27 @@ What would the simplified model score?
 
 --->
 
+It is possible to train a model with around 1/5 of the size of the final model that achieves slightly
+lower leaderboard score.
+
+| Name              | LB best | LB worst | Score=(μ - 3σ) | Mu: μ, Sigma: σ   | Matches | Iteration                                                |
+|-------------------|---------|----------|----------------|-------------------|---------|----------------------------------------------------------|
+| nairu_th02        | 1792    | -        | 29.0           | μ=31.473, σ=0.809 | 749     | Iteration 19. Multi agent imitation learning             |
+| batman_th02       | 1781    | 1719     | 28.8           | μ=31.312, σ=0.843 | 927     | Iteration 19. Multi agent imitation learning             |
+| obelix_tw16       | 1761    | 1673     | 27.0           | μ=29.548, σ=0.835 | 880     | Iteration 17. Bigger models                              |
+| terminator        | 1710    | 1685     | 26.1           | μ=28.574, σ=0.824 | 724     | Iteration 16. Find best curriculum learning strategy     |
+| stacy             | 1751    | 1682     | 25.0           | μ=27.427, σ=0.818 | 745     | Iteration 16. Find best curriculum learning strategy     |
+| fitipaldi         | 1720    | 1643     | 24.9           | μ=27.391, σ=0.828 | 670     | Iteration 15. Add new input features                     |
+| megatron          | 1704    | 1640     | 22.6           | μ=25.150, σ=0.838 | 640     | Iteration 14. Curriculum for imitation learning          |
+| optimus_prime     | 1691    | 1615     | 22.3           | μ=24.804, σ=0.821 | 582     | Iteration 11. Architecture search                        |
+| three_toad_deluxe | 1633    | 1615     | 19.3           | μ=21.823, σ=0.852 | 589     | Iteration 10. Download more data for pretraining         |
+| superfocus_64     | 1591    | 1514     | 18.6           | μ=21.228, σ=0.878 | 544     | Iteration 7. Focus on data from a single or a few agents |
+| pagliacci_64      | 1475    | -        | 12.8           | μ=15.804, σ=0.987 | 528     | Iteration 5. Imitation learning with data augmentation   |
+| napoleon_128      | 1418    | -        | 10.0           | μ=13.108, σ=1.046 | 448     | Iteration 6. Training on all the data                    |
+
+Models below obelix are smaller in size (although in those cases I emsembled them). Probably we can get
+a single smaller model to score around 1700 on LB.
+
 ### A8. Model Execution Time
 
 <!---
@@ -179,17 +216,28 @@ Many customers care about how long the winning models take to train and generate
 
 #### How long does it take to train your model?
 
+Training the model on a single RTX3090 gpu usually takes less than one day.
+
 #### How long does it take to generate predictions using your model?
+
+The model was able to do 2 predictions in the 3 seconds of time available for playing.
 
 #### How long does it take to train the simplified model (referenced in section A6)?
 
+Between 6 and 12 hours on a single RTX3090 gpu.
+
 #### How long does it take to generate predictions from the simplified model?
+
+The simplified model is around 4 times faster than the bigger one on prediction.
 
 ### A9. References
 
 <!---
 Citations to references, websites, blog posts, and external sources of information where appropriate.
 --->
+
+- [Conditioned Unet](https://github.com/gabolsgabs/cunet)
+- [5th solution summary: Learning to imitate the best leaderboard agents using Conditional Unet](https://www.kaggle.com/c/lux-ai-2021/discussion/293911)
 
 ## B. SUBMISSION MODEL
 
