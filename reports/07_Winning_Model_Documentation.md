@@ -56,6 +56,17 @@ The tool(s) you used
 How long it takes to train your model
 --->
 
+I have already summarized the solution on this [kaggle topic](https://www.kaggle.com/c/lux-ai-2021/discussion/293911).
+
+The final solution for the Lux AI challenge used Imitation Learning with a [Conditioned Unet](https://github.com/gabolsgabs/cunet). The conditioning mechanism was used to provide global information about the state of the game and
+also the identify of the agent the model need to imitate. Thus the model learned to imitate multiple different
+agents at the same time. By learning to imitate different agents the model generalized better, probably
+because it had to learn better representations of the data. One funny thing of this approach is that
+the model can imitate the different agents on prediction also.
+
+This approach worked because Toad Brigade agents were much better than the other teams. At the time of closing the submission period there is a difference of ~300 points in leaderboard between my agents and Toad Brigade's agents, it may go down because my best agents did not have time to converge but the difference is big. So the lesson learned is that using imitation learning
+can provide a very strong agent, but 300 matches are not enough to get a good copy of the agent.
+
 ### A4. Features Selection / Engineering
 
 #### What were the most important features?
@@ -67,13 +78,69 @@ partial plots for the 3-5 most important features
 If this is not possible, you should provide a list of the most important features.
 --->
 
+All features are defined on the repo at `luxai/input_features.py`
+
+##### Map features
+
+This involve features that have are 2d.
+
+```python
+CHANNELS_MAP = dict(
+    wood=0, coal=1, uranium=2,
+    player_worker=3, player_cart=4, player_city=5,
+    opponent_worker=6, opponent_cart=7, opponent_city=8,
+    cooldown=9, road_level=10,
+    player_city_fuel=11, opponent_city_fuel=12,
+    player_unit_cargo=13, opponent_unit_cargo=14,
+    player_unit_fuel=15, opponent_unit_fuel=16,
+    player_city_can_survive_next_night=17, opponent_city_can_survive_next_night=18,
+    player_city_can_survive_until_end=19, opponent_city_can_survive_until_end=20,
+    resources_available=21, fuel_available=22,
+    player_is_unit_full=23, is_cell_emtpy=24, player_can_build_city=25,
+    player_obstacles=26, playable_area=27,
+)
+```
+
+I believe the names are self-explicative so please go to the code if you need more details for
+each feature. All the features are normalized.
+
+##### Global features
+
+```python
+FEATURES_MAP = dict(
+    step=0, is_night=1, is_last_day=2,
+    player_research_points=3, opponent_research_points=4,
+    is_player_in_coal_era=5, is_player_in_uranium_era=6,
+    is_opponent_in_coal_era=7, is_opponent_in_uranium_era=8,
+    hour=9, city_diff=10,
+    unit_free_slots=11,
+)
+```
+
+In adittion to those features an extra feature is given representing the identity of the agent the
+model needs to imitate. This is a simple one hot encoding. In the ohe the agents are sorted by leaderboard
+score so first index is the best agent and last index is the worse. This can be used later on
+prediction to choose which agent the model will imitate.
+
+This features are feed to the conditioning branch.
+
 #### How did you select features?
+
+On a first step I implemented all the features that I thought were necessary. Then at the middle
+of the challenge I run an [iteration](https://github.com/ironbar/luxai/blob/main/reports/04_Modeling.md#iteration-15-add-new-input-features) to find if adding new features could improve the models
+and if removing some of them will also be beneficial.
 
 #### Did you make any important feature transformations?
 
+There is no magic feature, they all are pretty much trivial.
+
 #### Did you find any interesting interactions between features?
 
+Nothing relevant to say here
+
 #### Did you use external data? (if permitted)
+
+No
 
 ### A5. Training Method(s)
 
