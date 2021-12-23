@@ -2,6 +2,8 @@
 
 [Winning Model Documentation Guidelines](https://www.kaggle.com/WinningModelDocumentationGuidelines)
 
+This is the Winning model documentation for LuxAI challenge from ironbar. All code and reports can be found at [github](https://github.com/ironbar/luxai) and also the latest version of this [document](https://github.com/ironbar/luxai/blob/main/reports/07_Winning_Model_Documentation.md)
+
 ## A. MODEL SUMMARY
 
 <!---
@@ -15,10 +17,10 @@ The below should be considered helpful guidance. You can ignore any questions th
 
 ### A1. Background on you/your team
 
-- Competition Name:
-- Team Name:
-- Private Leaderboard Score:
-- Private Leaderboard Place:
+- Competition Name: LuxAI
+- Team Name: ironbar
+- Private Leaderboard Score: 1791.8
+- Private Leaderboard Place: 1791.8
 - Name: Guillermo Barbadillo
 - Location: Pamplona, SPAIN
 - Email: guilllermobarbadillo@gmail.com
