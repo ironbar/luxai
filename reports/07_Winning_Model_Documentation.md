@@ -332,6 +332,8 @@ Important side effects of your code. For example, if your data processing code o
 Key assumptions made by your code. For example, if the outputs folder must be empty when starting a training run.
 --->
 
+Done.
+
 ### B3. Configuration files
 
 <!---
@@ -366,6 +368,8 @@ This is the only place that specifies the path to these directories.
 Any code that is doing I/O should use the appropriate base paths from SETTINGS.json
 --->
 
+There is a [template configuration](https://github.com/ironbar/luxai/blob/main/scripts/final_solution_files/template.yml) file for training in the repo.
+
 ### B7. Serialized copy of the trained model
 
 <!---
@@ -394,4 +398,4 @@ Use your model to make predictions on new samples
 Save your predictions to SUBMISSION_DIR (specified in SETTINGS.json)
 --->
 
-Already done on the README
+Already done on the README.
