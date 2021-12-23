@@ -338,6 +338,8 @@ Key assumptions made by your code. For example, if the outputs folder must be em
 Create a sub-folder with any necessary configuration files, such as `$HOME/.keras/keras.json`. The README should also include a description of what these files are and where they need to be placed to function.
 --->
 
+Nothing needed here.
+
 ### B4. requirements.txt
 
 <!---
@@ -391,3 +393,5 @@ Load your model from MODEL_DIR (specified in SETTINGS.json)
 Use your model to make predictions on new samples
 Save your predictions to SUBMISSION_DIR (specified in SETTINGS.json)
 --->
+
+Already done on the README

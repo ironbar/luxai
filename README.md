@@ -35,6 +35,10 @@ I have skipped Evaluation and Deployment steps because they are not usually done
 
 ## Hardware used during the challenge
 
+My PC is described [here](https://pcpartpicker.com/b/jY8MnQ). It has two RTX3090 GPUs and the rest of the hardware can be seen below.
+
+![ubuntu_specs](reports/res/ubuntu_specs.png)
+
 ## How to train a model
 
 ## How to create an agent
