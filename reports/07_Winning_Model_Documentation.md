@@ -2,7 +2,7 @@
 
 [Winning Model Documentation Guidelines](https://www.kaggle.com/WinningModelDocumentationGuidelines)
 
-This is the Winning model documentation for LuxAI challenge from ironbar. All code and reports can be found at [github](https://github.com/ironbar/luxai) and also the latest version of this [document](https://github.com/ironbar/luxai/blob/main/reports/07_Winning_Model_Documentation.md)
+This is the Winning model documentation for LuxAI challenge from ironbar. All code and reports can be found at [github](https://github.com/ironbar/luxai) and also the latest version of this [document](https://github.com/ironbar/luxai/blob/main/reports/07_Winning_Model_Documentation.md).
 
 ## A. MODEL SUMMARY
 
@@ -29,15 +29,21 @@ The below should be considered helpful guidance. You can ignore any questions th
 
 #### What is your academic/professional background?
 
+My main interest is artificial intelligence. Since June 2014 I've been applying it at work and also on my free time on different projects and challenges. I have been lucky to win prizes in many international data science challenges.
+
+I'm currently working on voice biometrics at Veridas.
+
 #### Did you have any prior experience that helped you succeed in this competition?
+
+I'm still learning about Reinforcement Learning but I have already participated on Hungry Geese challenge and also AnimalAI challenge.
 
 #### What made you decide to enter this competition?
 
+It was an oportunity to learn more about RL.
+
 #### How much time did you spend on the competition?
 
-#### If part of a team, how did you decide to team up?
-
-#### If you competed as part of a team, who did what?
+Around 2 months.
 
 ### A3. Summary
 
