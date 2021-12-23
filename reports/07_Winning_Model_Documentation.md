@@ -316,7 +316,7 @@ Except for data downloaded from Kaggle
 Note: If you are preparing documentation for a Kernels Only competition, then please share your kernel with the host by adding their user name as a collaborator. If the winner's license requirement is open source, you can also make your kernel public.
 --->
 
-All the code is available at [github](https://github.com/ironbar/luxai). Also the best agent is [there](https://github.com/ironbar/luxai/blob/main/agents/best_local_agent_nairu.tar.gz).
+All the code is available at [github](https://github.com/ironbar/luxai). The best agent is also [there](https://github.com/ironbar/luxai/blob/main/agents/best_local_agent_nairu.tar.gz).
 
 ### B2. README.md
 

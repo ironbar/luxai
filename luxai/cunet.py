@@ -1,6 +1,7 @@
 """
 Customized version of cunet adapted from https://github.com/gabolsgabs/cunet
 """
+import os
 from functools import partial
 import tensorflow as tf
 from tensorflow.keras.models import Model
@@ -11,7 +12,8 @@ from tensorflow.keras.layers import (
 import tensorflow.keras.backend as K
 
 import sys
-sys.path.append('/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/forum/cunet')
+KERAS_CUNET_PATH = os.environ.get('KERAS_CUNET_PATH', '/mnt/hdd0/MEGA/AI/22 Kaggle/luxai/forum/cunet')
+sys.path.append(KERAS_CUNET_PATH)
 
 from cunet.train.models.cunet_model import (
     u_net_conv_block, dense_control, cnn_control, u_net_deconv_block,

@@ -75,3 +75,8 @@ Creating an agent is very simple, just run this command giving the output folder
 ```bash
 python scripts/create_cunet_agent/create_cunet_agent.py AGENT_PATH TRAIN_FOLDER_PATH/best_val_loss_model.h5
 ```
+
+## Aditional dependences
+
+[Keras Conditioned Unet](https://github.com/gabolsgabs/cunet) is used and should be downloaded. Then the
+environment variable `KERAS_CUNET_PATH` should be set to the downloaded path.
