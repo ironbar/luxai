@@ -32,3 +32,9 @@ I have skipped Evaluation and Deployment steps because they are not usually done
      |_ rules: the official rules of the challenge
      |_ agents: folder with agents for the challenge
      |_ scripts: scripts for training agents, playing the game...
+
+## Hardware used during the challenge
+
+## How to train a model
+
+## How to create an agent
