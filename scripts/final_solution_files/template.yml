@@ -1,0 +1,49 @@
+model_params:
+  board_shape: [32, 32, 28]
+  layer_filters: [256, 256, 256, 256]
+  dropout: [0, 1, 0, 0]
+  final_layer_filters: 256
+  z_dim: 12
+  control_type: dense
+  film_type: complex
+  n_neurons: [16]
+  lr: 1.e-3
+  loss_weights:
+    unit_action: 1
+    city_action: 0.1
+    unit_policy: 1
+    city_policy: 0.1
+train_kwargs:
+  epochs: 600
+  steps_per_epoch: 200
+  validation_steps: 300
+  verbose: 2
+callbacks:
+  EarlyStopping:
+    monitor: val_loss
+    patience: 40
+  ModelCheckpoint_best_val_loss:
+    filepath: "%s/best_val_loss_model.h5"
+    monitor: val_loss
+    save_best_only: True
+  ReduceLROnPlateau:
+    monitor: val_loss
+    factor: 0.7
+    patience: 5
+    min_lr: 1.e-4 # increased from 1.e-5
+data:
+  max_queue_size: 200
+  train:
+    n_matches: 50
+    batch_size: 128
+    matches_json_dir: /home/gbarbadillo/luxai_ssd/matches_20211014/matches_json
+    matches_cache_npz_dir: /home/gbarbadillo/luxai_ssd/matches_npz_v2
+    agent_selection_path: /mnt/hdd0/Kaggle/luxai/models/36_feature_engineering/seed0/stage0/train.csv
+    submission_id_to_idx_path: /mnt/hdd0/Kaggle/luxai/models/49_submission_id_as_input/debug/submission_id_to_idx.yaml
+  val:
+    n_matches: 50
+    batch_size: 128
+    matches_json_dir: /home/gbarbadillo/luxai_ssd/matches_20211014/matches_json
+    matches_cache_npz_dir: /home/gbarbadillo/luxai_ssd/matches_npz_v2
+    agent_selection_path: /mnt/hdd0/Kaggle/luxai/models/36_feature_engineering/seed0/stage0/val.csv
+    submission_id_to_idx_path: /mnt/hdd0/Kaggle/luxai/models/49_submission_id_as_input/debug/submission_id_to_idx.yaml

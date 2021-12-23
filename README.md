@@ -41,4 +41,14 @@ My PC is described [here](https://pcpartpicker.com/b/jY8MnQ). It has two RTX3090
 
 ## How to train a model
 
+### 1. Select matches to download
+
+I did this with this [kaggle public notebook](https://www.kaggle.com/ironbar/select-agents-for-downloading-matches/notebook). It simply ranks the submitted agents by score and saves a csv file with the agents exceeding a threshold score. 
+
+2. Download the matches
+
+3. Create train configuration file
+
+4. Train
+
 ## How to create an agent
