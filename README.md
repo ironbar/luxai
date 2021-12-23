@@ -24,7 +24,7 @@ I have skipped Evaluation and Deployment steps because they are not usually done
 ## Code structure
 
      |_ luxai: library with code for the challenge
-     |_ forum: all the scritps and notebooks taken from the forum
+     |_ forum: all the scripts and notebooks taken from the forum
      |_ notebooks: jupyter notebooks made during the challenge. They start by number for easier sorting.
      |_ reports: documents made during the challenge according to CRISP-DM methodology
      |_ tests: folder with tests for the library
@@ -76,7 +76,7 @@ Creating an agent is very simple, just run this command giving the output folder
 python scripts/create_cunet_agent/create_cunet_agent.py AGENT_PATH TRAIN_FOLDER_PATH/best_val_loss_model.h5
 ```
 
-## Aditional dependences
+## Additional dependences
 
 [Keras Conditioned Unet](https://github.com/gabolsgabs/cunet) is used and should be downloaded. Then the
 environment variable `KERAS_CUNET_PATH` should be set to the downloaded path.
