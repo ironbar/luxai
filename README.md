@@ -69,3 +69,9 @@ python scripts/train_imitation_learning/train_with_generators.py TRAIN_FOLDER_PA
 ```
 
 ## How to create an agent
+
+Creating an agent is very simple, just run this command giving the output folder for the agent and the path of the trained model.
+
+```bash
+python scripts/create_cunet_agent/create_cunet_agent.py AGENT_PATH TRAIN_FOLDER_PATH/best_val_loss_model.h5
+```
