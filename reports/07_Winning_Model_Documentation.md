@@ -148,6 +148,54 @@ No
 
 The final solution for the Lux AI challenge used Imitation Learning with a [Conditioned Unet](https://github.com/gabolsgabs/cunet). Thus it is supervised learning.
 
+##### Model architecture
+
+The model uses the [Conditioned Unet](https://github.com/gabolsgabs/cunet) with some variations to tune
+the architecture for the challenge. It is implemented on `luxai/cunet.py`
+
+![picture of the model architecture](https://github.com/gabolsgabs/cunet/raw/master/.markdown_images/c-u-net.png)
+
+The model has almost 24M of parameters. It has 4 levels and all of them have the same number of filters: 512
+
+```python
+(None, 32, 32, 28) # map features input size
+(None, 32, 32, 512) # level 1
+(None, 16, 16, 512) # level 2
+(None, 8, 8, 512) # level 3
+(None, 4, 4, 512) # level 4
+```
+
+The model has 4 outputs, 2 for units and 2 for cities. The first output is sigmoid and predicts wether
+the city or the unit has to take an action. The second output is a softmax that predicts the distribution
+over the possible actions. More details about the output can be found at `luxai/output_features.py`
+
+```python
+(None, 32, 32, 1) # unit_action output
+(None, 32, 32, 10) # unit_policy output
+(None, 32, 32, 1) # city_action output
+(None, 32, 32, 3) # city_policy output
+
+UNIT_ACTIONS_MAP = {
+    'm n': 0, # move north
+    'm e': 1, # move east
+    'm s': 2, # move south
+    'm w': 3, # move west
+    't n': 4, # transfer north
+    't e': 5, # transfer east
+    't s': 6, # transfer south
+    't w': 7, # transfer west
+    'bcity': 8, # build city
+    'p': 9, # pillage
+}
+
+
+CITY_ACTIONS_MAP = {
+    'r': 0, # research
+    'bw': 1, # build worker
+    'bc': 2, # build cart
+}
+```
+
 #### Did you ensemble the models?
 
 The final solution has a single big model with around 24M of parameters. Previously I tried ensembling
@@ -238,6 +286,7 @@ Citations to references, websites, blog posts, and external sources of informati
 
 - [Conditioned Unet](https://github.com/gabolsgabs/cunet)
 - [5th solution summary: Learning to imitate the best leaderboard agents using Conditional Unet](https://www.kaggle.com/c/lux-ai-2021/discussion/293911)
+- [Report of the work done during the challenge](https://github.com/ironbar/luxai/blob/main/reports/04_Modeling.md)
 
 ## B. SUBMISSION MODEL
 
