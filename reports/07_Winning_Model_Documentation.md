@@ -39,7 +39,7 @@ I'm still learning about Reinforcement Learning but I have already participated 
 
 #### What made you decide to enter this competition?
 
-It was an oportunity to learn more about RL.
+It was an opportunity to learn more about RL.
 
 #### How much time did you spend on the competition?
 
@@ -117,7 +117,7 @@ FEATURES_MAP = dict(
 )
 ```
 
-In adittion to those features an extra feature is given representing the identity of the agent the
+In addition to those features an extra feature is given representing the identity of the agent the
 model needs to imitate. This is a simple one hot encoding. In the ohe the agents are sorted by leaderboard
 score so first index is the best agent and last index is the worse. This can be used later on
 prediction to choose which agent the model will imitate.
@@ -225,7 +225,7 @@ agents.
 
 #### What do you think set you apart from others in the competition?
 
-I discovered that imitation learning was successfull earlier than the other people and that gave me
+I discovered that imitation learning was successful earlier than the other people and that gave me
 time to finetune a lot of details that helped to stand above other guys using imitation learning.
 
 #### Did you find any interesting relationships in the data that don't fit in the sections above?
