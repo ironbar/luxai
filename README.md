@@ -43,12 +43,29 @@ My PC is described [here](https://pcpartpicker.com/b/jY8MnQ). It has two RTX3090
 
 ### 1. Select matches to download
 
-I did this with this [kaggle public notebook](https://www.kaggle.com/ironbar/select-agents-for-downloading-matches/notebook). It simply ranks the submitted agents by score and saves a csv file with the agents exceeding a threshold score. 
+I did this with this [kaggle public notebook](https://www.kaggle.com/ironbar/select-agents-for-downloading-matches/notebook). It simply ranks the submitted agents by score and saves a csv file with the agents exceeding a threshold score. The exact csv file used on the final train can be found [here.](https://github.com/ironbar/luxai/blob/main/scripts/final_solution_files/agent_selection_20211201.csv)
 
-2. Download the matches
+### 2. Download the matches
 
-3. Create train configuration file
+To download the matches I use [Google colab](https://colab.research.google.com/drive/1XtHHPVzrSnLGoqZ_A0CKdz21gSFkN_CI?usp=sharing) that allows to do all the job online and later I simply have to download a zip file with all the matches.
 
-4. Train
+### 3. Create train configuration files
+
+We have to split the dataset between train and validation. For validation 10% of the matches from the best leaderboard agent were used.
+
+Please replace TRAIN_FOLDER_PATH with the folder on your computer. Also edit the template.yml file
+to use paths on your computer.
+
+```bash
+python scripts/train_imitation_learning/create_multiagent_imitation_learning_training.py scripts/final_solution_files/template.yml TRAIN_FOLDER_PATH 0 scripts/final_solution_files/agent_selection_20211201.csv 1700
+```
+
+### 4. Train
+
+Run the following command and wait for around one day.
+
+```bash
+python scripts/train_imitation_learning/train_with_generators.py TRAIN_FOLDER_PATH/train_conf.yml
+```
 
 ## How to create an agent
