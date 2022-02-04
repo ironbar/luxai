@@ -6,6 +6,12 @@ Gather the most resources and survive the night!
 
 https://www.kaggle.com/c/lux-ai-2021
 
+## Solution presentation and description
+
+[Google slides](https://docs.google.com/presentation/d/1eyoQmXgccuvxZjSgF0wyH_pzk0nY3BixBL4Ay0S2lmM/edit?usp=sharing)
+
+[Kaggle post](https://www.kaggle.com/c/lux-ai-2021/discussion/293911)
+
 ## Methodology
 
 I'm following [CRISP-DM 1.0](https://www.the-modeling-agency.com/crisp-dm.pdf) methodology for the reports.
